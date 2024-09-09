@@ -5,12 +5,12 @@ export const AuthenticationContext = createContext();
 
 export const AuthenticationProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   const loadUser = async () => {
     const storedUser = await AsyncStorage.getItem('userToken');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUserId(JSON.parse(storedUser));
       setIsAuthenticated(true);
     }
   };
@@ -20,19 +20,19 @@ export const AuthenticationProvider = ({ children }) => {
   }, []);
 
   const login = async (userData) => {
-    setUser(userData);
+    setUserId(userData);
     setIsAuthenticated(true);
     await AsyncStorage.setItem('userToken', JSON.stringify(userData));
   };
 
   const logout = async () => {
-    setUser(null);
+    setUserId(null);
     setIsAuthenticated(false);
     await AsyncStorage.removeItem('userToken');
   };
 
   return (
-    <AuthenticationContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthenticationContext.Provider value={{ isAuthenticated, userId, login, logout }}>
       {children}
     </AuthenticationContext.Provider>
   );

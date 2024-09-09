@@ -10,12 +10,13 @@ import VotingBarStats from './VotingBarStats';
 import { BoothUser_Context } from '../Context_Api/BoothUser_Context';
 import CastDonotStat from './CastDonotStat';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 
 const { height, width } = Dimensions.get('screen');
 
 const Dashboard = () => {
     const navigation = useNavigation();
-    const { boothUserId } = useContext(BoothUser_Context);
+    const { userId } = useContext(AuthenticationContext);
     const [votersCounter, setVoterCounter] = useState({
         TotalVoters: null,
         Favorable: null,
@@ -29,7 +30,7 @@ const Dashboard = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${boothUserId}/`);
+            const result = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${userId}/`);
             const totalVoterDetails = result.data.voters;
 
             const totalVoterCount = totalVoterDetails.length;
@@ -77,10 +78,10 @@ const Dashboard = () => {
     }, []);
 
     useEffect(() => {
-        if (boothUserId) {
+        if (userId) {
             getVotersByUserwise();
         }
-    }, [boothUserId]);
+    }, [userId]);
 
     return (
         <HeaderFooterLayout showHeader={false} showFooter={true}  >
