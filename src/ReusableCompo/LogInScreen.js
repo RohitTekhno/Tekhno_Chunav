@@ -7,10 +7,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { BoothUser_Context } from '../Context_Api/BoothUser_Context';
 import { ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 
 const LogInScreen = () => {
     const navigation = useNavigation()
     const { setBoothUserId } = useContext(BoothUser_Context)
+    const { login } = useContext(AuthenticationContext)
     const [Username, setUsername] = useState("User")
     const [password, setPassword] = useState("Buser")
     const [isTextSecure, setTextSecure] = useState(true)
@@ -29,10 +32,9 @@ const LogInScreen = () => {
                 "user_password": password
             })
             if (response.status === 200) {
-                setBoothUserId(response.data.user_id)
-                // alert(response.data.message)
-                // setUsername(null)
-                // setPassword(null)
+                const userId = response.data.user_id
+                setBoothUserId(userId)
+                login(userId)
                 navigation.navigate('Dashboard')
             }
         } catch (error) {

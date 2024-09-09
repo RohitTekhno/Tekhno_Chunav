@@ -1,14 +1,20 @@
 import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Linking, Pressable, Alert } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 const { height } = Dimensions.get('screen');
 const topMargin = height * 0.1;
 
 
 const LogOut = () => {
     const navigation = useNavigation();
+    const { logout } = useContext(AuthenticationContext)
 
+    const handleLogOut = async () => {
+        logout()
+    }
     const handleGoBack = () => {
         navigation.goBack()
     };
@@ -31,7 +37,7 @@ const LogOut = () => {
                 </View>
 
                 <View style={styles.bottomView}>
-                    <Pressable onPress={() => { navigation.navigate('LogInScreen') }}
+                    <Pressable onPress={handleLogOut}
                         style={{
                             width: 150,
                             backgroundColor: '#E54394',

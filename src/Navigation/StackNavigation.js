@@ -19,12 +19,32 @@ import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import ProfileButton from '../Profile/ProfileButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext, useEffect, useState } from 'react';
+import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 
 
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
+    const { isAuthenticated } = useContext(AuthenticationContext)
+
     const navigation = useNavigation();
+    const [isLoggedIn, setLoggedIn] = useState(null)
+    const checkLoginStatus = async () => {
+        try {
+            const isLoggedIn = await AsyncStorage.getItem('adminToken');
+            setLoggedIn(isLoggedIn)
+        } catch (error) {
+            console.error("Error retrieving adminToken: ", error);
+        }
+    };
+
+    useEffect(() => {
+        checkLoginStatus()
+    }, [])
+
+
 
     return (
         <Stack.Navigator
@@ -34,89 +54,95 @@ const StackNavigation = () => {
             }}
         >
             {/* <Stack.Screen name="BottomTabsNav" component={BottomTabsNav} /> */}
-            <Stack.Screen name="Launch Screen" component={LaunchScreen} />
-            <Stack.Screen name="ProfileChooser" component={ProfileChooser} />
-            <Stack.Screen name="LogInScreen" component={LogInScreen} />
-            <Stack.Screen name="Dashboard" component={Dashboard}
-                options={{
-                    headerShown: true, headerTitleAlign: 'center',
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 20 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                    headerRight: () => (<ProfileButton />)
-                }}
-            />
-            <Stack.Screen name='Users List' component={UsersList} options={{
-                headerShown: true, headerTitleAlign: 'center',
-                headerLeft: () => (
-                    <MaterialIcons name="menu" size={24} color="black"
-                        style={{ marginLeft: 20 }}
-                        onPress={() => navigation.toggleDrawer()} />
-                ),
-            }} />
-            <Stack.Screen name='Towns Users' component={TownUsers} options={{
-                headerShown: true, headerTitleAlign: 'center',
-                headerLeft: () => (
-                    <MaterialIcons name="menu" size={24} color="black"
-                        style={{ marginLeft: 20 }}
-                        onPress={() => navigation.toggleDrawer()} />
-                ),
-            }} />
-            <Stack.Screen name='Booth Users' component={BoothUsers} options={{
-                headerShown: true, headerTitleAlign: 'center',
-                headerLeft: () => (
-                    <MaterialIcons name="menu" size={24} color="black"
-                        style={{ marginLeft: 20 }}
-                        onPress={() => navigation.toggleDrawer()} />
-                ),
-            }} />
-            <Stack.Screen name='Towns' component={Towns} />
-            <Stack.Screen
-                name='Town Voters'
-                component={TownVoters}
-                options={({ route }) => ({
-                    headerShown: true,
-                    headerTitleAlign: 'center',
-                    headerTitle: route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters',
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 20 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                })}
-            />
 
-            <Stack.Screen name='Booths' component={Booths} />
-            <Stack.Screen name='Booth Voters' component={BoothVoters}
-                options={({ route }) => ({
-                    headerShown: true,
-                    headerTitleAlign: 'center',
-                    headerTitle: route.params.boothId ? `Voters in Booth : ${route.params.boothId}  ` : 'Booth Voters',
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 20 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                })}
-            />
+            {isAuthenticated ? (
+                <>
+                    <Stack.Screen name="Dashboard" component={Dashboard}
+                        options={{
+                            headerShown: true, headerTitleAlign: 'center',
+                            headerLeft: () => (
+                                <MaterialIcons name="menu" size={24} color="black"
+                                    style={{ marginLeft: 20 }}
+                                    onPress={() => navigation.toggleDrawer()} />
+                            ),
+                            headerRight: () => (<ProfileButton />)
+                        }}
+                    />
+                    <Stack.Screen name='Users List' component={UsersList} options={{
+                        headerShown: true, headerTitleAlign: 'center',
+                        headerLeft: () => (
+                            <MaterialIcons name="menu" size={24} color="black"
+                                style={{ marginLeft: 20 }}
+                                onPress={() => navigation.toggleDrawer()} />
+                        ),
+                    }} />
+                    <Stack.Screen name='Towns Users' component={TownUsers} options={{
+                        headerShown: true, headerTitleAlign: 'center',
+                        headerLeft: () => (
+                            <MaterialIcons name="menu" size={24} color="black"
+                                style={{ marginLeft: 20 }}
+                                onPress={() => navigation.toggleDrawer()} />
+                        ),
+                    }} />
+                    <Stack.Screen name='Booth Users' component={BoothUsers} options={{
+                        headerShown: true, headerTitleAlign: 'center',
+                        headerLeft: () => (
+                            <MaterialIcons name="menu" size={24} color="black"
+                                style={{ marginLeft: 20 }}
+                                onPress={() => navigation.toggleDrawer()} />
+                        ),
+                    }} />
+                    <Stack.Screen name='Towns' component={Towns} />
+                    <Stack.Screen
+                        name='Town Voters'
+                        component={TownVoters}
+                        options={({ route }) => ({
+                            headerShown: true,
+                            headerTitleAlign: 'center',
+                            headerTitle: route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters',
+                            headerLeft: () => (
+                                <MaterialIcons name="menu" size={24} color="black"
+                                    style={{ marginLeft: 20 }}
+                                    onPress={() => navigation.toggleDrawer()} />
+                            ),
+                        })}
+                    />
 
-            <Stack.Screen name='Updated Voters' component={BoothUser_ActivityLog}
-                options={{
-                    headerShown: true, headerTitleAlign: 'center',
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 20 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                }}
-            />
+                    <Stack.Screen name='Booths' component={Booths} />
+                    <Stack.Screen name='Booth Voters' component={BoothVoters}
+                        options={({ route }) => ({
+                            headerShown: true,
+                            headerTitleAlign: 'center',
+                            headerTitle: route.params.boothId ? `Voters in Booth : ${route.params.boothId}  ` : 'Booth Voters',
+                            headerLeft: () => (
+                                <MaterialIcons name="menu" size={24} color="black"
+                                    style={{ marginLeft: 20 }}
+                                    onPress={() => navigation.toggleDrawer()} />
+                            ),
+                        })}
+                    />
 
-            <Stack.Screen name='Registration' component={TownUserReg} options={{ headerShown: false }} />
-            <Stack.Screen name='Profile' component={Profile} options={{ headerShown: false }} />
-            <Stack.Screen name='LogOut' component={LogOut} options={{ headerShown: false }} />
-        </Stack.Navigator>
+                    <Stack.Screen name='Updated Voters' component={BoothUser_ActivityLog}
+                        options={{
+                            headerShown: true, headerTitleAlign: 'center',
+                            headerLeft: () => (
+                                <MaterialIcons name="menu" size={24} color="black"
+                                    style={{ marginLeft: 20 }}
+                                    onPress={() => navigation.toggleDrawer()} />
+                            ),
+                        }}
+                    />
+
+                    <Stack.Screen name='Registration' component={TownUserReg} options={{ headerShown: false }} />
+                    <Stack.Screen name='Profile' component={Profile} options={{ headerShown: false }} />
+                    <Stack.Screen name='LogOut' component={LogOut} options={{ headerShown: false }} />
+                </>) : (
+                <>
+                    <Stack.Screen name="Launch Screen" component={LaunchScreen} />
+                    <Stack.Screen name="ProfileChooser" component={ProfileChooser} />
+                    <Stack.Screen name="LogInScreen" component={LogInScreen} />
+                </>)}
+        </Stack.Navigator >
     );
 };
 

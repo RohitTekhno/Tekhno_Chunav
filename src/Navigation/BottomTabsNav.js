@@ -18,12 +18,11 @@ const BottomTabsNav = () => {
 
     return (
         <Tab.Navigator
-            initialRouteName='User List'
+            initialRouteName='Dashboard'
             screenOptions={{
                 tabBarActiveTintColor: 'black',
                 headerShown: false,
                 headerTitleAlign: 'center',
-
             }}>
 
             <Tab.Screen name='Dashboard' component={Dashboard}

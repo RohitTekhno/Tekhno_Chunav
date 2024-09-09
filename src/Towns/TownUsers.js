@@ -83,13 +83,13 @@ const TownUsers = () => {
                                         }}>
                                             <Text style={{ fontWeight: '700', textAlignVertical: 'center' }}>{item.town_user_id}</Text>
                                         </View>
-                                        <View style={{ flexDirection: 'column' }}>
+                                        <View style={{ flexDirection: 'column', flex: 1 }}>
                                             <Text>{item.town_user_name}</Text>
                                             <Text style={{ color: '#565D6D', fontSize: 11 }}>Ph. No {item.town_user_contact_number}</Text>
                                         </View>
                                     </View>
                                     <Pressable onPress={() => { navigation.navigate('Updated Voters') }}>
-                                        <MaterialCommunityIcons name="arrow-right-bold-box" size={24} color="#0077b6" />
+                                        <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
                                     </Pressable>
                                 </Pressable>
                             )}
@@ -108,9 +108,8 @@ export default TownUsers;
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
-        height: height * 0.93,
+        height: height * 0.8,
         backgroundColor: 'white',
-        paddingVertical: 20
     },
     searchContainer: {
         borderColor: '#9095A1',
@@ -143,8 +142,9 @@ const styles = StyleSheet.create({
         borderWidth: 1
     },
     voterDetails: {
+        flex: 1,
         flexDirection: 'row',
-        gap: 10
+        gap: 20,
     },
     noDataText: {
         textAlign: 'center',

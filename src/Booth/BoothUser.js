@@ -81,10 +81,13 @@ const BoothUsers = () => {
                                             borderWidth: 1, borderColor: 'blue', width: 30,
                                             textAlign: 'center', borderRadius: 3, fontWeight: '700'
                                         }}>{item.user_id}</Text>
-                                        <Text>{item.user_name}</Text>
+                                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                                            <Text style={{}}>{item.user_name}</Text>
+                                            <Text style={{ color: '#565D6D', fontSize: 11 }}>Ph. No {item.user_phone}</Text>
+                                        </View>
                                     </View>
                                     <Pressable onPress={() => { navigation.navigate('Updated Voters') }}>
-                                        <MaterialCommunityIcons name="arrow-right-bold-box" size={24} color="#0077b6" />
+                                        <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
                                     </Pressable>
                                 </Pressable>
                             )}
@@ -103,9 +106,8 @@ export default BoothUsers;
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
-        height: height * 0.93,
+        height: height * 0.81,
         backgroundColor: 'white',
-        paddingVertical: 20
     },
     searchContainer: {
         borderColor: '#9095A1',
@@ -138,10 +140,10 @@ const styles = StyleSheet.create({
         borderWidth: 1
     },
     voterDetails: {
+        flex: 1,
         flexDirection: 'row',
-        gap: 20,
         alignItems: 'center',
-        flex: 1
+        gap: 20,
     },
     noDataText: {
         textAlign: 'center',
