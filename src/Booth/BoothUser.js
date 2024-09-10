@@ -130,14 +130,14 @@ const styles = StyleSheet.create({
     },
     voterItem: {
         flex: 1,
-        borderRadius: 4,
+        borderRadius: 2,
         paddingVertical: 12,
         paddingHorizontal: 15,
         marginVertical: 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderWidth: 1
+        borderWidth: 0.2
     },
     voterDetails: {
         flex: 1,

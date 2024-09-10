@@ -79,9 +79,7 @@ const StackNavigation = () => {
                         ),
                     }} />
                     <Stack.Screen name='Towns' component={Towns} />
-                    <Stack.Screen
-                        name='Town Voters'
-                        component={TownVoters}
+                    <Stack.Screen name='Town Voters' component={TownVoters}
                         options={({ route }) => ({
                             headerShown: true,
                             headerTitleAlign: 'center',

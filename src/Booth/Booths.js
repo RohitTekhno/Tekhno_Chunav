@@ -113,7 +113,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
-        marginVertical: 10
+        marginVertical: 10, 
+        columnGap: 20,
     },
     searchInput: {
         flex: 1,

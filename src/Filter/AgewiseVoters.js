@@ -76,7 +76,6 @@ const AgewiseVoters = () => {
                     open={openTown}
                     value={townValue}
                     items={townItems}
-                    // maxHeight={300}
                     setOpen={setOpenTown}
                     setValue={setTownValue}
                     setItems={setTownItems}
@@ -84,29 +83,32 @@ const AgewiseVoters = () => {
                     searchable={true}
                     searchPlaceholder="Search town..."
                     placeholderStyle={styles.placeholder}
-                    style={[styles.dropdown, { zIndex: 1000 }]}
+                    style={styles.dropdown}
                     searchTextInputStyle={styles.searchTextInput}
-                    containerStyle={[styles.dropdownContainer, { zIndex: 1000 }]}
-                    dropDownContainerStyle={[styles.dropdownMenu, { zIndex: 1000 }]}
+                    containerStyle={styles.dropdownContainer}
+                    dropDownContainerStyle={[styles.dropdownMenu, { zIndex: 9999 }]}
+                    maxHeight={300}
                 />
 
                 <DropDownPicker
                     open={openAge}
                     value={ageValue}
                     items={ageItems}
-                    // maxHeight={200}
                     setOpen={setOpenAge}
                     setValue={setAgeValue}
                     setItems={setAgeItems}
                     placeholder='Select Age Range'
-                    placeholderStyle={styles.placeholder}
                     searchable={true}
                     searchPlaceholder="Search age range..."
+                    placeholderStyle={styles.placeholder}
+                    style={styles.dropdown}
                     searchTextInputStyle={styles.searchTextInput}
-                    style={[styles.dropdown, { zIndex: 999 }]}
-                    containerStyle={[styles.dropdownContainer, { zIndex: 999 }]}
+                    containerStyle={styles.dropdownContainer}
                     dropDownContainerStyle={[styles.dropdownMenu, { zIndex: 999 }]}
+                    maxHeight={200}
                 />
+
+
 
                 {loading && ageValue && townValue ? (
                     <View style={styles.loadingContainer}>
@@ -120,6 +122,11 @@ const AgewiseVoters = () => {
                             keyExtractor={item => item.voter_id.toString()}
                             showsVerticalScrollIndicator={false}
                             scrollEnabled={!isDropdownOpen}
+                            style={{
+                                flex: 1,
+                                backgroundColor: 'red'
+
+                            }}
                             renderItem={({ item }) => (
                                 <Pressable style={styles.voterItem}>
                                     <View style={styles.voterDetails}>
@@ -151,8 +158,8 @@ const styles = StyleSheet.create({
     dropdown: {
         backgroundColor: 'white',
         borderRadius: 8,
-        marginVertical: 10,
         borderColor: '#9095A1',
+        marginVertical: 10,
     },
     dropdownContainer: {
         width: "100%",
@@ -165,7 +172,7 @@ const styles = StyleSheet.create({
     searchTextInput: {
         borderColor: '#9095A1',
         borderRadius: 4,
-        marginVertical: 10
+        marginVertical: 10,
     },
     placeholder: {
         color: '#9095A1',
@@ -173,7 +180,8 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         width: '100%',
-        zIndex: 99,
+        // height: height * 0.7,
+        zIndex: 1,
     },
     voterItem: {
         flex: 1,
@@ -211,3 +219,5 @@ const styles = StyleSheet.create({
         marginTop: 50,
     },
 });
+
+

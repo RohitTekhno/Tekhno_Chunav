@@ -104,8 +104,11 @@ const HeaderFooterLayout = ({ children, headerText, showHeader, showFooter }) =>
                         <Text style={styles.footerButtonText}>Booth</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Age Wise Voters')}>
-                        <MaterialIcons name="person" size={24} color="black" />
-                        <Text style={styles.footerButtonText}>Profile</Text>
+                        {/* <MaterialIcons name="person" size={24} color="black" /> */}
+                        {/* <Text style={styles.footerButtonText}>Profile</Text> */}
+                        <MaterialCommunityIcons name="page-next-outline" size={24} color="black" />
+                        <Text style={styles.footerButtonText}>Voters Age</Text>
+
                     </TouchableOpacity>
                 </View>
             }
