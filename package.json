@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.7.2",
     "@react-navigation/native": "^6.1.18",
@@ -36,7 +37,8 @@
     "react-native-svg": "15.2.0",
     "react-native-tooltip": "^5.2.0",
     "react-native-walkthrough-tooltip": "^1.6.0",
-    "@react-native-async-storage/async-storage": "1.23.1"
+    "react-native-web": "^0.19.12",
+    "@expo/metro-runtime": "~3.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

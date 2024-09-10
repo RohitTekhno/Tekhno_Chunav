@@ -76,14 +76,10 @@ const VotingBarStats = ({ TotalVoters = 0, Favorable = 0, Non_Favorable = 0, Dou
 
 export default VotingBarStats;
 
-// (Styles remain the same)
-
-
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         marginHorizontal: 10,
-        // backgroundColor: 'red'
     },
     barGraphContainer: {
         width: '100%',
@@ -91,19 +87,18 @@ const styles = StyleSheet.create({
     graphTitle: {
         fontSize: height * 0.017,
         fontWeight: '700',
+        textAlign: 'center',
     },
     barChart: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-around',
-        // backgroundColor: 'red',
         alignItems: 'flex-end',
-        height: height * 0.25,
+        height: height * 0.27,
     },
     barContainer: {
         alignItems: 'center',
         marginVertical: 20,
-        // backgroundColor: 'green'
     },
     barText: {
         textAlign: 'center',
@@ -114,7 +109,7 @@ const styles = StyleSheet.create({
     },
     legendContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     legendColumn: {
         flexDirection: 'column',

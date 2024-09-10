@@ -1,5 +1,5 @@
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -11,9 +11,49 @@ import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import VoterComponents from './VoterComponents';
 import TopNavCompo from '../ReusableCompo/TopNavCompo';
+import axios from 'axios';
+import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 
 const Prediction = () => {
     const navigation = useNavigation();
+    const { userId } = useContext(AuthenticationContext)
+    const [votersCounter, setVoterCounter] = useState({
+        TotalVoters: null,
+        Favorable: null,
+        Non_Favorable: null,
+        Doubted: null,
+        Non_Voted: null
+    });
+
+    const getVotersByUserwise = async () => {
+        try {
+            const result = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${userId}/`);
+            const totalVoterDetails = result.data.voters;
+
+            const totalVoterCount = totalVoterDetails.length;
+            const favorableCount = totalVoterDetails.filter(voter => voter.voter_favour_id === 1).length;
+            const non_FavorableCount = totalVoterDetails.filter(voter => voter.voter_favour_id === 2).length;
+            const doubtedCount = totalVoterDetails.filter(voter => voter.voter_favour_id === 3).length;
+            const pendingCount = totalVoterDetails.filter(voter => (voter.voter_favour_id !== 1 && voter.voter_favour_id !== 2 && voter.voter_favour_id !== 3)).length;
+
+            setVoterCounter({
+                TotalVoters: totalVoterCount,
+                Favorable: favorableCount,
+                Non_Favorable: non_FavorableCount,
+                Doubted: doubtedCount,
+                Non_Voted: pendingCount
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (userId) {
+            getVotersByUserwise();
+        }
+    }, [userId]);
+
 
     return (
         <View style={{ paddingHorizontal: 20, paddingVertical: 50 }}>
@@ -21,21 +61,21 @@ const Prediction = () => {
             <TopNavCompo navigation={navigation} ScreenName={"Prediction"} />
 
             <View style={{ marginVertical: 30 }}>
-                <VoterComponents boxColor={'#DEDEDE'} voterType={'Total Voters'} voterCount={'3881'}>
+                <VoterComponents boxColor={'#DEDEDE'} voterType={'Total Voters'} voterCount={votersCounter.TotalVoters || '000'}>
                     <AntDesign name="team" size={30} color="grey" />
                 </VoterComponents>
-                <VoterComponents boxColor={'#D9F4E9'} voterType={'Favourable Voters'} voterCount={'31'} >
+                <VoterComponents boxColor={'#D9F4E9'} voterType={'Favourable Voters'} voterCount={votersCounter.Favorable || '000'} >
                     <AntDesign name="heart" size={30} color="green" />
                 </VoterComponents>
-                <VoterComponents boxColor={'#FDDDDD'} voterType={'Opposition Voters'} voterCount={'81'}>
+                <VoterComponents boxColor={'#FDDDDD'} voterType={'Opposition Voters'} voterCount={votersCounter.Non_Favorable || '000'}>
                     <Entypo name="cross" size={40} color="red" />
                 </VoterComponents>
 
-                <VoterComponents boxColor={'#FFFAE1'} voterType={'Doubted Voters'} voterCount={'43'} >
+                <VoterComponents boxColor={'#FFFAE1'} voterType={'Doubted Voters'} voterCount={votersCounter.Doubted || '000'} >
                     {/* <Fontisto name="confused" size={24} color="orange" /> */}
                     <AntDesign name="exclamationcircle" size={30} color="orange" />
                 </VoterComponents>
-                <VoterComponents boxColor={'#ECEEF7'} voterType={'Pending'} voterCount={'255'} >
+                <VoterComponents boxColor={'#ECEEF7'} voterType={'Pending'} voterCount={votersCounter.Non_Voted || '000'} >
                     <MaterialIcons name="pending-actions" size={30} color="#c26dbc" />
                 </VoterComponents>
             </View>

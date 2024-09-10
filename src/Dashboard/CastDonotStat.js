@@ -5,21 +5,24 @@ import PieChart from 'react-native-pie-chart';
 
 const { height, width } = Dimensions.get('screen')
 const CastDonutStat = () => {
-    const widthAndHeight = width * 0.3;
+    const widthAndHeight = width * 0.28;
     const series = [80, 20, 50, 15, 10, 22, 8, 5];
     const sliceColor = ['#F8700F', '#FB1C88', '#FF56A5', 'yellow', 'purple', 'blue', '#4CA145', 'cyan'];
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Cast wise Statistics</Text>
-            <PieChart
-                widthAndHeight={widthAndHeight}
-                series={series}
-                sliceColor={sliceColor}
-                doughnut={true}
-                coverRadius={0.6}
-                coverFill={'#FFF'}
-            />
+
+            <View style={{ marginTop: '8%' }}>
+                <PieChart
+                    widthAndHeight={widthAndHeight}
+                    series={series}
+                    sliceColor={sliceColor}
+                    doughnut={true}
+                    coverRadius={0.5}
+                    coverFill={'#FFF'}
+                />
+            </View>
 
             <View style={styles.legendContainer}>
                 <View style={styles.legendColumn}>
@@ -79,17 +82,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginHorizontal: 10,
+
     },
     title: {
         fontSize: height * 0.017,
         fontWeight: '700',
-        marginBottom: 10,
     },
     legendContainer: {
         flexDirection: 'row',
         width: width * 0.4,
         justifyContent: 'space-between',
-        marginVertical: '10%'
+        marginTop: '8%',
     },
     legendColumn: {
         flexDirection: 'column',

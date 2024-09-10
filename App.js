@@ -14,9 +14,7 @@ export default function App() {
         <BoothUser_Provider>
           <NavigationContainer>
             <DrawerNavigationComp >
-              <StackNavigation>
-                <BottomTabsNav />
-              </StackNavigation>
+              <StackNavigation />
             </DrawerNavigationComp>
           </NavigationContainer>
         </BoothUser_Provider>

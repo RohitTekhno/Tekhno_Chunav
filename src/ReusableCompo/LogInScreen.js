@@ -31,6 +31,7 @@ const LogInScreen = () => {
                 "user_name": Username,
                 "user_password": password
             })
+
             if (response.status === 200) {
                 const userId = response.data.user_id
                 setBoothUserId(userId)

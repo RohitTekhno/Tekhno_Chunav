@@ -27,6 +27,13 @@ const UsersList = () => {
                 }}>
                     <Text>Booth User</Text>
                 </Pressable>
+                <Pressable onPress={() => { navigation.navigate('Registration') }} style={{
+                    backgroundColor: 'white', alignSelf: 'center',
+                    alignContent: 'center', alignItems: 'center',
+                    padding: 20, borderRadius: 10, elevation: 10
+                }}>
+                    <Text>Register User</Text>
+                </Pressable>
             </View>
         </HeaderFooterLayout>
     )

@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { StatusBar } from 'expo-status-bar';
@@ -11,6 +11,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import { Pressable } from 'react-native';
 
+
+const { height, width } = Dimensions.get('screen')
 const CustomDrawerContent = ({ navigation }) => {
     const handleCloseDrawer = () => {
         navigation.closeDrawer();
@@ -98,8 +100,8 @@ const styles = StyleSheet.create({
         borderColor: 'white',
     },
     image: {
-        width: 100,
-        height: 100,
+        width: width * 0.4,
+        height: height * 0.2,
     },
     drawerList: {
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         columnGap: 10,
-        borderRadius: 20,
+        borderRadius: 8,
     },
     drawerListText: {
         color: 'white',

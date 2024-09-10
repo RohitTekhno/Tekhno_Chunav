@@ -103,7 +103,7 @@ const HeaderFooterLayout = ({ children, headerText, showHeader, showFooter }) =>
                         <FontAwesome5 name="person-booth" size={18} color="black" style={{ padding: 2 }} />
                         <Text style={styles.footerButtonText}>Booth</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Profile')}>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Age Wise Voters')}>
                         <MaterialIcons name="person" size={24} color="black" />
                         <Text style={styles.footerButtonText}>Profile</Text>
                     </TouchableOpacity>

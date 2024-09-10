@@ -16,7 +16,7 @@ const ProfileButton = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: 'white',
-                marginRight: 20
+                marginRight: 10
             }}>
             <Image source={require('../Assets/Cover.png')}
                 style={{

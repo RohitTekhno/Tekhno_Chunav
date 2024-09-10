@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         height: height * 0.93,
         paddingHorizontal: 15,
         backgroundColor: 'white',
-        paddingVertical: 20
+        paddingVertical: 10
     },
     headerContainer: {
         height: height * 0.15,
@@ -173,9 +173,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     gradient: {
-        // width: width * 1,
-        // height: height * 0.1,
-        borderRadius: 8,
+         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: '2%',
@@ -202,7 +200,8 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 8,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        elevation: 3
     },
     statsBoxBlue: {
         backgroundColor: '#DAE3FF',
@@ -234,7 +233,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.1,
         borderRadius: 1,
         marginHorizontal: '1%',
-        // paddingVertical: "2%"
+        paddingVertical: "2%"
     },
     footer: {
         height: height * 0.1,

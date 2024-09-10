@@ -22,40 +22,25 @@ import ProfileButton from '../Profile/ProfileButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useContext, useEffect, useState } from 'react';
 import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
+import AgewiseVoters from '../Filter/AgewiseVoters';
+import LoadingAuth from '../ReusableCompo/LoadingAuth';
 
 
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
     const { isAuthenticated } = useContext(AuthenticationContext)
-
     const navigation = useNavigation();
-    const [isLoggedIn, setLoggedIn] = useState(null)
-    const checkLoginStatus = async () => {
-        try {
-            const isLoggedIn = await AsyncStorage.getItem('adminToken');
-            setLoggedIn(isLoggedIn)
-        } catch (error) {
-            console.error("Error retrieving adminToken: ", error);
-        }
-    };
-
-    useEffect(() => {
-        checkLoginStatus()
-    }, [])
-
-
 
 
     return (
         <Stack.Navigator
-            initialRouteName="ProfileChooser"
+            initialRouteName={isAuthenticated ? "Dashboard" : "LogInScreen"}
             screenOptions={{
                 headerShown: false,
             }}
         >
-            {/* <Stack.Screen name="BottomTabsNav" component={BottomTabsNav} /> */}
-
+            {/* <Stack.Screen name='loading Auth' component={LoadingAuth} /> */}
             {isAuthenticated ? (
                 <>
                     <Stack.Screen name="Dashboard" component={Dashboard}
@@ -63,7 +48,7 @@ const StackNavigation = () => {
                             headerShown: true, headerTitleAlign: 'center',
                             headerLeft: () => (
                                 <MaterialIcons name="menu" size={24} color="black"
-                                    style={{ marginLeft: 20 }}
+                                    style={{ marginLeft: 10 }}
                                     onPress={() => navigation.toggleDrawer()} />
                             ),
                             headerRight: () => (<ProfileButton />)
@@ -73,7 +58,7 @@ const StackNavigation = () => {
                         headerShown: true, headerTitleAlign: 'center',
                         headerLeft: () => (
                             <MaterialIcons name="menu" size={24} color="black"
-                                style={{ marginLeft: 20 }}
+                                style={{ marginLeft: 10 }}
                                 onPress={() => navigation.toggleDrawer()} />
                         ),
                     }} />
@@ -81,7 +66,7 @@ const StackNavigation = () => {
                         headerShown: true, headerTitleAlign: 'center',
                         headerLeft: () => (
                             <MaterialIcons name="menu" size={24} color="black"
-                                style={{ marginLeft: 20 }}
+                                style={{ marginLeft: 10 }}
                                 onPress={() => navigation.toggleDrawer()} />
                         ),
                     }} />
@@ -89,7 +74,7 @@ const StackNavigation = () => {
                         headerShown: true, headerTitleAlign: 'center',
                         headerLeft: () => (
                             <MaterialIcons name="menu" size={24} color="black"
-                                style={{ marginLeft: 20 }}
+                                style={{ marginLeft: 10 }}
                                 onPress={() => navigation.toggleDrawer()} />
                         ),
                     }} />
@@ -103,7 +88,7 @@ const StackNavigation = () => {
                             headerTitle: route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters',
                             headerLeft: () => (
                                 <MaterialIcons name="menu" size={24} color="black"
-                                    style={{ marginLeft: 20 }}
+                                    style={{ marginLeft: 10 }}
                                     onPress={() => navigation.toggleDrawer()} />
                             ),
                         })}
@@ -117,7 +102,7 @@ const StackNavigation = () => {
                             headerTitle: route.params.boothId ? `Voters in Booth : ${route.params.boothId}  ` : 'Booth Voters',
                             headerLeft: () => (
                                 <MaterialIcons name="menu" size={24} color="black"
-                                    style={{ marginLeft: 20 }}
+                                    style={{ marginLeft: 10 }}
                                     onPress={() => navigation.toggleDrawer()} />
                             ),
                         })}
@@ -128,12 +113,21 @@ const StackNavigation = () => {
                             headerShown: true, headerTitleAlign: 'center',
                             headerLeft: () => (
                                 <MaterialIcons name="menu" size={24} color="black"
-                                    style={{ marginLeft: 20 }}
+                                    style={{ marginLeft: 10 }}
                                     onPress={() => navigation.toggleDrawer()} />
                             ),
                         }}
                     />
-
+                    <Stack.Screen name='Age Wise Voters' component={AgewiseVoters}
+                        options={{
+                            headerShown: true, headerTitleAlign: 'center',
+                            headerLeft: () => (
+                                <MaterialIcons name="menu" size={24} color="black"
+                                    style={{ marginLeft: 10 }}
+                                    onPress={() => navigation.toggleDrawer()} />
+                            ),
+                        }}
+                    />
                     <Stack.Screen name='Registration' component={TownUserReg} options={{ headerShown: false }} />
                     <Stack.Screen name='Profile' component={Profile} options={{ headerShown: false }} />
                     <Stack.Screen name='LogOut' component={LogOut} options={{ headerShown: false }} />
