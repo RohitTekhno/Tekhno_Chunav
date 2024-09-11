@@ -93,9 +93,9 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
                     town_user_name: name,
                     town_user_contact_number: contact,
                     town_user_password: password,
-                    town_user_town_id: value,
+                    town_ids: value,
                 });
-                Alert.alert('Success', 'Signup successful', [{ text: 'OK', onPress: () => navigation.navigate('Netadash'), }]);
+                Alert.alert('Success', 'Signup successful', [{ text: 'OK', onPress: () => navigation.navigate('Dashboard'), }]);
             } catch (error) {
                 console.error('Signup failed', error);
                 Alert.alert('Error', 'Signup failed. Please try again.');
@@ -132,9 +132,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
 
                         <Text style={styles.text}>Registration</Text>
 
-                        <Pressable onPress={() => { alert('Convert into PDF..') }} style={styles.iconRight}>
-                            <FontAwesome6 name="file-pdf" size={22} color="white" />
-                        </Pressable>
+                        <View style={styles.iconRight} />
                     </View>
 
                 </LinearGradient>

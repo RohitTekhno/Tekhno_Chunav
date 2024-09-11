@@ -24,6 +24,7 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 import AgewiseVoters from '../Filter/AgewiseVoters';
 import LoadingAuth from '../ReusableCompo/LoadingAuth';
+import Totalvoters from '../Voters/TotalVoters';
 
 
 const Stack = createNativeStackNavigator();
@@ -117,6 +118,17 @@ const StackNavigation = () => {
                         }}
                     />
                     <Stack.Screen name='Age Wise Voters' component={AgewiseVoters}
+                        options={{
+                            headerShown: true, headerTitleAlign: 'center',
+                            headerLeft: () => (
+                                <MaterialIcons name="menu" size={24} color="black"
+                                    style={{ marginLeft: 10 }}
+                                    onPress={() => navigation.toggleDrawer()} />
+                            ),
+                        }}
+                    />
+
+                    <Stack.Screen name='Total Voters' component={Totalvoters}
                         options={{
                             headerShown: true, headerTitleAlign: 'center',
                             headerLeft: () => (

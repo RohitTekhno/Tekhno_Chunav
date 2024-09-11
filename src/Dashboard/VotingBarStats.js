@@ -34,7 +34,7 @@ const VotingBarStats = ({ TotalVoters = 0, Favorable = 0, Non_Favorable = 0, Dou
                 <View style={styles.barChart}>
                     {data.map((item, index) => {
                         const animatedStyle = useAnimatedStyle(() => ({
-                            height: animatedValues[index].value * 2,
+                            height: animatedValues[index].value * 1.6,
                             backgroundColor: colorData[index].value,
                         }));
                         return (

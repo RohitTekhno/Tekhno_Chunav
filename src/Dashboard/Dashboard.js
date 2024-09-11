@@ -1,13 +1,9 @@
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
-import ResponsivePoll from '../Exit Poll/ResponsivePoll';
 import VotingBarStats from './VotingBarStats';
-import { BoothUser_Context } from '../Context_Api/BoothUser_Context';
 import CastDonotStat from './CastDonotStat';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
@@ -30,21 +26,15 @@ const Dashboard = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${userId}/`);
-            const totalVoterDetails = result.data.voters;
-
-            const totalVoterCount = totalVoterDetails.length;
-            const favorableCount = totalVoterDetails.filter(voter => voter.voter_favour_id === 1).length;
-            const non_FavorableCount = totalVoterDetails.filter(voter => voter.voter_favour_id === 2).length;
-            const doubtedCount = totalVoterDetails.filter(voter => voter.voter_favour_id === 3).length;
-            const pendingCount = totalVoterDetails.filter(voter => (voter.voter_favour_id !== 1 && voter.voter_favour_id !== 2 && voter.voter_favour_id !== 3)).length;
+            const result1 = await axios.get(`http://192.168.200.23:8000/api/voter_favour_counts/`)
+            console.log(result1.data);
 
             setVoterCounter({
-                TotalVoters: totalVoterCount,
-                Favorable: favorableCount,
-                Non_Favorable: non_FavorableCount,
-                Doubted: doubtedCount,
-                Non_Voted: pendingCount
+                TotalVoters: result1.data.Total_Voters,
+                Favorable: result1.data.Favourable,
+                Non_Favorable: result1.data.Non_Favourable,
+                Doubted: result1.data.Not_Confirmed,
+                Non_Voted: result1.data.Pending
             });
         } catch (error) {
             console.error(error);
@@ -88,7 +78,7 @@ const Dashboard = () => {
             <ScrollView style={styles.container}>
                 <View style={styles.headerContainer}>
                     <Text style={styles.title}>Washim Constituency</Text>
-                    <View style={{
+                    <Pressable onPress={() => { navigation.navigate('Total Voters') }} style={{
                         height: height * 0.1, borderRadius: 10,
                         paddingVertical: '2%',
                         width: '100%',
@@ -101,7 +91,7 @@ const Dashboard = () => {
                             <Text style={styles.gradientText}>Total Voters Count</Text>
                             <Text style={styles.gradientText}>{totalVoters}</Text>
                         </LinearGradient>
-                    </View>
+                    </Pressable>
                 </View>
 
                 <View style={styles.statsContainer}>
@@ -173,7 +163,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     gradient: {
-         borderRadius: 8,
+        borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: '2%',

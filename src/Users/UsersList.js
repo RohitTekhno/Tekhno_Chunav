@@ -9,8 +9,8 @@ const UsersList = () => {
     return (
         <HeaderFooterLayout showFooter={true}>
             <View style={{
-                flexDirection: 'row', justifyContent: 'space-around',
-                padding: 50, flex: 1
+                flexDirection: 'row', justifyContent: 'space-between', padding: 50,
+                //  flex: 1
             }}>
                 <Pressable onPress={() => { navigation.navigate('Towns Users') }} style={{
                     backgroundColor: 'white', alignSelf: 'center',
@@ -27,6 +27,8 @@ const UsersList = () => {
                 }}>
                     <Text>Booth User</Text>
                 </Pressable>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                 <Pressable onPress={() => { navigation.navigate('Registration') }} style={{
                     backgroundColor: 'white', alignSelf: 'center',
                     alignContent: 'center', alignItems: 'center',
