@@ -1,16 +1,12 @@
+import AboutUs from '../ReusableCompo/AboutUs'
+import ContactUs from '../ReusableCompo/ContactUs/ContactUs'
+import CustomDrawerContent from '../Navigation/CustomDrawerContent'
+import { Dimensions } from 'react-native';
+import Help from '../ReusableCompo/Help'
 import React from 'react';
+import StackNavigation from './StackNavigation';
 import { StatusBar } from 'expo-status-bar';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Dimensions } from 'react-native';
-
-import CustomDrawerContent from './CustomDrawerContent';
-import ProfileButton from '../Profile/ProfileButton';
-import AboutUs from '../AboutUs/AboutUs';
-import ContactUs from '../ContactUs/ContactUs';
-import Help from '../Help/Help';
-import Setting from '../Setting/Setting';
-import Prediction from '../Predication/Prediction';
-import StackNavigation from './StackNavigation';  // Nest the StackNavigation for specific screens.
 
 const DrawerNavigationComp = () => {
     const Drawer = createDrawerNavigator();
@@ -38,11 +34,9 @@ const DrawerNavigationComp = () => {
                 })}
             >
                 <Drawer.Screen name='Home' component={StackNavigation} />
-                <Drawer.Screen name='Prediction' component={Prediction} />
                 <Drawer.Screen name='About Us' component={AboutUs} />
                 <Drawer.Screen name='Contact Us' component={ContactUs} />
                 <Drawer.Screen name='Help' component={Help} />
-                <Drawer.Screen name='Setting' component={Setting} />
             </Drawer.Navigator>
         </>
     );

@@ -13,7 +13,7 @@ import ProfileButton from '../Profile/ProfileButton';
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabsNav = () => {
+const AdminBottomTabsNav = () => {
     const navigation = useNavigation();
 
     return (
@@ -83,4 +83,4 @@ const BottomTabsNav = () => {
     )
 }
 
-export default BottomTabsNav;
+export default AdminBottomTabsNav;

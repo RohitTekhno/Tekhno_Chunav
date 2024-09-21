@@ -1,6 +1,6 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import Octicons from 'react-native-vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const TopNavCompo = ({ navigation, ScreenName, colorName }) => {
@@ -16,7 +16,7 @@ const TopNavCompo = ({ navigation, ScreenName, colorName }) => {
     return (
         <View style={styles.nav}>
             <Pressable onPress={handleGoBack}>
-                <Icon name='chevron-left' size={25} color={colorName ? colorName : 'black'} />
+                <Octicons name="chevron-left" size={26} color={colorName} />
             </Pressable>
 
             <Text style={[styles.text, { color: colorName ? colorName : 'black' }]}>{ScreenName}</Text>

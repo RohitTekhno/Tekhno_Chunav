@@ -26,50 +26,51 @@ const CustomDrawerContent = ({ navigation }) => {
                 locations={[0.6, 1]}
                 style={styles.gradient}
             >
-                <Pressable style={{ marginTop: 35, marginLeft: 10 }} onPress={handleCloseDrawer}>
-                    <Icon name='chevron-left' size={25} color={'white'} />
-                </Pressable>
+                <View style={{
+                    flexDirection: 'row', alignItems: 'center', marginTop: 20,
+                    justifyContent: 'space-between', marginBottom: 20
+                }}>
+                    <Pressable style={{ marginLeft: 10 }} onPress={handleCloseDrawer}>
+                        <Icon name='chevron-left' size={25} color={'white'} />
+                    </Pressable>
+                    <Text style={{
+                        color: 'white', fontWeight: '500', fontSize: width * 0.035,
+                        textAlign: 'center',
+                    }}>Welcome to</Text>
+                    <View />
+                </View>
+
 
                 <View style={styles.imageContainer}>
-                    <Text style={{
-                        color: 'white', fontWeight: '500', fontSize: 17,
-                        textAlign: 'center'
-                    }}>Welcome to</Text>
                     <Image
-                        source={require('../Assets/tekhnoWhite.png')}
+                        source={require('../../assets/tekhnoWhite.png')}
                         style={styles.image}
                     />
                 </View>
-                <View style={{ marginTop: 50 }}>
-                    <TouchableOpacity onPress={() => { navigation.navigate("Prediction") }} style={styles.drawerList} >
-                        <MaterialIcons name="batch-prediction" size={26} color="white" />
-                        <Text style={styles.drawerListText}>Prediction</Text>
-                    </TouchableOpacity>
+                <View style={{ marginTop: 20 }}>
+                    <View style={{ height: 100 }}>
 
+                    </View>
                     <TouchableOpacity onPress={() => { navigation.navigate("About Us") }} style={styles.drawerList} >
-                        <Entypo name="info-with-circle" size={24} color="white" />
+                        <Entypo name="info-with-circle" size={height * 0.025} color="white" />
                         <Text style={styles.drawerListText}>About Us</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { navigation.navigate("Contact Us") }} style={styles.drawerList} >
-                        <MaterialIcons name="contact-phone" size={24} color="white" />
+                        <MaterialIcons name="contact-phone" size={height * 0.025} color="white" />
                         <Text style={styles.drawerListText}>Contact Us</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { navigation.navigate("Help") }} style={styles.drawerList} >
-                        <FontAwesome5 name="hands-helping" size={24} color="white" />
+                        <FontAwesome5 name="hands-helping" size={height * 0.025} color="white" />
                         <Text style={styles.drawerListText}>Help</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => { navigation.navigate("Setting") }} style={styles.drawerList} >
-                        <Ionicons name="settings-outline" size={24} color="white" />
-                        <Text style={styles.drawerListText}>Setting</Text>
-                    </TouchableOpacity>
                 </View>
 
                 <Pressable style={styles.logOutView} onPress={() => { navigation.navigate('LogOut') }}>
-                    <Feather name="log-out" size={24} color="#3C4CAC" />
-                    <Text style={{ color: '#3C4CAC', fontSize: 18 }}>Log Out</Text>
+                    <Feather name="log-out" size={height * 0.02} color="#3C4CAC" />
+                    <Text style={{ color: '#3C4CAC', fontSize: height * 0.02 }}>Log Out</Text>
                 </Pressable>
             </LinearGradient >
         </View >
@@ -100,27 +101,29 @@ const styles = StyleSheet.create({
         borderColor: 'white',
     },
     image: {
-        width: width * 0.4,
-        height: height * 0.2,
+        width: width * 0.3,
+        height: height * 0.15,
     },
     drawerList: {
+        height: height * 0.05,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         padding: 10,
         paddingLeft: 15,
-        marginVertical: 10,
+        marginVertical: height * 0.01,
         flexDirection: 'row',
         alignItems: 'center',
-        columnGap: 10,
+        columnGap: width * 0.05,
         borderRadius: 8,
     },
     drawerListText: {
         color: 'white',
-        fontSize: 18,
+        fontSize: height * 0.02,
         fontWeight: '400'
     },
     logOutView: {
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
         alignSelf: 'center',
+        alignItems: 'center',
         position: 'absolute',
         bottom: 0,
         left: 0,

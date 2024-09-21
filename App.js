@@ -1,23 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
-import { BoothUser_Provider } from './src/Context_Api/BoothUser_Context';
-import DrawerNavigationComp from './src/Navigation/DrawerNavigationComp';
+import { AuthenticationProvider } from './src/Admin/Context_Api/AuthenticationContext';
 import StackNavigation from './src/Navigation/StackNavigation';
-import BottomTabsNav from './src/Navigation/BottomTabsNav';
-import { AuthenticationProvider } from './src/Context_Api/AuthenticationContext';
+import DrawerNavigationComp from './src/Navigation/DrawerNavigationComp'
+import { TownUserProvider } from './src/TownUser/ContextApi/TownUserProvider';
+import { BoothUserProvider } from './src/BoothUser/ContextApi/BuserContext';
 
 export default function App() {
   return (
     <>
       <StatusBar style="light" translucent={true} />
       <AuthenticationProvider>
-        <BoothUser_Provider>
-          <NavigationContainer>
-            <DrawerNavigationComp >
-              <StackNavigation />
-            </DrawerNavigationComp>
-          </NavigationContainer>
-        </BoothUser_Provider>
+        <BoothUserProvider>
+          <TownUserProvider>
+            <NavigationContainer>
+              <DrawerNavigationComp>
+                <StackNavigation />
+              </DrawerNavigationComp>
+            </NavigationContainer>
+          </TownUserProvider>
+        </BoothUserProvider>
       </AuthenticationProvider>
     </>
   );

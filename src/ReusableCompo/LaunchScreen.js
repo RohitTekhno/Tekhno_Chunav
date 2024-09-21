@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dimensions, Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 const LaunchScreen = () => {
+
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigation.navigate('ProfileChooser');
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [navigation]);
+
+
     return (
         <LinearGradient
             colors={['#3C4CAC', '#F04393']}
@@ -13,24 +26,23 @@ const LaunchScreen = () => {
         >
             <View style={styles.imageContainer}>
                 <ImageBackground
-                    source={require('../Assets/Cover.png')}
-                    imageStyle={{ borderBottomLeftRadius: 370, borderBottomRightRadius: 370 }}
+                    source={require('../../assets/Cover.png')}
                     style={styles.backgroundImage}
                 >
                     <View style={styles.container}>
                         <Image
-                            source={require('../Assets/tekhnoblue.png')}
-                            style={{ width: 100, height: 100 }}
+                            source={require('../../assets/tekhnoblue.png')}
+                            style={{ width: width * 0.6, height: width * 0.6 }}
                         />
-                        <Text style={{ fontSize: 16, fontWeight: '700' }}>Your gateway to get vote prediction</Text>
+                        <Text style={styles.text}>Your gateway to get vote prediction</Text>
                     </View>
                 </ImageBackground>
             </View>
 
             <View style={styles.smallLogoView}>
                 <Image
-                    source={require('../Assets/tempLogo.png')}
-                    style={{ width: 70, height: 70, alignSelf: 'center', marginVertical: 15 }}
+                    source={require('../../assets/tempLogo.png')}
+                    style={{ width: width * 0.2, height: width * 0.2, alignSelf: 'center', marginVertical: width * 0.04 }}
                 />
             </View>
         </LinearGradient >
@@ -52,28 +64,28 @@ const styles = StyleSheet.create({
         left: 0,
     },
     backgroundImage: {
-        width: '130%',
-        height: '100%',
+        width: width * 1.1,//'105%',
+        height: height * 1,//'105%',
         justifyContent: 'center',
         alignItems: 'center',
         resizeMode: 'cover',
-        marginLeft: -120
+        marginTop: -height * 0.35,
+        marginLeft: -width * 0.05
     },
     container: {
-        width: '130%',
-        height: '100%',
+        width: width * 2,
+        height: height * 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        padding: 20,
-        borderBottomLeftRadius: 370,
-        borderBottomRightRadius: 370,
-        marginLeft: 140,
-        paddingTop: 300,
+        borderBottomLeftRadius: height * 1,
+        borderBottomRightRadius: height * 1,
+        // paddingTop: height * 0.4,
+        paddingTop: "50%"
     },
     text: {
-        color: 'black',
-        fontSize: 30,
+        color: '#0A2E73',
+        fontSize: height * 0.022,
         fontWeight: 'bold',
     },
 
@@ -82,8 +94,8 @@ const styles = StyleSheet.create({
         height: width * 0.3,
         borderRadius: (width * 0.3) / 2,
         backgroundColor: 'white',
-        left: 130,
-        top: '60%',
+        left: width * 0.35,//130,
+        top: height * 0.57,//'55%',
         borderWidth: 3,
         borderColor: '#3C4CAC',
     }

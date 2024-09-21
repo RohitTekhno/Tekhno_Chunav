@@ -1,17 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Alert, Dimensions, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
+import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
-const HeaderFooterLayout = ({ children, headerText, showHeader, showFooter }) => {
+const CustomTUserBottomTabs = ({ children, headerText, showHeader, showFooter }) => {
+
     const navigation = useNavigation();
 
     const handleGoBack = () => {
@@ -20,42 +23,27 @@ const HeaderFooterLayout = ({ children, headerText, showHeader, showFooter }) =>
 
     return (
         <View style={styles.container}>
-            {showHeader &&
-                <View style={styles.nav}>
-                    <Pressable onPress={handleGoBack}>
-                        <Octicons name="chevron-left" size={24} color="black" />
-                    </Pressable>
-
-                    <Text style={styles.text}>{headerText}</Text>
-
-                    <Pressable onPress={() => { alert('Convert into PDF..') }}>
-                        <FontAwesome6 name="file-pdf" size={22} color="black" />
-                    </Pressable>
-                </View>
-
-            }
             <View style={styles.content}>
                 {children}
             </View>
 
-            {
-                showFooter &&
+            {showFooter &&
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.footerButton} onPress={() => { navigation.navigate('Dashboard') }} >
                         <AntDesign name="home" size={height * 0.03} color="black" />
                         <Text style={styles.footerButtonText}>Dashboard</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => { navigation.navigate('Towns') }}>
-                        <MaterialCommunityIcons name="city-variant-outline" size={height * 0.03} color="black" />
-                        <Text style={styles.footerButtonText}>Towns</Text>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => { navigation.navigate('Town Voters List') }}>
+                        <FontAwesome name="list-alt" size={height * 0.03} color="black" />
+                        <Text style={styles.footerButtonText}>Voters List</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Booths')}>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Town Booths')}>
                         <FontAwesome5 name="person-booth" size={height * 0.025} color="black" style={{ padding: 2 }} />
-                        <Text style={styles.footerButtonText}>Booth</Text>
+                        <Text style={styles.footerButtonText}>Booths</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Age Wise Voters')}>
-                        <MaterialCommunityIcons name="page-next-outline" size={height * 0.03} color="black" />
-                        <Text style={styles.footerButtonText}>Voters Age</Text>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Booth Users')}>
+                        <FontAwesome6 name="users" size={height * 0.03} color="black" />
+                        <Text style={styles.footerButtonText}>Booth Users</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Profile')}>
                         <MaterialIcons name="person" size={height * 0.032} color="black" />
@@ -101,6 +89,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         height: height * 0.08,
+        // marginBottom: height * 0.04,
+
     },
     footerButton: {
         alignItems: 'center',
@@ -111,4 +101,6 @@ const styles = StyleSheet.create({
     }
 });
 
-export default HeaderFooterLayout;
+
+export default CustomTUserBottomTabs
+
