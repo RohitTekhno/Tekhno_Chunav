@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -55,7 +55,10 @@ const TownUsers = () => {
     }
 
     return (
-        <HeaderFooterLayout showFooter={true}>
+        <HeaderFooterLayout 
+        showFooter={false}
+        headerText='Town Users'
+        >
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
@@ -109,7 +112,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
         // height: height * 0.9,
-        marginBottom: height * 0.25,
+        // marginBottom: height * 0.25,
         backgroundColor: 'white',
     },
     searchContainer: {

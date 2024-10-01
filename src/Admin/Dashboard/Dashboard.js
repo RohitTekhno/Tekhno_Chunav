@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import VotingBarStats from './VotingBarStats';
 import CastDonotStat from './CastDonotStat';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 
 const { height, width } = Dimensions.get('screen');
@@ -13,6 +13,7 @@ const { height, width } = Dimensions.get('screen');
 const Dashboard = () => {
     const navigation = useNavigation();
     const { userId } = useContext(AuthenticationContext);
+
     const [votersCounter, setVoterCounter] = useState({
         TotalVoters: null,
         Favorable: null,
@@ -23,10 +24,13 @@ const Dashboard = () => {
     const [totalVoters, setTotalVoters] = useState('00000');
     const [totalTowns, setTotalTowns] = useState('000');
     const [totalBooths, setTotalBooths] = useState('000');
+    const [totalVoted, setTotalVoted] = useState('000');
+    const [totalNVoted, setNTotalVoted] = useState('000');
 
     const getVotersByUserwise = async () => {
         try {
             const result1 = await axios.get(`http://192.168.200.23:8000/api/voter_favour_counts/`)
+
             setVoterCounter({
                 TotalVoters: result1.data.Total_Voters,
                 Favorable: result1.data.Favourable,
@@ -63,13 +67,31 @@ const Dashboard = () => {
             .catch(error => {
                 console.error('Error fetching total booths count:', error);
             });
+
+
+        axios.get('http://192.168.200.23:8000/api/vote_confirmation/1/')
+            .then(response => {
+                setTotalVoted(response.data.length.toString());
+            })
+            .catch(error => {
+                console.error('Error fetching total voted count:', error);
+            });
+
+
+        axios.get('http://192.168.200.23:8000/api/vote_confirmation/2/')
+            .then(response => {
+                setNTotalVoted(response.data.length.toString());
+            })
+            .catch(error => {
+                console.error('Error fetching total voted count:', error);
+            });
     }, []);
 
     useEffect(() => {
-        if (userId) {
-            getVotersByUserwise();
-        }
-    }, [userId]);
+        // if (userId) {
+        getVotersByUserwise();
+        // }
+    }, []);
 
     return (
         <HeaderFooterLayout showHeader={false} showFooter={true}  >
@@ -108,14 +130,14 @@ const Dashboard = () => {
                     </View>
 
                     <View style={styles.statsRow}>
-                        <Pressable style={[styles.statsBox, styles.statsBoxYellow]}>
+                        <Pressable style={[styles.statsBox, styles.statsBoxYellow]} onPress={() => { navigation.navigate('Voted') }}>
                             <Text style={styles.statsLabel}>Total Voted Count</Text>
-                            <Text style={styles.statsValue}>000</Text>
+                            <Text style={styles.statsValue}>{totalVoted}</Text>
                         </Pressable>
 
-                        <Pressable style={[styles.statsBox, styles.statsBoxCyan]}>
+                        <Pressable style={[styles.statsBox, styles.statsBoxCyan]} onPress={() => { navigation.navigate('Nvoted') }}>
                             <Text style={styles.statsLabel}>Total Non-Voted Count</Text>
-                            <Text style={styles.statsValue}>000</Text>
+                            <Text style={styles.statsValue}>{totalNVoted}</Text>
                         </Pressable>
                     </View>
                 </View>

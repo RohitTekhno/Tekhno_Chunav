@@ -3,9 +3,10 @@ import { View, Pressable, Modal, Text, StyleSheet, TouchableOpacity, Dimensions,
 import { useNavigation } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
+
 const { width, height } = Dimensions.get('screen');
 
-const ManuListBtn = () => {
+const ProfileButton = () => {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -18,6 +19,7 @@ const ManuListBtn = () => {
     };
 
     return (
+
         <Pressable onPress={handleToggleModal} style={styles.button}>
             <AntDesign
                 name={modalVisible ? "appstore1" : "appstore-o"}
@@ -52,6 +54,18 @@ const ManuListBtn = () => {
                                 >
                                     <Text style={styles.modalText}>Registeration</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => { navigation.navigate('Castwise'); handleCloseModal(); }}
+                                    style={styles.modalButton}
+                                >
+                                    <Text style={styles.modalText}>Cast-wise Voters</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => { navigation.navigate('Voters'); handleCloseModal(); }}
+                                    style={styles.modalButton}
+                                >
+                                    <Text style={styles.modalText}>Family</Text>
+                                </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -83,7 +97,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 5,
         paddingHorizontal: 15,
-        width: width * 0.4,
+        width: 170,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
@@ -104,4 +118,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ManuListBtn;
+export default ProfileButton;

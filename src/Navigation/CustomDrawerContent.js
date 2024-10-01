@@ -34,7 +34,7 @@ const CustomDrawerContent = ({ navigation }) => {
                         <Icon name='chevron-left' size={25} color={'white'} />
                     </Pressable>
                     <Text style={{
-                        color: 'white', fontWeight: '500', fontSize: width * 0.035,
+                        color: 'white', fontWeight: '500', fontSize: 15,
                         textAlign: 'center',
                     }}>Welcome to</Text>
                     <View />
@@ -52,25 +52,25 @@ const CustomDrawerContent = ({ navigation }) => {
 
                     </View>
                     <TouchableOpacity onPress={() => { navigation.navigate("About Us") }} style={styles.drawerList} >
-                        <Entypo name="info-with-circle" size={height * 0.025} color="white" />
+                        <Entypo name="info-with-circle" size={25} color="white" />
                         <Text style={styles.drawerListText}>About Us</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { navigation.navigate("Contact Us") }} style={styles.drawerList} >
-                        <MaterialIcons name="contact-phone" size={height * 0.025} color="white" />
+                        <MaterialIcons name="contact-phone" size={25} color="white" />
                         <Text style={styles.drawerListText}>Contact Us</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { navigation.navigate("Help") }} style={styles.drawerList} >
-                        <FontAwesome5 name="hands-helping" size={height * 0.025} color="white" />
+                        <FontAwesome5 name="hands-helping" size={25} color="white" />
                         <Text style={styles.drawerListText}>Help</Text>
                     </TouchableOpacity>
 
                 </View>
 
                 <Pressable style={styles.logOutView} onPress={() => { navigation.navigate('LogOut') }}>
-                    <Feather name="log-out" size={height * 0.02} color="#3C4CAC" />
-                    <Text style={{ color: '#3C4CAC', fontSize: height * 0.02 }}>Log Out</Text>
+                    <Feather name="log-out" size={25} color="#3C4CAC" />
+                    <Text style={{ color: '#3C4CAC', fontSize: 20 }}>Log Out</Text>
                 </Pressable>
             </LinearGradient >
         </View >
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         borderTopRightRadius: 20,
-        borderBottomRightRadius: 30,
+        borderBottomRightRadius: 25,
     },
     gradient: {
         flex: 1,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         height: height * 0.15,
     },
     drawerList: {
-        height: height * 0.05,
+        height: 50,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         padding: 10,
         paddingLeft: 15,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     },
     drawerListText: {
         color: 'white',
-        fontSize: height * 0.02,
+        fontSize: 20,
         fontWeight: '400'
     },
     logOutView: {

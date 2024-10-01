@@ -2,10 +2,10 @@ import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } fr
 import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -44,17 +44,25 @@ const BoothUsers = () => {
 
     if (loading) {
         return (
-            <HeaderFooterLayout showFooter={true}>
+            // <HeaderFooterLayout showFooter={true}>
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size={'small'} />
                     <Text>Loading...</Text>
                 </View>
-            </HeaderFooterLayout>
+            //  </HeaderFooterLayout> 
         );
     }
 
     return (
-        <HeaderFooterLayout showFooter={true}>
+        <HeaderFooterLayout
+            headerText="Booth Users"
+            showFooter={false}
+            leftIcon={true}
+            rightIcon={true}
+            leftIconName="chevron-left"
+            rightIconName=""
+            
+        >
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
@@ -107,7 +115,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
         // height: height * 0.81,
-        marginBottom: height * 0.25,
+        // marginBottom: height * 0.25,
         backgroundColor: 'white',
     },
     searchContainer: {

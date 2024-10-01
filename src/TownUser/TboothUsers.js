@@ -39,7 +39,7 @@ const TboothUsers = () => {
             }
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching booth users:', error);
             setLoading(false);
         }
     };
@@ -94,7 +94,7 @@ const TboothUsers = () => {
                                     showsVerticalScrollIndicator={false}
                                     renderItem={({ item, index }) => (
                                         <Pressable style={styles.voterItem}
-                                            onPress={() => { fetchVoterDetails(item.user_id) }}>
+                                            onPress={() => { navigation.navigate("Approval Voters", { Buser_id: item.user_id }) }}>
                                             <Text style={{
                                                 borderWidth: 1, borderColor: 'blue', width: 30,
                                                 textAlign: 'center', borderRadius: 3, fontWeight: '700'

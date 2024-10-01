@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import Octicons from '@expo/vector-icons/Octicons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
@@ -118,7 +118,9 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
     };
 
     return (
-        <HeaderFooterLayout showFooter={true}>
+        <HeaderFooterLayout 
+        showHeader={false}
+        showFooter={false}>
             <View style={{ height: height * 0.3, width: width }}>
                 <LinearGradient
                     colors={['#3C4CAC', '#F04393']}

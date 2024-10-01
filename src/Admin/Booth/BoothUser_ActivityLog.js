@@ -2,7 +2,7 @@ import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } fr
 import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get('screen');
 
 const BoothUser_ActivityLog = (routes) => {
 
-    const { userId } = routes.route.params
+    const { userId } = routes.route.params;
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(true);
@@ -21,7 +21,6 @@ const BoothUser_ActivityLog = (routes) => {
         (town.voter_name && town.voter_name.toString().includes(searchedValue)) ||
         (town.voter_id && town.voter_id.toString().includes(searchedValue))
     );
-
 
     const fetchData = async () => {
         try {
@@ -46,12 +45,10 @@ const BoothUser_ActivityLog = (routes) => {
 
     if (loading) {
         return (
-            <HeaderFooterLayout showFooter={true}>
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} />
-                    <Text>Loading...</Text>
-                </View>
-            </HeaderFooterLayout>
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size={'small'} />
+                <Text>Loading...</Text>
+            </View>
         );
     }
 
@@ -67,14 +64,20 @@ const BoothUser_ActivityLog = (routes) => {
     };
 
     return (
-        <HeaderFooterLayout showFooter={true}>
+        <HeaderFooterLayout
+            headerText="Updated Voters"
+            showFooter={false}
+            leftIcon={true}
+            rightIcon={true}
+            leftIconName="chevron-left"
+        >
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder='search by user’s name or ID'
+                        placeholder="Search by user’s name or ID"
                         style={styles.searchInput}
                     />
                 </View>
@@ -113,14 +116,14 @@ const BoothUser_ActivityLog = (routes) => {
             </View>
         </HeaderFooterLayout>
     );
-}
+};
 
 export default BoothUser_ActivityLog;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1, 
         paddingHorizontal: 15,
-        flex: 1,
         backgroundColor: 'white',
     },
     searchContainer: {
@@ -133,14 +136,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginVertical: 10,
         columnGap: 20,
-
     },
     searchInput: {
         flex: 1,
         paddingVertical: 10,
     },
     listContainer: {
-        height: height * 0.7
+        flex: 1,
     },
     voterItem: {
         flex: 1,
@@ -149,13 +151,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginVertical: 5,
         flexDirection: 'row',
-        // alignItems: 'center',
         gap: 20,
         borderWidth: 1,
         borderColor: '#D9D9D9'
     },
-    voterDetails: {
-    },
+    voterDetails: {},
     noDataText: {
         textAlign: 'center',
         marginVertical: 20,

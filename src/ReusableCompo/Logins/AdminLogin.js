@@ -9,7 +9,7 @@ import axios from 'axios';
 const { height, width } = Dimensions.get('screen');
 
 const AdminLogin = () => {
-    const { login, setUserId } = useContext(AuthenticationContext);
+    const { login } = useContext(AuthenticationContext);
     const [username, setUsername] = useState("politician");
     const [password, setPassword] = useState("politician123");
     const [isTextSecure, setTextSecure] = useState(true);
@@ -60,8 +60,7 @@ const AdminLogin = () => {
                 });
 
                 if (response.status === 200) {
-                    const userId = response.data.user_id;
-                    setUserId(userId);
+                    const userId = response.data.politician_id;
                     login(userId);
                 }
             } catch (error) {

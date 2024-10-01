@@ -5,10 +5,10 @@ import { Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
-import TopNavCompo from '../../ReusableCompo/TopNavCompo';
+import TopNavCompo from '../ReusableCompo/TopNavCompo';
 import CustomeTextInput from './CustomeTextInput';
 import { StatusBar } from 'expo-status-bar';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('screen')
 const Profile = () => {
@@ -37,22 +37,15 @@ const Profile = () => {
                 <View style={styles.profileDetailsView}>
                     <View style={styles.profileImageView}>
                         <View style={styles.profileImageCircle}>
-                            <Image source={require('../../../assets/Cover.png')} style={styles.profileImage} />
+                            <Image source={require('../Assets/Cover.png')} style={styles.profileImage} />
                         </View>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', }}>Rohit Linge</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', }}>Politician</Text>
                         <Text>User</Text>
                     </View>
                     <View style={{ marginVertical: 10 }}>
                         <CustomeTextInput
                             label={'User Name : '}
-                            valueDetails={'Rohit Linge'}
-                            styles={styles.profileTextInput}
-                            readValue={true}
-                        />
-
-                        <CustomeTextInput
-                            label={'User Id : '}
-                            valueDetails={'50'}
+                            valueDetails={'Politician'}
                             styles={styles.profileTextInput}
                             readValue={true}
                         />
@@ -65,15 +58,8 @@ const Profile = () => {
                         />
 
                         <CustomeTextInput
-                            label={'Town : '}
-                            valueDetails={'Pune'}
-                            styles={styles.profileTextInput}
-                            readValue={true}
-                        />
-
-                        <CustomeTextInput
-                            label={'Booth : '}
-                            valueDetails={'Baner'}
+                            label={'Constituency : '}
+                            valueDetails={'Washim'}
                             styles={styles.profileTextInput}
                             readValue={true}
                         />
@@ -99,15 +85,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 50,
     },
-    text: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
     profileDetailsView: {
-        height: height * 0.57,
+        height: height * 0.47,
         width: "90%",
-        elevation: 2,
+        elevation: 5,
         borderRadius: 10,
         marginTop: '-17%',
         alignContent: 'center',
@@ -146,6 +127,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         backgroundColor: 'rgba(236, 238, 247, 1)',
         fontSize: 18,
+        color:'black'
     },
     logOutButton: {
         width: width * 0.8,

@@ -1,6 +1,7 @@
 import BuserRegisteration from '../TownUser/BuserRegisteration'
 import LogOut from '../ReusableCompo/LogOut';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { Dimensions, Pressable } from 'react-native';
 import RightManuBtn from '../TownUser/ExtraComponents/RightManuBtn';
@@ -15,6 +16,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import CastWiseVoters from '../TownUser/CastWiseVoters';
 import BoothVoters from '../TownUser/BoothVoters';
+import UpdateVoter from '../TownUser/UpdateVoter';
+import ApprovalScreen from '../TownUser/ApprovalScreen';
 
 const Stack = createNativeStackNavigator();
 const { height, width } = Dimensions.get('screen')
@@ -139,6 +142,39 @@ const TownUserMainStack = () => {
                     ),
                 }}
             />
+
+            <Stack.Screen name='Update Voter' component={UpdateVoter}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <Octicons name="chevron-left" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Approval Voters' component={ApprovalScreen}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false, headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <Octicons name="chevron-left" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+
             <Stack.Screen name='Registeration' component={BuserRegisteration} options={{ headerShown: false }} />
             <Stack.Screen name='Profile' component={TownProfile} options={{ headerShown: false }} />
             <Stack.Screen name='LogOut' component={LogOut} options={{ headerShown: false }} />

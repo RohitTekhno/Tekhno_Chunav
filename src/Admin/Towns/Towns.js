@@ -2,7 +2,7 @@ import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } fr
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -44,7 +44,7 @@ const Towns = () => {
 
     if (loading) {
         return (
-            <HeaderFooterLayout showFooter={true}>
+            <HeaderFooterLayout headerText={'Town List'} showHeader={true} showFooter={true}>
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size={'small'} />
                     <Text>Loading...</Text>
@@ -54,7 +54,12 @@ const Towns = () => {
     }
 
     return (
-        <HeaderFooterLayout showFooter={true}>
+        <HeaderFooterLayout 
+        headerText={'Town List'} 
+        showHeader={true} 
+        showFooter={true}
+        // rightIcon={}
+        >
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
         // height: height * 0.85,
-        marginBottom: height * 0.25
+        // marginBottom: height * 0.25
     },
     searchContainer: {
         borderColor: '#9095A1',
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     listContainer: {
-        height: height * 0.75
+        // flex: 1,
     },
     voterItem: {
         flex: 1,

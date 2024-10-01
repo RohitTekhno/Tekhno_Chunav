@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Dimensions, Modal, Pressable, StyleSheet, Text, View, TouchableWithoutFeedback, Animated } from 'react-native';
+import { Dimensions, Modal, TouchableOpacity, StyleSheet, Text, View, TouchableWithoutFeedback, Animated } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Feather from '@expo/vector-icons/Feather';
 const { height, width } = Dimensions.get('screen');
 
 const RightMenuBtn = () => {
@@ -46,13 +47,13 @@ const RightMenuBtn = () => {
 
     return (
         <>
-            <Pressable onPress={handleToggleAppStore} accessibilityLabel="Toggle App Store Menu">
+            <TouchableOpacity onPress={handleToggleAppStore} accessibilityLabel="Toggle App Store Menu">
                 <AntDesign
                     name={isPressed ? "appstore1" : "appstore-o"}
                     size={25}
                     color="black"
                 />
-            </Pressable>
+            </TouchableOpacity>
 
             <Modal
                 animationType="fade"
@@ -63,7 +64,7 @@ const RightMenuBtn = () => {
                 <TouchableWithoutFeedback onPress={closeModal}>
                     <View style={styles.modalContainer}>
                         <Animated.View style={[styles.modalContent, { transform: [{ translateY: slideAnim }] }]}>
-                            <Pressable
+                            <TouchableOpacity
                                 onPress={() => { handleNavigation('Registeration') }}
                                 style={styles.modalOption}
                                 accessibilityLabel="Go to Registration"
@@ -72,9 +73,9 @@ const RightMenuBtn = () => {
                                     <AntDesign name="adduser" size={25} color="black" />
                                 </View>
                                 <Text style={styles.modalText}>Registration</Text>
-                            </Pressable>
+                            </TouchableOpacity>
 
-                            <Pressable
+                            <TouchableOpacity
                                 onPress={() => { handleNavigation('Castwise Voters') }}
                                 style={styles.modalOption}
                                 accessibilityLabel="Go to Castwise Voters"
@@ -83,7 +84,29 @@ const RightMenuBtn = () => {
                                     <MaterialCommunityIcons name="account-filter-outline" size={30} color="black" />
                                 </View>
                                 <Text style={styles.modalText}>Castwise</Text>
-                            </Pressable>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => { handleNavigation('Update Voter') }}
+                                style={styles.modalOption}
+                                accessibilityLabel="Go to Update Voters"
+                            >
+                                <View style={{ width: 40, alignItems: 'center' }}>
+                                    <MaterialCommunityIcons name="account-edit-outline" size={30} color="black" />
+                                </View>
+                                <Text style={styles.modalText}>Update Voter</Text>
+                            </TouchableOpacity>
+
+                            {/* <TouchableOpacity
+                                onPress={() => { handleNavigation('Approval Voters') }}
+                                style={styles.modalOption}
+                                accessibilityLabel="Go to Update Voters"
+                            >
+                                <View style={{ width: 40, alignItems: 'center' }}>
+                                    <Feather name="user-check" size={25} color="black" />
+                                </View>
+                                <Text style={styles.modalText}>Approval</Text>
+                            </TouchableOpacity> */}
                         </Animated.View>
                     </View>
                 </TouchableWithoutFeedback>

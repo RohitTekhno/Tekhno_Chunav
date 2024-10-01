@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
         fontSize: height * 0.02,
     },
     image: {
-        width: width * 0.3,
-        height: width * 0.3,
+        width: width * 0.35,
+        height: width * 0.35,
         marginVertical: 20,
     },
     bottomView: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     },
     button: {
         width: width * 0.5,
-        height: height * 0.05,
+        height: 45,
         justifyContent: 'center',
         alignSelf: 'center',
         paddingVertical: 10,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontSize: height * 0.02,
+        fontSize: 20,
         textAlign: 'center',
     },
 });

@@ -14,7 +14,7 @@ const TownUserLogin = () => {
     const { setUserName, setUserId, login } = useContext(TownUserContext);
 
     const [username, setUsername] = useState("Tuser");
-    const [password, setPassword] = useState("Tuser@123");
+    const [password, setPassword] = useState("123@Pass");
     const [isTextSecure, setTextSecure] = useState(true);
     const [isLoading, setLoading] = useState(false);
     const [nameError, setNameError] = useState('');

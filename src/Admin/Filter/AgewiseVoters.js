@@ -1,10 +1,10 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ActivityIndicator } from 'react-native-paper';
-import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
+import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 
 const { width, height } = Dimensions.get('window');
 
@@ -75,7 +75,10 @@ const AgewiseVoters = () => {
     };
 
     return (
-        <HeaderFooterLayout showFooter={true}>
+        <HeaderFooterLayout 
+        showFooter={true}
+        headerText='Age Wise Voters'
+        >
             <View style={styles.container}>
                 <DropDownPicker
                     open={openAge}
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         borderColor: '#9095A1',
-        marginVertical: 10,
+        marginVertical: '6%',
     },
     dropdownContainer: {
         width: '100%',
@@ -154,6 +157,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         borderColor: '#9095A1',
+        paddingTop:'6%'
     },
     searchTextInput: {
         borderColor: '#9095A1',

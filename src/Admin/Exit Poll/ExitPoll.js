@@ -5,7 +5,7 @@ import ResponsivePoll from './ResponsivePoll'
 import ProgressCircleWithMargin from './ProgressCircleWithMargin'
 import { BoothUser_Context } from '../Context_Api/BoothUser_Context';
 import axios from 'axios';
-import HeaderFooterLayout from '../../../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 
 
 const ExitPoll = () => {

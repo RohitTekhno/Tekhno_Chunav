@@ -7,19 +7,18 @@ const BuserDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedBuser })
         <Modal
             visible={isModalVisible}
             transparent={true}
-            animationType="slide"
+            animationType='fade'
             onRequestClose={() => setIsModalVisible(false)}
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
                     {selectedBuser && (
                         <>
-                            <Text style={styles.modalTitle}>Voter Details</Text>
+                            <Text style={styles.modalTitle}>Booth User Details</Text>
                             <View style={styles.detailsContainer}>
                                 <Text style={styles.modalText}>Name: {selectedBuser[0].user_name}</Text>
-                                <Text style={styles.modalText}>Age: {selectedBuser[0].user_age}</Text>
-                                <Text style={styles.modalText}>Town: {selectedBuser[0].town_name}</Text>
-                                <Text>{selectedBuser[0].booth_names }</Text>
+                                <Text style={styles.modalText}>Phone No: {selectedBuser[0].user_phone}</Text>
+                                <Text style={styles.modalText}>Town: {selectedBuser[0].town_names}</Text>
                                 <Text style={styles.modalText}>Booth: {selectedBuser[0].booth_names}</Text>
                             </View>
                             <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.closeButton}>
@@ -46,13 +45,13 @@ const styles = StyleSheet.create({
     modalContent: {
         width: '90%',
         height: '100%',
-        maxWidth: 400,
-        maxHeight: 500,
+        maxWidth: 350,
+        maxHeight: 450,
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
     },
     modalTitle: {
         fontSize: 25,
@@ -62,6 +61,7 @@ const styles = StyleSheet.create({
     detailsContainer: {
         alignItems: 'flex-start',
         width: '100%',
+        justifyContent: 'center',
     },
     modalText: {
         fontSize: 16,
@@ -70,11 +70,12 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     closeButton: {
-        marginTop: 20,
+        width: '100%',
         paddingVertical: 10,
         paddingHorizontal: 20,
         backgroundColor: 'black',
         borderRadius: 5,
+        alignItems: 'center'
     },
     closeButtonText: {
         color: 'white',

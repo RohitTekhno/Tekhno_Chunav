@@ -2,7 +2,7 @@ import { View, Text, Pressable } from 'react-native'
 import React from 'react'
 import { Button } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
-import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout'
+import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout'
 
 const UsersList = () => {
     const navigation = useNavigation();

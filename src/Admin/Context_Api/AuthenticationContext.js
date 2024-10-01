@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 
 export const AuthenticationContext = createContext();
 
@@ -9,7 +8,7 @@ export const AuthenticationProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
 
   const loadUser = async () => {
-    const storedUser = await AsyncStorage.getItem('adminToken');
+    const storedUser = await AsyncStorage.getItem('politicianToken');
     if (storedUser) {
       setUserId(JSON.parse(storedUser));
       setIsAuthenticated(true);
@@ -23,18 +22,17 @@ export const AuthenticationProvider = ({ children }) => {
   const login = async (userData) => {
     setUserId(userData);
     setIsAuthenticated(true);
-    await AsyncStorage.setItem('adminToken', JSON.stringify(userData));
+    await AsyncStorage.setItem('politicianToken', JSON.stringify(userData));
   };
 
   const logout = async () => {
     setUserId(null);
     setIsAuthenticated(false);
-    await AsyncStorage.removeItem('adminToken');
-    // const logoutResponse = axios.post(`http://192.168.200.23:8000/api/politician_logout/`)
+    await AsyncStorage.removeItem('politicianToken');
   };
 
   return (
-    <AuthenticationContext.Provider value={{ isAuthenticated, userId, login, logout }}>
+    <AuthenticationContext.Provider value={{ isAuthenticated, userId, login, logout, setUserId, setIsAuthenticated }}>
       {children}
     </AuthenticationContext.Provider>
   );
