@@ -55,7 +55,7 @@ export default function Nvoted({ route }) {
 
 
     useEffect(() => {
-        axios.get(`http://192.168.200.23:8000/api/vote_confirmation/2/`)
+        axios.get(`http://192.168.200.23:8000/api/get_non_voted_voters/`)
             .then(response => {
                 if (response.data && Array.isArray(response.data)) {
                     setVoters(response.data);
@@ -72,18 +72,6 @@ export default function Nvoted({ route }) {
     }, []);
 
 
-
-    if (loading) {
-        return (
-            <HeaderFooterLayout showHeader={false} showFooter={false}>
-
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} />
-                    <Text>Loading...</Text>
-                </View>
-            </HeaderFooterLayout>
-        );
-    }
 
     return (
         <HeaderFooterLayout
@@ -102,8 +90,17 @@ export default function Nvoted({ route }) {
                     />
                 </View>
 
-                <View style={styles.listContainer}>
-                    {filteredVoters.length > 0 ? (
+
+                {(loading) ? (
+                    <HeaderFooterLayout showHeader={false} showFooter={false}>
+
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size={'small'} color='black' />
+                            <Text>Loading...</Text>
+                        </View>
+                    </HeaderFooterLayout>
+                ) : (
+                    <View style={styles.listContainer}>
                         <FlatList
                             data={filteredVoters}
                             keyExtractor={item => item.voter_id.toString()}
@@ -121,11 +118,10 @@ export default function Nvoted({ route }) {
                                     </View>
                                 </Pressable>
                             )}
+                            ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
                         />
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-                </View>
+                    </View>
+                )}
 
                 <VoterDetailsPopUp
                     isModalVisible={isModalVisible}
@@ -142,6 +138,7 @@ export default function Nvoted({ route }) {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
+
     },
     searchContainer: {
         borderColor: '#9095A1',

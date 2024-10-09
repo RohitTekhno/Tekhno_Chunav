@@ -4,7 +4,7 @@ import { AntDesign, MaterialIcons, MaterialCommunityIcons, FontAwesome5, Octicon
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const { height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const HeaderFooterLayout = ({
     children,
@@ -14,10 +14,10 @@ const HeaderFooterLayout = ({
     leftIcon = true,
     rightIcon = true,
     leftIconName = 'chevron-left',
-    rightIconName = '',  
+    rightIconName = '',
     onLeftIconPress,
     onRightIconPress,
-    onSortPress, 
+    onSortPress,
 }) => {
     const navigation = useNavigation();
 
@@ -33,7 +33,7 @@ const HeaderFooterLayout = ({
         if (onRightIconPress) {
             onRightIconPress();
         } else if (onSortPress) {
-            onSortPress();  
+            onSortPress();
         } else {
             // Alert.alert("Right button pressed.");
         }
@@ -43,10 +43,10 @@ const HeaderFooterLayout = ({
         <View style={styles.container}>
             {showHeader && (
                 <View style={styles.nav}>
-                    
+
                     {leftIcon && (
                         <Pressable onPress={handleGoBack}>
-                            <Octicons name={leftIconName} size={24} color="black" />
+                            <Octicons name={leftIconName} size={30} color="black" />
                         </Pressable>
                     )}
                     <Text style={styles.text}>{headerText}</Text>
@@ -55,7 +55,7 @@ const HeaderFooterLayout = ({
                             <FontAwesome5 name={rightIconName} size={22} color="black" />
                         </Pressable>
                     )}
-                    
+
                 </View>
             )}
             <View style={styles.content}>
@@ -64,23 +64,23 @@ const HeaderFooterLayout = ({
             {showFooter && (
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.footerButton} onPress={() => { navigation.navigate('Dashboard') }}>
-                        <AntDesign name="home" size={24} color="black" />
+                        <AntDesign name="home" size={width * 0.05} color="black" />
                         <Text style={styles.footerButtonText}>Dashboard</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Towns')}>
-                        <MaterialCommunityIcons name="city-variant-outline" size={24} color="black" />
+                        <MaterialCommunityIcons name="city-variant-outline" size={width * 0.05} color="black" />
                         <Text style={styles.footerButtonText}>Towns</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Booths')}>
-                        <FontAwesome5 name="person-booth" size={18} color="black" style={{ padding: 2 }} />
+                        <FontAwesome5 name="person-booth" size={width * 0.04} color="black" style={{ padding: 2 }} />
                         <Text style={styles.footerButtonText}>Booth</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Age Wise Voters')}>
-                        <MaterialCommunityIcons name="page-next-outline" size={24} color="black" />
+                        <MaterialCommunityIcons name="page-next-outline" size={width * 0.05} color="black" />
                         <Text style={styles.footerButtonText}>Voters Age</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Profile')}>
-                        <MaterialIcons name="person" size={24} color="black" />
+                        <MaterialIcons name="person" size={width * 0.05} color="black" />
                         <Text style={styles.footerButtonText}>Profile</Text>
                     </TouchableOpacity>
                 </View>
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     footerButtonText: {
-        fontSize: 10,
+        fontSize: 12,
         color: 'black',
     },
     gradient: {

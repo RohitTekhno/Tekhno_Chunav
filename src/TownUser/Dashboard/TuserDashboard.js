@@ -1,4 +1,4 @@
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, RefreshControl } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,8 +22,8 @@ const Towndash = () => {
     const [finalTotalBoothsCount, setFinalTotalBoothsCount] = useState(0);
     const [totalUsers, setTotalUsers] = useState(0);
     const [finalTotalUsers, setFinalTotalUsers] = useState(0);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
 
     const fetchData = async (url, setter, finalSetter) => {
         try {
@@ -37,7 +37,7 @@ const Towndash = () => {
         }
     };
 
-    useEffect(() => {
+    const loadData = () => {
         if (userId) {
             fetchData(`http://192.168.200.23:8000/api/get_voter_list_by_town_user/${userId}`, setTotalVoters, setFinalTotalVoters);
             fetchData(`http://192.168.200.23:8000/api/get_booth_names_by_town_user/${userId}`, setTotalBoothsCount, setFinalTotalBoothsCount);
@@ -45,11 +45,21 @@ const Towndash = () => {
             fetchData(`http://192.168.200.23:8000/api/town_user_id/${userId}/confirmation/2/`, setTotalNonVoted, setFinalTotalNonVoted);
             fetchData(`http://192.168.200.23:8000/api/get_booth_users_by_town_user/${userId}/`, setTotalUsers, setFinalTotalUsers);
         }
+    };
+
+    useEffect(() => {
+        loadData();
     }, [userId]);
 
+    const handleRefresh = () => {
+        setRefreshing(true);
+        loadData();
+        setRefreshing(false);
+    };
+
     const animateCount = (finalCount, setter) => {
-        const duration = 2000; // Duration in milliseconds
-        const intervalTime = 50; // Time between each increment in milliseconds
+        const duration = 2000;
+        const intervalTime = 50;
         const increments = Math.ceil(duration / intervalTime);
         const incrementValue = Math.ceil(finalCount / increments);
 
@@ -91,8 +101,17 @@ const Towndash = () => {
     };
 
     return (
-        <CustomTUserBottomTabs showFooter={true}>
-            <ScrollView style={styles.container}>
+        <ScrollView
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                />
+            }
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+        >
+            <View style={styles.container}>
                 <View style={styles.headerContainer}>
                     <Text style={styles.title}>Washim Constituency</Text>
                     <View style={styles.gradientContainer}>
@@ -140,8 +159,8 @@ const Towndash = () => {
                         <TownVotingBarStats />
                     </View>
                 </View>
-            </ScrollView>
-        </CustomTUserBottomTabs>
+            </View>
+        </ScrollView>
     );
 };
 

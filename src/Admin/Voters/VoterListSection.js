@@ -4,10 +4,18 @@ import { View, Text, StyleSheet, FlatList, Dimensions, TextInput } from 'react-n
 const { width } = Dimensions.get('window');
 
 const VoterListSection = ({ voters, filteredVoters, searchQuery, handleSearch }) => {
+
+  const toTitleCase = (str) => {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.voterItem}>
       <Text style={styles.voterId}>{item.voter_id || 'No ID'}</Text>
-      <Text style={styles.voterName}>{item.voter_name || 'No Name'}</Text>
+      <Text style={styles.voterName}>{toTitleCase(item.voter_name) || 'No Name'}</Text>
     </View>
   );
 

@@ -73,7 +73,7 @@ const TotalVoted = () => {
   }
 
   return (
-    <CustomTUserBottomTabs showFooter={true}>
+    <CustomTUserBottomTabs showFooter={false}>
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="grey" />

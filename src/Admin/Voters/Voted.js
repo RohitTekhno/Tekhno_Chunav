@@ -23,6 +23,7 @@ export default function Voted({ route }) {
     const fetchVoterDetails = (voter_id) => {
         axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
             .then(response => {
+
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
             })
@@ -57,6 +58,7 @@ export default function Voted({ route }) {
     useEffect(() => {
         axios.get(`http://192.168.200.23:8000/api/vote_confirmation/1/`)
             .then(response => {
+
                 if (response.data && Array.isArray(response.data)) {
                     setVoters(response.data);
                 } else {
@@ -73,17 +75,7 @@ export default function Voted({ route }) {
 
 
 
-    if (loading) {
-        return (
-            <HeaderFooterLayout showHeader={false} showFooter={false}>
 
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} />
-                    <Text>Loading...</Text>
-                </View>
-            </HeaderFooterLayout>
-        );
-    }
 
     return (
         <HeaderFooterLayout
@@ -102,30 +94,40 @@ export default function Voted({ route }) {
                     />
                 </View>
 
-                <View style={styles.listContainer}>
-                    {filteredVoters.length > 0 ? (
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
-                                    <View style={styles.voterDetails}>
-                                        <View style={{
-                                            borderRightWidth: 1, borderColor: '#D9D9D9',
-                                            width: 60, alignItems: 'center',
-                                        }}>
-                                            <Text style={{}}>{item.voter_id}</Text>
+                {(loading) ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size={'small'} />
+                        <Text>Loading...</Text>
+                    </View>
+                ) : (
+                    <View style={styles.listContainer}>
+                        {filteredVoters.length > 0 ? (
+                            <FlatList
+                                data={filteredVoters}
+                                keyExtractor={item => item.voter_id.toString()}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({ item, index }) => (
+                                    <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
+                                        <View style={styles.voterDetails}>
+                                            <View style={styles.indexBox}>
+                                                {/* <Text style={styles.indexText}>{index + 1}</Text> */}
+                                            </View>
+                                            <View style={{
+                                                borderRightWidth: 1, borderColor: '#D9D9D9',
+                                                width: 60, alignItems: 'center',
+                                            }}>
+                                                <Text style={{}}>{item.voter_id}</Text>
+                                            </View>
+                                            <Text>{toTitleCase(item.voter_name)}</Text>
                                         </View>
-                                        <Text>{toTitleCase(item.voter_name)}</Text>
-                                    </View>
-                                </Pressable>
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-                </View>
+                                    </Pressable>
+                                )}
+                            />
+                        ) : (
+                            <Text style={styles.noDataText}>No results found</Text>
+                        )}
+                    </View>)
+                }
 
                 <VoterDetailsPopUp
                     isModalVisible={isModalVisible}
@@ -142,6 +144,7 @@ export default function Voted({ route }) {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
+        paddingBottom: '32%'
     },
     searchContainer: {
         borderColor: '#9095A1',

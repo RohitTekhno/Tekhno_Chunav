@@ -1,4 +1,4 @@
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,8 +12,7 @@ const { height, width } = Dimensions.get('screen');
 
 const Dashboard = () => {
     const navigation = useNavigation();
-    const { userId } = useContext(AuthenticationContext);
-
+    // const { userId } = useContext(AuthenticationContext);
     const [votersCounter, setVoterCounter] = useState({
         TotalVoters: null,
         Favorable: null,
@@ -21,6 +20,7 @@ const Dashboard = () => {
         Doubted: null,
         Non_Voted: null
     });
+    const [refreshing, setRefreshing] = useState(false)
     const [totalVoters, setTotalVoters] = useState('00000');
     const [totalTowns, setTotalTowns] = useState('000');
     const [totalBooths, setTotalBooths] = useState('000');
@@ -29,8 +29,7 @@ const Dashboard = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result1 = await axios.get(`http://192.168.200.23:8000/api/voter_favour_counts/`)
-
+            const result1 = await axios.get(`http://192.168.200.23:8000/api/voter_favour_counts/`);
             setVoterCounter({
                 TotalVoters: result1.data.Total_Voters,
                 Favorable: result1.data.Favourable,
@@ -43,7 +42,18 @@ const Dashboard = () => {
         }
     };
 
-    useEffect(() => {
+    // NEW API call for voted and non-voted count
+    const getVotedAndNonVotedCount = async () => {
+        try {
+            const response = await axios.get('http://192.168.200.23:8000/api/get_voted_and_non_voted_count/');
+            setTotalVoted(response.data.voted_count.toString());
+            setNTotalVoted(response.data.non_voted_count.toString());
+        } catch (error) {
+            console.error('Error fetching voted and non-voted count:', error);
+        }
+    };
+
+    const getAllCounts = () => {
         axios.get('http://192.168.200.23:8000/api/voter_count/')
             .then(response => {
                 setTotalVoters(response.data.count.toString());
@@ -68,34 +78,33 @@ const Dashboard = () => {
                 console.error('Error fetching total booths count:', error);
             });
 
-
-        axios.get('http://192.168.200.23:8000/api/vote_confirmation/1/')
-            .then(response => {
-                setTotalVoted(response.data.length.toString());
-            })
-            .catch(error => {
-                console.error('Error fetching total voted count:', error);
-            });
-
-
-        axios.get('http://192.168.200.23:8000/api/vote_confirmation/2/')
-            .then(response => {
-                setNTotalVoted(response.data.length.toString());
-            })
-            .catch(error => {
-                console.error('Error fetching total voted count:', error);
-            });
-    }, []);
+    }
 
     useEffect(() => {
-        // if (userId) {
+        getAllCounts()
         getVotersByUserwise();
-        // }
+        getVotedAndNonVotedCount();
     }, []);
 
+    const handleRefresh = () => {
+        setRefreshing(true);
+        getAllCounts()
+        getVotersByUserwise();
+        getVotedAndNonVotedCount();
+        setRefreshing(false);
+    }
+
     return (
-        <HeaderFooterLayout showHeader={false} showFooter={true}  >
-            <View style={styles.container}>
+        <HeaderFooterLayout showHeader={false} showFooter={true}>
+            <ScrollView style={styles.container}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
+                    />}
+                scrollEnabled={false}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={styles.headerContainer}>
                     <Text style={styles.title}>Washim Constituency</Text>
                     <Pressable onPress={() => { navigation.navigate('Total Voters') }} style={{
@@ -121,9 +130,7 @@ const Dashboard = () => {
                             <Text style={styles.statsValue}>{totalTowns}</Text>
                         </Pressable>
 
-                        <Pressable onPress={() => {
-                            navigation.navigate('Booths');
-                        }} style={[styles.statsBox, styles.statsBoxGreen]}>
+                        <Pressable onPress={() => { navigation.navigate('Booths'); }} style={[styles.statsBox, styles.statsBoxGreen]}>
                             <Text style={styles.statsLabel}>Total Booth Count</Text>
                             <Text style={styles.statsValue}>{totalBooths}</Text>
                         </Pressable>
@@ -157,8 +164,8 @@ const Dashboard = () => {
                         <CastDonotStat />
                     </View>
                 </View>
-            </View>
-        </HeaderFooterLayout >
+            </ScrollView>
+        </HeaderFooterLayout>
     );
 };
 
@@ -166,7 +173,6 @@ export default Dashboard;
 
 const styles = StyleSheet.create({
     container: {
-        // height: height * 0.9,
         marginBottom: height * 0.05,
         paddingHorizontal: 15,
         backgroundColor: 'white',

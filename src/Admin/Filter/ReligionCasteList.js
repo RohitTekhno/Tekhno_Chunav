@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, Platform, ScrollView } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 
 export default function ReligionCasteList() {
+  const [townOpen, setTownOpen] = useState(false);
+  const [townValue, setTownValue] = useState(null);
+  const [townItems, setTownItems] = useState([]);
+
+  const [boothOpen, setBoothOpen] = useState(false);
+  const [boothValue, setBoothValue] = useState(null);
+  const [boothItems, setBoothItems] = useState([]);
+
   const [religionOpen, setReligionOpen] = useState(false);
   const [religionValue, setReligionValue] = useState(null);
   const [religionItems, setReligionItems] = useState([
@@ -18,8 +28,36 @@ export default function ReligionCasteList() {
   const [casteItems, setCasteItems] = useState([]);
 
   const [voters, setVoters] = useState([]);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
-  // Fetch castes dynamically based on selected religion
+  const fetchTowns = async () => {
+    try {
+      const response = await axios.get('http://192.168.200.23:8000/api/towns/');
+      const townsData = response.data.map(town => ({
+        label: `${town.town_id} - ${town.town_name}`,
+        value: town.town_id,
+      }));
+      setTownItems(townsData);
+    } catch (error) {
+      console.error('Error fetching towns:', error);
+      Alert.alert('Error', 'Failed to load towns');
+    }
+  };
+
+  const fetchBoothsByTown = async (townId) => {
+    try {
+      const response = await axios.get(`http://192.168.200.23:8000/api/booths_by_town/${townId}`);
+      const boothsData = response.data.map(booth => ({
+        label: `${booth.booth_id} - ${booth.booth_name}`,
+        value: booth.booth_id,
+      }));
+      setBoothItems(boothsData);
+    } catch (error) {
+      console.error('Error fetching booths:', error);
+      Alert.alert('Error', 'Failed to load booths');
+    }
+  };
+
   const fetchCasteData = async (religionId) => {
     try {
       const response = await axios.get(`http://192.168.200.23:8000/api/cast_by_religion/${religionId}`);
@@ -34,10 +72,9 @@ export default function ReligionCasteList() {
     }
   };
 
-  // Fetch voters by selected caste from the new API
-  const fetchVotersByCaste = async (castId) => {
+  const fetchVotersByBoothAndCaste = async (boothId, castId) => {
     try {
-      const response = await axios.get(`http://192.168.200.23:8000/api/cast_wise_voter_list/${castId}`);
+      const response = await axios.get(`http://192.168.200.23:8000/api/booth/${boothId}/cast/${castId}/`);
       setVoters(response.data);
     } catch (error) {
       console.error('Error fetching voters:', error);
@@ -45,112 +82,200 @@ export default function ReligionCasteList() {
     }
   };
 
+  const handlePDFClick = async () => {
+    if (!townValue || !boothValue || !religionValue || !casteValue) {
+      Alert.alert('Error', 'Please select all fields');
+      return;
+    }
+
+    setPdfLoading(true);
+    try {
+      const response = await axios.get(`http://192.168.200.23:8000/api/booth_pdf/${boothValue}/cast/${casteValue}/`, {
+        responseType: 'arraybuffer',
+      });
+
+      const base64 = btoa(
+        new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+
+      const fileUri = FileSystem.documentDirectory + 'town_users_report.pdf';
+      await FileSystem.writeAsStringAsync(fileUri, base64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      Alert.alert('Success', 'PDF has been saved to your device!');
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert('Error', 'Sharing not available on this device.');
+      }
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      Alert.alert('Error', 'Failed to download the PDF.');
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const toTitleCase = (str) => {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  useEffect(() => {
+    fetchTowns();
+  }, []);
+
+  useEffect(() => {
+    if (townValue) {
+      fetchBoothsByTown(townValue);
+      setBoothOpen(false);
+    }
+  }, [townValue]);
+
   useEffect(() => {
     if (religionValue) {
-      // Fetch caste data when a religion is selected
       fetchCasteData(religionValue);
-      setCasteOpen(false); // Close caste dropdown until religion is selected
+      setCasteOpen(false);
     }
   }, [religionValue]);
 
   useEffect(() => {
-    if (casteValue) {
-      // Fetch voters when a caste is selected
-      fetchVotersByCaste(casteValue);
+    if (boothValue && casteValue) {
+      fetchVotersByBoothAndCaste(boothValue, casteValue);
     }
-  }, [casteValue]);
+  }, [boothValue, casteValue]);
+
+
 
   const renderVoterItem = ({ item }) => (
     <View style={styles.voterItem}>
-      <Text style={styles.voterText}>{item.voter_id} - {item.voter_name}</Text>
+      <Text style={styles.voterText}>{item.voter_id} - {toTitleCase(item.voter_name)}</Text>
+      <Text style={styles.voterContact}>Contact: {item.voter_contact_number || "N/A"}</Text>
     </View>
   );
 
   return (
     <HeaderFooterLayout
-    showFooter={false}
-    headerText='Cast Wise Voters'
+      showFooter={false}
+      headerText='Cast Wise Voters'
+      rightIconName="file-pdf"
+      onRightIconPress={handlePDFClick}
     >
-    <View style={styles.container}>
-      {/* <Text style={styles.heading}>Select Religion and Caste</Text> */}
+      <View style={styles.container}>
+        <View style={[styles.pickerWrapper, { zIndex: 4000, elevation: 4000 }]}>
+          <DropDownPicker
+            open={townOpen}
+            value={townValue}
+            items={townItems}
+            setOpen={setTownOpen}
+            setValue={setTownValue}
+            setItems={setTownItems}
+            placeholder="Select Town"
+            searchable={true}
+            searchPlaceholder="Search town..."
+            containerStyle={styles.picker}
+          />
+        </View>
 
-      {/* Religion Dropdown */}
-      <DropDownPicker
-        open={religionOpen}
-        value={religionValue}
-        items={religionItems}
-        setOpen={setReligionOpen}
-        setValue={setReligionValue}
-        setItems={setReligionItems}
-        placeholder="Select Religion"
-        containerStyle={styles.picker}
-        zIndex={6000}
-      />
+        {townValue && (
+          <View style={[styles.pickerWrapper, { zIndex: 3000, elevation: 3000 }]}>
+            <DropDownPicker
+              open={boothOpen}
+              value={boothValue}
+              items={boothItems}
+              setOpen={setBoothOpen}
+              setValue={setBoothValue}
+              setItems={setBoothItems}
+              placeholder="Select Booth"
+              searchable={true}
+              searchPlaceholder="Search booth..."
+              containerStyle={styles.picker}
+            />
+          </View>
+        )}
 
-      {/* Caste Dropdown (Only opens after religion is selected) */}
-      {religionValue && (
-        <DropDownPicker
-          open={casteOpen}
-          value={casteValue}
-          items={casteItems}
-          setOpen={setCasteOpen}
-          setValue={setCasteValue}
-          setItems={setCasteItems}
-          placeholder="Select Caste"
-          containerStyle={styles.picker}
-          zIndex={2000}
-        />
-      )}
+        {boothValue && (
+          <View style={[styles.pickerWrapper, { zIndex: 2000, elevation: 2000 }]}>
+            <DropDownPicker
+              open={religionOpen}
+              value={religionValue}
+              items={religionItems}
+              setOpen={setReligionOpen}
+              setValue={setReligionValue}
+              setItems={setReligionItems}
+              placeholder="Select Religion"
+              searchable={true}
+              searchPlaceholder="Search religion..."
+              containerStyle={styles.picker}
+            />
+          </View>
+        )}
 
-      {/* Voter List (Display voters based on caste selection) */}
-      {casteValue && (
-        <FlatList
-          data={voters}
-          keyExtractor={(item) => item.voter_id.toString()}
-          renderItem={renderVoterItem}
-          contentContainerStyle={styles.voterList}
-        />
-      )}
-    </View>
+        {religionValue && (
+          <View style={[styles.pickerWrapper, { zIndex: 1000, elevation: 1000 }]}>
+            <DropDownPicker
+              open={casteOpen}
+              value={casteValue}
+              items={casteItems}
+              setOpen={setCasteOpen}
+              setValue={setCasteValue}
+              setItems={setCasteItems}
+              placeholder="Select Caste"
+              searchable={true}
+              searchPlaceholder="Search caste..."
+              containerStyle={styles.picker}
+            />
+          </View>
+        )}
+
+        {casteValue && boothValue && (
+          <>
+            <Text style={{ color: 'blue', fontSize: 20, fontWeight: '500', textAlign: 'center' }}>Filtered Voters</Text>
+            <FlatList
+              data={voters}
+              keyExtractor={(item) => item.voter_id.toString()}
+              renderItem={renderVoterItem}
+            />
+          </>
+        )}
+      </View>
     </HeaderFooterLayout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    paddingVertical: 25,
     flex: 1,
-    // backgroundColor: '#F5F5F5',
+    padding: 10,
   },
-  heading: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#3C4CAC',
+  pickerWrapper: {
+    marginBottom: 10,
   },
   picker: {
     height: 50,
-    marginBottom: 20,
-    zIndex: 10, // Ensure the dropdown overlaps content below
-  },
-  voterList: {
-    paddingTop: 20,
   },
   voterItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 10,
-    backgroundColor: '#FFF',
-    borderRadius: 5,
-    marginBottom: 10,
+    marginVertical: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: '#D9D9D9',
+    borderColor: '#ddd',
+    width: "100%",
+    borderRadius: 5,
+    alignContent: 'center',
+    textAlignVertical: 'center'
   },
   voterText: {
     fontSize: 16,
-    color: '#333',
+    flex: 1
+  },
+  voterContact: {
+    color: 'red',
+    flex: 1
+
   },
 });

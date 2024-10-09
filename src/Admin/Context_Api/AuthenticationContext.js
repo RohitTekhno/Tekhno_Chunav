@@ -8,7 +8,7 @@ export const AuthenticationProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
 
   const loadUser = async () => {
-    const storedUser = await AsyncStorage.getItem('politicianToken');
+    const storedUser = await AsyncStorage.getItem('userToken');
     if (storedUser) {
       setUserId(JSON.parse(storedUser));
       setIsAuthenticated(true);
@@ -22,17 +22,17 @@ export const AuthenticationProvider = ({ children }) => {
   const login = async (userData) => {
     setUserId(userData);
     setIsAuthenticated(true);
-    await AsyncStorage.setItem('politicianToken', JSON.stringify(userData));
+    await AsyncStorage.setItem('userToken', JSON.stringify(userData));
   };
 
   const logout = async () => {
     setUserId(null);
     setIsAuthenticated(false);
-    await AsyncStorage.removeItem('politicianToken');
+    await AsyncStorage.removeItem('userToken');
   };
 
   return (
-    <AuthenticationContext.Provider value={{ isAuthenticated, userId, login, logout, setUserId, setIsAuthenticated }}>
+    <AuthenticationContext.Provider value={{ isAuthenticated, userId, login, logout }}>
       {children}
     </AuthenticationContext.Provider>
   );

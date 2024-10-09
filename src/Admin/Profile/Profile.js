@@ -33,16 +33,22 @@ const Profile = () => {
                     <TopNavCompo navigation={navigation} ScreenName={'Profile'} colorName={'white'} />
                 </LinearGradient>
             </View>
-            <View style={{ height: height * 0.5, }}>
+            <View style={{ height: height * 0.45 }}>
                 <View style={styles.profileDetailsView}>
                     <View style={styles.profileImageView}>
                         <View style={styles.profileImageCircle}>
                             <Image source={require('../Assets/Cover.png')} style={styles.profileImage} />
                         </View>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', }}>Politician</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold',marginTop:10 }}>Politician</Text>
                         <Text>User</Text>
                     </View>
-                    <View style={{ marginVertical: 10 }}>
+                    <View style={{
+                        width: "100%",
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginVertical: 10,
+                    }}>
                         <CustomeTextInput
                             label={'User Name : '}
                             valueDetails={'Politician'}
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
         paddingTop: 50,
     },
     profileDetailsView: {
-        height: height * 0.47,
+        height: height * 0.45,
         width: "90%",
         elevation: 5,
         borderRadius: 10,
@@ -98,6 +104,7 @@ const styles = StyleSheet.create({
     },
     profileImageView: {
         width: '100%',
+        height: height * 0.13,
         borderBottomWidth: 1,
         borderBlockColor: 'black',
         alignContent: 'center',
@@ -106,13 +113,13 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     profileImageCircle: {
-        width: 100,
-        height: 100,
+        width: width * 0.28,
+        height: width * 0.28,
         backgroundColor: 'white',
         borderWidth: 2,
         borderRadius: width,
         borderColor: '#3C4CAC',
-        marginTop: - 70,
+        marginTop: - height * 0.1,
     },
     profileImage: {
         width: '100%',
@@ -127,22 +134,22 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         backgroundColor: 'rgba(236, 238, 247, 1)',
         fontSize: 18,
-        color:'black'
+        color: 'black'
     },
     logOutButton: {
         width: width * 0.8,
-        height: height * 0.06,
+        height: 50,
         backgroundColor: '#F04393',
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 15,
         borderRadius: 7,
-        // padding: 10
     },
     logOutButtonTxt: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight: '500',
         textAlign: 'center'
     }
 });

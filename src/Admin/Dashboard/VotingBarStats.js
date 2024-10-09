@@ -34,7 +34,7 @@ const VotingBarStats = ({ TotalVoters = 0, Favorable = 0, Non_Favorable = 0, Dou
                 <View style={styles.barChart}>
                     {data.map((item, index) => {
                         const animatedStyle = useAnimatedStyle(() => ({
-                            height: animatedValues[index].value * 1.6,
+                            height: animatedValues[index].value * 1.8,
                             backgroundColor: colorData[index].value,
                         }));
                         return (
@@ -98,14 +98,14 @@ const styles = StyleSheet.create({
     },
     barContainer: {
         alignItems: 'center',
-        marginVertical: 20,
+        marginVertical: 0,
     },
     barText: {
         textAlign: 'center',
         fontSize: 10,
     },
     bar: {
-        width: width * 0.07,
+        width: width * 0.075,
     },
     legendContainer: {
         flexDirection: 'row',

@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,6 +7,8 @@ import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -14,6 +16,7 @@ const TownUsers = () => {
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(true);
+    const [pdfLoading, setPdfLoading] = useState(false);
     const [townUsers, setTownUsers] = useState([]);
 
     const searchedTown = townUsers.filter(town =>
@@ -21,43 +24,103 @@ const TownUsers = () => {
         (town.town_user_id && town.town_user_id.toString().includes(searchedValue))
     );
 
-
     const fetchData = async () => {
         try {
-            const statesResponse = await axios.get('http://192.168.200.23:8000/api/town_user_info/');
-            const formattedTowns = statesResponse.data;
+            const response = await axios.get('http://192.168.200.23:8000/api/town_user_info/');
+            const formattedTowns = response.data;
             if (Array.isArray(formattedTowns)) {
                 setTownUsers(formattedTowns);
             } else {
                 console.error('Expected an array of townUsers');
             }
-            setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
+        } finally {
             setLoading(false);
         }
     };
 
+    const toTitleCase = (str) => {
+        return str
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    };
+
     useEffect(() => {
-        setLoading(true);
         fetchData();
     }, []);
 
+    const handlePDFClick = async () => {
+        setPdfLoading(true);
+        try {
+            const response = await axios.get('http://192.168.200.23:8000/api/generate_town_user_pdf/', {
+                responseType: 'arraybuffer',
+            });
+
+            const base64 = btoa(
+                new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+
+            const fileUri = FileSystem.documentDirectory + 'town_users_report.pdf';
+            await FileSystem.writeAsStringAsync(fileUri, base64, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+
+            Alert.alert('Success', 'PDF has been saved to your device!');
+
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(fileUri);
+            } else {
+                Alert.alert('Error', 'Sharing not available on this device.');
+            }
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            Alert.alert('Error', 'Failed to download the PDF.');
+        } finally {
+            setPdfLoading(false);
+        }
+    };
+
+    const handleDeleteUser = async (userId) => {
+        try {
+            await axios.delete(`http://192.168.200.23:8000/api/delete_town_user/${userId}/`);
+            // If the API deletion is successful, update the state
+            const updatedUsers = townUsers.filter(user => user.town_user_id !== userId);
+            setTownUsers(updatedUsers); // Now update the state
+            Alert.alert('Success', 'User deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            Alert.alert('Error', 'Failed to delete the user.');
+        }
+    };
+    const confirmDelete = (userId) => {
+        Alert.alert(
+            "Delete User",
+            "Are you sure you want to delete this user?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "Delete", onPress: () => handleDeleteUser(userId), style: "destructive" }
+            ]
+        );
+    };
+
     if (loading) {
         return (
-            <HeaderFooterLayout showFooter={true}>
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} />
-                    <Text>Loading...</Text>
-                </View>
-            </HeaderFooterLayout>
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size={'small'} />
+                <Text>Loading...</Text>
+            </View>
         );
     }
 
     return (
-        <HeaderFooterLayout 
-        showFooter={false}
-        headerText='Town Users'
+        <HeaderFooterLayout
+            showFooter={false}
+            headerText='Town Users'
+            rightIcon={true}
+            rightIconName="file-pdf"
+            onRightIconPress={handlePDFClick}
         >
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
@@ -77,23 +140,22 @@ const TownUsers = () => {
                             keyExtractor={item => item.town_user_id.toString()}
                             showsVerticalScrollIndicator={false}
                             renderItem={({ item }) => (
-                                <Pressable style={styles.voterItem}>
+                                <Pressable
+                                    style={styles.voterItem}
+                                    onLongPress={() => confirmDelete(item.town_user_id)} // Long press to delete
+                                >
                                     <View style={styles.voterDetails}>
-                                        <View style={{
-                                            borderWidth: 1, borderColor: 'blue', width: 30, padding: 5,
-                                            textAlign: 'center', borderRadius: 3, fontWeight: '700',
-                                            alignItems: 'center'
-                                        }}>
-                                            <Text style={{ fontWeight: '700', textAlignVertical: 'center' }}>{item.town_user_id}</Text>
+                                        <View style={styles.townUserIdContainer}>
+                                            <Text style={styles.townUserIdText}>{item.town_user_id}</Text>
                                         </View>
                                         <View style={{ flexDirection: 'column', flex: 1 }}>
-                                            <Text>{item.town_user_name}</Text>
-                                            <Text style={{ color: '#565D6D', fontSize: 11 }}>Ph. No {item.town_user_contact_number}</Text>
+                                            <Text style={{ fontWeight: '700' }}>{toTitleCase(item.town_user_name)}</Text>
+                                            <Text style={styles.townUserContactText}>Ph. No: {item.town_user_contact_number}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                                            <Text style={styles.townUserTownText}>Town: {toTitleCase(item.town_names)}</Text>
                                         </View>
                                     </View>
-                                    {/* <Pressable onPress={() => { navigation.navigate('Updated Voters') }}>
-                                        <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
-                                    </Pressable> */}
                                 </Pressable>
                             )}
                         />
@@ -101,18 +163,24 @@ const TownUsers = () => {
                         <Text style={styles.noDataText}>No results found</Text>
                     )}
                 </View>
+
+                {/* PDF loading overlay */}
+                {pdfLoading && (
+                    <View style={styles.pdfLoadingOverlay}>
+                        <ActivityIndicator size="large" color="#fff" />
+                        <Text style={styles.pdfLoadingText}>Downloading PDF...</Text>
+                    </View>
+                )}
             </View>
         </HeaderFooterLayout>
     );
-}
+};
 
 export default TownUsers;
 
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
-        // height: height * 0.9,
-        // marginBottom: height * 0.25,
         backgroundColor: 'white',
     },
     searchContainer: {
@@ -125,15 +193,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginVertical: 10,
         columnGap: 20,
-
     },
     searchInput: {
         flex: 1,
         paddingVertical: 10,
     },
-    listContainer: {
-        // flex: 1,
-    },
+    listContainer: {},
     voterItem: {
         flex: 1,
         borderRadius: 2,
@@ -143,12 +208,33 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderWidth: 0.2
+        borderWidth: 0.2,
     },
     voterDetails: {
         flex: 1,
         flexDirection: 'row',
         gap: 20,
+    },
+    townUserIdContainer: {
+        borderWidth: 1,
+        borderColor: 'blue',
+        width: 30,
+        padding: 5,
+        textAlign: 'center',
+        borderRadius: 3,
+        alignItems: 'center',
+    },
+    townUserIdText: {
+        fontWeight: '700',
+    },
+    townUserContactText: {
+        color: '#565D6D',
+        fontSize: 11,
+    },
+    townUserTownText: {
+        color: '#565D6D',
+        fontSize: 13,
+        fontWeight: '700',
     },
     noDataText: {
         textAlign: 'center',
@@ -160,5 +246,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    pdfLoadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    pdfLoadingText: {
+        color: 'white',
+        marginTop: 10,
+    },
 });

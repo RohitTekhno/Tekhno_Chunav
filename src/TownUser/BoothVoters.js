@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -15,11 +15,12 @@ const BoothVoters = ({ route }) => {
     const [voters, setVoters] = useState([]);
 
     const [filteredVoters, setFilteredVoters] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchedValue, setSearchValue] = useState('');
 
     const [selectedVoter, setSelectedVoter] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
 
     const fetchVoterDetails = (voter_id) => {
         axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
@@ -54,8 +55,8 @@ const BoothVoters = ({ route }) => {
             .join(' ');
     };
 
-
-    useEffect(() => {
+    const getBoothVoters = async () => {
+        setRefreshing(true)
         axios.get(`http://192.168.200.23:8000/api/get_voters_by_booth/${boothId}/`)
             .then(response => {
                 if (response.data.voters && Array.isArray(response.data.voters)) {
@@ -63,70 +64,77 @@ const BoothVoters = ({ route }) => {
                 } else {
                     setError('Unexpected API response format.');
                 }
-                setLoading(false);
+                setRefreshing(false);
             })
             .catch(error => {
                 console.error('Error fetching voter data:', error);
                 setError('Error fetching data. Please try again later.');
-                setLoading(false);
+                BottomBoothsStack(false);
             });
-    }, [boothId]);
-
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'small'} />
-                <Text>Loading...</Text>
-            </View>
-        );
     }
 
+    useEffect(() => {
+        getBoothVoters()
+    }, [boothId]);
+
+    const handleRefresh = () => {
+        setRefreshing(true);
+        getBoothVoters();
+        setRefreshing(false);
+    };
+
+
     return (
-        <CustomTUserBottomTabs showFooter={true} >
-            <View style={styles.container}>
-                <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={20} color="grey" />
-                    <TextInput
-                        value={searchedValue}
-                        onChangeText={text => setSearchValue(text)}
-                        placeholder='search by voter’s name or ID'
-                        style={styles.searchInput}
-                    />
-                </View>
-
-                <View style={styles.listContainer}>
-                    {filteredVoters.length > 0 ? (
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
-                                    <View style={styles.voterDetails}>
-                                        <View style={{
-                                            borderRightWidth: 1, borderColor: '#D9D9D9',
-                                            width: 60, alignItems: 'center',
-                                        }}>
-                                            <Text style={{}}>{item.voter_id}</Text>
-                                        </View>
-                                        <Text>{toTitleCase(item.voter_name)}</Text>
-                                    </View>
-                                </Pressable>
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-
-                    <VoterDetailsPopUp
-                        isModalVisible={isModalVisible}
-                        selectedVoter={selectedVoter}
-                        setIsModalVisible={setIsModalVisible}
-                    />
-                </View>
+        <View style={styles.container}>
+            <View style={styles.searchContainer}>
+                <Ionicons name="search" size={20} color="grey" />
+                <TextInput
+                    value={searchedValue}
+                    onChangeText={text => setSearchValue(text)}
+                    placeholder='search by voter’s name or ID'
+                    style={styles.searchInput}
+                />
             </View>
-        </CustomTUserBottomTabs>
+
+            {refreshing ?
+                (<View style={styles.loadingContainer}>
+                    <ActivityIndicator size={'small'} color={'black'} />
+                    <Text>Loading...</Text>
+                </View>
+                ) : (
+                    < FlatList
+                        data={filteredVoters}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                            />
+                        }
+                        ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
+                        renderItem={({ item }) => (
+                            <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
+                                <View style={styles.voterDetails}>
+                                    <View style={{
+                                        borderRightWidth: 1, borderColor: '#D9D9D9',
+                                        width: 60, alignItems: 'center',
+                                    }}>
+                                        <Text style={{}}>{item.voter_id}</Text>
+                                    </View>
+                                    <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                                </View>
+                            </Pressable>
+                        )}
+                    />
+                )
+            }
+            <VoterDetailsPopUp
+                isModalVisible={isModalVisible}
+                selectedVoter={selectedVoter}
+                setIsModalVisible={setIsModalVisible}
+            />
+        </View >
     )
 }
 
@@ -135,7 +143,7 @@ export default BoothVoters
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
-        height: height * 0.81,
+        height: height * 0.79,
         backgroundColor: 'white'
     },
     searchContainer: {
@@ -155,6 +163,7 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         flex: 1,
+        backgroundColor: 'white'
     },
     voterItem: {
         flex: 1,
@@ -179,7 +188,6 @@ const styles = StyleSheet.create({
     },
     loadingContainer: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
     }
 });

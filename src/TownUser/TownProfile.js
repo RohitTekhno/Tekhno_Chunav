@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 45,
   },
 
   nav: {

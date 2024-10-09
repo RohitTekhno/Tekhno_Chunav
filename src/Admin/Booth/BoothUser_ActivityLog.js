@@ -38,6 +38,13 @@ const BoothUser_ActivityLog = (routes) => {
         }
     };
 
+    const toTitleCase = (str) => {
+        return str
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    };
+
     useEffect(() => {
         setLoading(true);
         fetchData();
@@ -98,7 +105,7 @@ const BoothUser_ActivityLog = (routes) => {
                                     </View>
                                     <View>
                                         <Text style={{ color: '#9095A1', fontWeight: '600' }}>ID: {item.voter_id}</Text>
-                                        <Text style={{ color: '#3C4CAC', fontWeight: '600' }}>Name: {item.voter_name}</Text>
+                                        <Text style={{ color: '#3C4CAC', fontWeight: '600' }}>Name: {tot(item.voter_name)}</Text>
                                         {renderVoterField('Parent Name', item.voter_parent_name)}
                                         {renderVoterField('Age', item.voter_age)}
                                         {renderVoterField('Gender', item.voter_gender)}
@@ -122,7 +129,7 @@ export default BoothUser_ActivityLog;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, 
+        flex: 1,
         paddingHorizontal: 15,
         backgroundColor: 'white',
     },

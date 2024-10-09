@@ -8,12 +8,7 @@ import VoterDetailsPopUp from '../ReusableCompo/VoterDetailsPopUp';
 
 const { width, height } = Dimensions.get('screen');
 
-const VoterItem = memo(({ item, onPress }) => (
-    <Pressable style={styles.voterItem} onPress={onPress}>
-        <Text style={styles.voterIdText}>{item.voter_id}</Text>
-        <Text>{item.voter_name}</Text>
-    </Pressable>
-));
+
 
 const TotalNonVoted = () => {
     const { userId } = useContext(TownUserContext);
@@ -30,6 +25,11 @@ const TotalNonVoted = () => {
         const searchValueLower = searchedValue.toLowerCase();
         return boothId.includes(searchValueLower) || boothName.includes(searchValueLower);
     });
+
+
+    const convertToCamel = (name) => {
+        return newName = name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+    }
 
     const fetchData = async () => {
         try {
@@ -67,8 +67,15 @@ const TotalNonVoted = () => {
         );
     }
 
+    const VoterItem = memo(({ item, onPress }) => (
+        <Pressable style={styles.voterItem} onPress={onPress}>
+            <Text style={styles.voterIdText}>{item.voter_id}</Text>
+            <Text style={{ flex: 1 }}>{convertToCamel(item.voter_name)}</Text>
+        </Pressable>
+    ));
+
     return (
-        <CustomTUserBottomTabs showFooter={true}>
+        <CustomTUserBottomTabs showFooter={false}>
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
@@ -154,7 +161,9 @@ const styles = StyleSheet.create({
     voterIdText: {
         borderWidth: 1,
         borderColor: 'blue',
-        width: 30,
+        // width: 50,
+        paddingVertical: 2,
+        paddingHorizontal: 5,
         textAlign: 'center',
         borderRadius: 3,
         fontWeight: '700',

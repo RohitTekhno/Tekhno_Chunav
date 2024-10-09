@@ -1,9 +1,11 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator, Checkbox } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 
 const { width, height } = Dimensions.get('screen');
@@ -16,7 +18,7 @@ const BoothVoters = ({ route }) => {
     const [searchedValue, setSearchValue] = useState('');
     const [sortState, setSortState] = useState(0);
     const [initialVoters, setInitialVoters] = useState([]);
-    const [error, setError] = useState(null);
+
     const [selectedVoter, setSelectedVoter] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -159,16 +161,12 @@ const BoothVoters = ({ route }) => {
         setSelectedVoters(filteredVoters.map(item => item.voter_id));
     };
 
-
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'small'} />
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
+    const toTitleCase = (str) => {
+        return str
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    };
 
     return (
         <HeaderFooterLayout
@@ -200,14 +198,19 @@ const BoothVoters = ({ route }) => {
                     </View>
                 )}
 
-                <View style={styles.listContainer}>
-                    {filteredVoters.length > 0 ? (
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <>
+                {(loading) ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size={'small'} />
+                        <Text>Loading...</Text>
+                    </View>
+                ) : (
+                    < View style={styles.listContainer}>
+                        {filteredVoters.length > 0 ? (
+                            <FlatList
+                                data={filteredVoters}
+                                keyExtractor={item => item.voter_id.toString()}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({ item }) => (
                                     <Pressable
                                         style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem]}
                                         onPress={() => handleVoterPress(item.voter_id)}
@@ -220,8 +223,7 @@ const BoothVoters = ({ route }) => {
                                             }}>
                                                 <Text>{item.voter_id}</Text>
                                             </View>
-                                            <Text>{item.voter_name}</Text>
-
+                                            <Text>{toTitleCase(item.voter_name)}</Text>
                                         </View>
                                         {isSelectionMode && (
                                             <Checkbox
@@ -230,22 +232,21 @@ const BoothVoters = ({ route }) => {
                                             />
                                         )}
                                     </Pressable>
+                                )}
+                            />
+                        ) : (
+                            <Text style={styles.noDataText}>No results found</Text>
+                        )}
 
-                                </>
-                            )}
+                        <VoterDetailsPopUp
+                            isModalVisible={isModalVisible}
+                            selectedVoter={selectedVoter}
+                            setIsModalVisible={setIsModalVisible}
                         />
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-
-                    <VoterDetailsPopUp
-                        isModalVisible={isModalVisible}
-                        selectedVoter={selectedVoter}
-                        setIsModalVisible={setIsModalVisible}
-                    />
-                </View>
+                    </View>)
+                }
             </View>
-        </HeaderFooterLayout>
+        </HeaderFooterLayout >
     );
 };
 

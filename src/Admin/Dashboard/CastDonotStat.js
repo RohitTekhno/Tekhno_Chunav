@@ -7,8 +7,8 @@ import PieChart from 'react-native-pie-chart';
 const { height, width } = Dimensions.get('screen');
 
 const CastDonutStat = () => {
-    const widthAndHeight = width * 0.24;
-    const [series, setSeries] = useState([1, 1, 1]);
+    const widthAndHeight = width * 0.34;
+    const [series, setSeries] = useState([0, 0, 1]);
     const sliceColor = ['orange', 'green', '#545454'];
 
     const getReligionwiseData = async () => {
@@ -32,7 +32,7 @@ const CastDonutStat = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Religionwise Statistics</Text>
 
-            <View style={{ marginTop: '30%' }}>
+            <View style={{ marginTop: '20%', width: "100%", alignItems: 'center', height: "50%", justifyContent: 'center' }}>
                 <PieChart
                     widthAndHeight={widthAndHeight}
                     series={series}
@@ -67,9 +67,11 @@ export default CastDonutStat;
 
 const styles = StyleSheet.create({
     container: {
+        // flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal:10,
+        marginHorizontal: 5,
+        height: "100%"
     },
     title: {
         fontSize: height * 0.017,
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         columnGap: 5,
-        marginVertical: 5,
+        marginVertical: 3,
     },
     legendColor: {
         height: 10,

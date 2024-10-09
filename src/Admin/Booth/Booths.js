@@ -27,7 +27,7 @@ const Booths = () => {
     const [loading, setLoading] = useState(true);
     const [booths, setBooths] = useState([]);
     const [pdfLoading, setPdfLoading] = useState(false);
-    const scaleValue = useRef(new Animated.Value(1)).current;  // Ref for animation scaling
+    const scaleValue = useRef(new Animated.Value(1)).current;
 
     const searchedBooth = booths.filter(booth => {
         const boothId = booth.booth_id ? booth.booth_id.toString().toLowerCase() : '';
@@ -54,6 +54,13 @@ const Booths = () => {
         }
     };
 
+    const toTitleCase = (str) => {
+        return str
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    };
+
     useEffect(() => {
         setLoading(true);
         fetchData();
@@ -75,7 +82,7 @@ const Booths = () => {
     };
 
     const handlePDFClick = async () => {
-        animateButton();  // Start button animation
+        animateButton();
 
         setPdfLoading(true);
         try {
@@ -103,23 +110,14 @@ const Booths = () => {
             console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
-            setPdfLoading(false);  // Stop loading indicator
+            setPdfLoading(false);
         }
     };
 
-    if (loading) {
-        return (
-
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'small'} />
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
 
     return (
         <HeaderFooterLayout
-            headerText="Booths"
+            headerText="Booths List"
             showFooter={true}
             leftIcon={true}
             rightIcon={true}
@@ -138,28 +136,37 @@ const Booths = () => {
                     />
                 </View>
 
-                <View style={styles.listContainer}>
-                    {searchedBooth.length > 0 ? (
-                        <FlatList
-                            data={searchedBooth}
-                            keyExtractor={item => item.booth_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable
-                                    style={styles.voterItem}
-                                    onPress={() => {
-                                        navigation.navigate('Booth Voters', { boothId: item.booth_id });
-                                    }}
-                                >
-                                    <Text style={styles.boothIdText}>{item.booth_id}</Text>
-                                    <Text style={styles.boothNameText}>{item.booth_name}</Text>
-                                </Pressable>
-                            )}
-                        />
+
+                {(loading) ?
+                    (<View style={styles.loadingContainer}>
+                        <ActivityIndicator size={'small'} />
+                        <Text>Loading...</Text>
+                    </View>
                     ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-                </View>
+                        <View style={styles.listContainer}>
+                            {searchedBooth.length > 0 ? (
+                                <FlatList
+                                    data={searchedBooth}
+                                    keyExtractor={item => item.booth_id.toString()}
+                                    showsVerticalScrollIndicator={false}
+                                    renderItem={({ item }) => (
+                                        <Pressable
+                                            style={styles.voterItem}
+                                            onPress={() => {
+                                                navigation.navigate('Booth Voters', { boothId: item.booth_id });
+                                            }}
+                                        >
+                                            <Text style={styles.boothIdText}>{item.booth_id}</Text>
+                                            <Text style={{ flex: 1 }}>{toTitleCase(item.booth_name)}</Text>
+                                        </Pressable>
+                                    )}
+                                />
+                            ) : (
+                                <Text style={styles.noDataText}>No results found</Text>
+                            )}
+                        </View>
+                    )
+                }
 
                 {pdfLoading && (
                     <View style={styles.pdfLoadingOverlay}>
@@ -184,6 +191,7 @@ export default Booths;
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
+        height: height * 0.77,
         backgroundColor: 'white',
     },
     searchContainer: {
@@ -194,7 +202,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
-        marginVertical: 10,
+        marginVertical: 5,
         columnGap: 20,
     },
     searchInput: {
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
     listContainer: {},
     voterItem: {
         flex: 1,
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 15,
         marginVertical: 5,
         flexDirection: 'row',
@@ -221,10 +229,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         borderRadius: 3,
         fontWeight: '700',
-    },
-    boothNameText: {
-        flex: 1,
-        flexWrap: 'wrap',
     },
     noDataText: {
         textAlign: 'center',
@@ -255,6 +259,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     pdfLoadingOverlay: {
+        height: '120%',
         position: 'absolute',
         top: 0,
         left: 0,

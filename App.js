@@ -5,6 +5,7 @@ import StackNavigation from './src/Navigation/StackNavigation';
 import DrawerNavigationComp from './src/Navigation/DrawerNavigationComp'
 import { TownUserProvider } from './src/TownUser/ContextApi/TownUserProvider';
 import { BoothUserProvider } from './src/BoothUser/ContextApi/BuserContext';
+import AdminBottomTabsNav from './src/Navigation/BottomTabsNav';
 
 export default function App() {
   return (

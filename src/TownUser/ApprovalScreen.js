@@ -1,8 +1,9 @@
-import { Alert, Dimensions, StyleSheet, Text, TextInput, View, FlatList, ActivityIndicator } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, TextInput, View, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import TempEditedVoterForm from '../ReusableCompo/TempEditedVoterForm';
 import { Checkbox } from 'react-native-paper';
@@ -11,21 +12,33 @@ const { width, height } = Dimensions.get('screen');
 
 const ApprovalScreen = ({ route }) => {
   const { Buser_id } = route.params;
+
   const [voters, setVoters] = useState([]);
   const [filteredVoters, setFilteredVoters] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [selectedVoter, setSelectedVoter] = useState(null);
   const [isFormVisible, setFormVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   const [casteOptions, setCasteOptions] = useState([]);
-  const [multiSelector, setMultiSelector] = useState(false);
+  const [isMultiSelectOn, setMultiSelectOn] = useState(false);
   const [selectedVoterIds, setSelectedVoterIds] = useState([]);
+  const [isAllChecked, setAllChecked] = useState(false)
   const [message, setMessage] = useState(null)
   const statusOptions = [{ label: 'Alive', value: 1 }, { label: 'Dead', value: 2 }];
   const maritalOptions = [{ label: 'Single', value: 1 }, { label: 'Married', value: 2 }];
 
+
+  useEffect(() => {
+    if (selectedVoterIds.length === filteredVoters.length) {
+      setAllChecked(true)
+    } else {
+      setAllChecked(false)
+    }
+  }, [selectedVoterIds])
+
   const fetchUpdatedVotersToApprove = async () => {
-    setLoading(true);
+    setRefreshing(true);
     try {
       const response = await axios.get(`http://192.168.200.23:8000/api/get_temp_voter_data_town/${Buser_id}/`);
       setVoters(response.data);
@@ -44,7 +57,7 @@ const ApprovalScreen = ({ route }) => {
         Alert.alert('Error', 'An unexpected error occurred. Please try again.');
       }
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -63,14 +76,72 @@ const ApprovalScreen = ({ route }) => {
     setSelectedVoterIds(prevIds => prevIds.includes(voterId) ? prevIds.filter(id => id !== voterId) : [...prevIds, voterId]);
   };
 
-  const handleApproveSelected = () => {
-    setSelectedVoterIds([]);
-    setMultiSelector(false);
+  const handleOnEditVoter = (id) => {
+    const filteredVoterData = voters.filter(voter => voter.temp_voter_data_voter_id !== id);
+
+    setFilteredVoters(filteredVoterData)
+    setVoters(filteredVoterData)
+  }
+
+  const approveSelectedVoters = async () => {
+    try {
+      const response = await axios.put(`http://192.168.200.23:8000/api/multiple_voter_data_approve/`,
+        {
+          "temp_voter_data_voter_ids": selectedVoterIds
+        }
+      )
+
+      if (response.status === 200) {
+        let filteredVoterData = filteredVoters;
+        selectedVoterIds.forEach(id => {
+          filteredVoterData = filteredVoterData.filter(voter => voter.temp_voter_data_voter_id !== id);
+        });
+        setFilteredVoters(filteredVoterData)
+
+        let voterData = voters;
+        selectedVoterIds.forEach(id => {
+          voterData = voterData.filter(voter => voter.temp_voter_data_voter_id !== id);
+        });
+
+        setVoters(voterData)
+      }
+    } catch (error) {
+      console.error(error, "Failed to Approve voters.. Try again!!!");
+    } finally {
+      setSearchText('')
+      setSelectedVoterIds([]);
+      setMultiSelectOn(false);
+    }
   };
 
-  const handleRejectSelected = () => {
-    setSelectedVoterIds([]);
-    setMultiSelector(false);
+  const rejectSelectedVoters = async () => {
+    try {
+      const response = await axios.put(`http://192.168.200.23:8000/api/reject_multiple_temp_voter_data/`,
+        {
+          "temp_voter_data_voter_ids": selectedVoterIds
+        }
+      )
+
+      if (response.status === 200) {
+        let filteredVoterData = filteredVoters;
+        selectedVoterIds.forEach(id => {
+          filteredVoterData = filteredVoterData.filter(voter => voter.temp_voter_data_voter_id !== id);
+        });
+        setFilteredVoters(filteredVoterData)
+
+        let voterData = voters;
+        selectedVoterIds.forEach(id => {
+          voterData = voterData.filter(voter => voter.temp_voter_data_voter_id !== id);
+        });
+        setVoters(voterData)
+      }
+    } catch (error) {
+      console.error(error, "Failed to Approve voters.. Try again!!!");
+    } finally {
+      setSearchText('')
+      setSelectedVoterIds([]);
+      setMultiSelectOn(false);
+    }
   };
 
   const fetchCasteData = async () => {
@@ -87,6 +158,42 @@ const ApprovalScreen = ({ route }) => {
     }
   };
 
+
+  const handleCancleAll = () => {
+    setSelectedVoterIds([]);
+    setAllChecked(false);
+    setMultiSelectOn(false);
+  };
+
+  const handleSelectAll = () => {
+    if (isAllChecked) {
+      setSelectedVoterIds([])
+    } else {
+      const allVoterIds = filteredVoters.map(voter => voter.temp_voter_data_voter_id)
+      setSelectedVoterIds(allVoterIds)
+    }
+    setAllChecked(!isAllChecked)
+  }
+
+  const handleRejectVoter = async (id) => {
+    try {
+      const response = await axios.put(`http://192.168.200.23:8000/api/update_reject_status/${id}/`)
+      console.log(response);
+
+      if (response.status === 200) {
+        const filteredVoterData = filteredVoters.filter(voter => voter.temp_voter_data_voter_id !== id);
+        setFilteredVoters(filteredVoterData)
+
+        const voterData = voters.filter(voter => voter.temp_voter_data_voter_id !== id);
+        setVoters(voterData)
+      }
+    } catch (error) {
+      console.error(error, 'failed to reject voter ');
+    } finally {
+      setSearchText('')
+    }
+  }
+
   const getCastName = (castId) => casteOptions.find(option => option.value === castId)?.label || 'Unknown Cast';
   const getMaritalStatus = (statusId) => maritalOptions.find(option => option.value === statusId)?.label || 'Unknown Status';
   const getCurrentStatus = (statusId) => statusOptions.find(option => option.value === statusId)?.label || 'Unknown Status';
@@ -102,15 +209,24 @@ const ApprovalScreen = ({ route }) => {
     fetchUpdatedVotersToApprove();
   }, []);
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchCasteData();
+    fetchUpdatedVotersToApprove();
+    setRefreshing(false);
+  };
 
   const renderVoterItem = ({ item }) => {
     const isSelected = selectedVoterIds.includes(item.temp_voter_data_voter_id);
-
     return (
-      <TouchableOpacity style={styles.voterItem}
-        onPress={() => handleVoterSelection(item.temp_voter_data_voter_id)}
+      <TouchableOpacity style={[styles.voterItem, { backgroundColor: isSelected ? '#f1f5eb' : 'white' }]}
+        onPress={() => {
+          if (isMultiSelectOn) {
+            handleVoterSelection(item.temp_voter_data_voter_id)
+          }
+        }}
         onLongPress={() => {
-          setMultiSelector(true)
+          setMultiSelectOn(true)
           handleVoterSelection(item.temp_voter_data_voter_id)
         }}
       >
@@ -125,16 +241,21 @@ const ApprovalScreen = ({ route }) => {
           {item.temp_voter_data_voter_gender && <Text>Gender: {item.temp_voter_data_voter_gender}</Text>}
           {item.temp_voter_data_voter_age && <Text>Age: {item.temp_voter_data_voter_age}</Text>}
         </View>
-        {multiSelector ? (
+        {isMultiSelectOn ? (
           <Checkbox
             status={isSelected ? 'checked' : 'unchecked'}
-            color='black'
+            color='green'
             onPress={() => handleVoterSelection(item.temp_voter_data_voter_id)}
           />
         ) : (
-          <TouchableOpacity onPress={() => fetchUpdatedVoterDetails(item.temp_voter_data_voter_id)}>
-            <Feather name="edit" size={24} color="black" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+            <TouchableOpacity onPress={() => handleRejectVoter(item.temp_voter_data_voter_id)}>
+              <Ionicons name="close-sharp" size={28} color="red" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => fetchUpdatedVoterDetails(item.temp_voter_data_voter_id)}>
+              <Feather name="edit" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
         )}
       </TouchableOpacity>
     );
@@ -148,41 +269,54 @@ const ApprovalScreen = ({ route }) => {
         placeholder='Search voter here...'
         style={styles.searchInput}
       />
-      {loading ? (
+      {refreshing ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size={'small'} color={'black'} />
           <Text>Loading...</Text>
         </View>
       ) : (
         <>
-          <Text style={{ textAlign: 'center', padding: 10, color: 'grey' }}>{message}</Text>
+          {message && <Text style={{ textAlign: 'center', padding: 10, color: 'grey' }}>{message}</Text>}
+          {isMultiSelectOn &&
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15, paddingVertical: 10 }}>
+              <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleCancleAll}>
+                <MaterialCommunityIcons name="playlist-remove" size={30} color="black" />
+              </TouchableOpacity>
+              <Checkbox
+                status={isAllChecked ? 'checked' : 'unchecked'}
+                color='green'
+                onPress={handleSelectAll}
+              />
+            </View>
+          }
+
           <FlatList
             data={filteredVoters}
             renderItem={renderVoterItem}
             keyExtractor={item => item.voter_id?.toString() || Math.random().toString()}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
           />
         </>
       )}
-
 
       <TempEditedVoterForm
         isVisible={isFormVisible}
         onClose={() => setFormVisible(false)}
         selectedVoter={selectedVoter}
-        onEditVoter={(id) => {
-          const filteredVoterData = voters.filter(voter => voter.temp_voter_data_voter_id !== id);
-          setFilteredVoters(filteredVoterData)
-          setVoters(filteredVoterData)
-        }}
+        onEditVoter={handleOnEditVoter}
       />
 
-
-      {multiSelector && (
+      {isMultiSelectOn && (
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.rejectButton} onPress={handleRejectSelected}>
+          <TouchableOpacity style={styles.rejectButton} onPress={rejectSelectedVoters}>
             <Ionicons name="close-sharp" size={30} color="red" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.approveButton} onPress={handleApproveSelected}>
+          <TouchableOpacity style={styles.approveButton} onPress={approveSelectedVoters}>
             <Ionicons name="checkmark-done-sharp" size={30} color="green" />
           </TouchableOpacity>
         </View>

@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Dimensions, ActivityIndicator, Animated, TouchableOpacity } from 'react-native';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
 import axios from 'axios';
+import withSidebar from './Withsidebar';
+import HeaderFooterLayout from './HeaderFooterLayout';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BoothUserContext } from './ContextApi/BuserContext';
 
@@ -10,19 +13,24 @@ const { width, height } = Dimensions.get('window');
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
 
-export default Dashboard = ({ navigation, toggleSidebar }) => {
+function Newdashuser({ navigation, toggleSidebar }) {
   const [voterCounts, setVoterCounts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { buserId } = useContext(BoothUserContext);
+  const [totalVoted, setTotalVoted] = useState('000');
+  const [totalNVoted, setNTotalVoted] = useState('000');
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const fetchVoterData = async () => {
     try {
       setLoading(true);
       const response = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${buserId}/`);
+      // console.log(response)
       const voters = response.data.voters || [];
+      // console.log(voters)
       const totalVoters = voters.length;
+      // console.log(totalVoters)
       const ours = voters.filter(voter => voter.voter_favour_id === 1).length;
       const against = voters.filter(voter => voter.voter_favour_id === 2).length;
       const doubted = voters.filter(voter => voter.voter_favour_id === 3).length;
@@ -35,12 +43,24 @@ export default Dashboard = ({ navigation, toggleSidebar }) => {
         doubted: doubted,
         pending: pending,
       });
+
+      const voteCountResponse = await axios.get(
+        `http://192.168.200.23:8000/api/get_voted_and_non_voted_count_by_booth_user/${buserId}/`
+      );
+      console.log(voteCountResponse)
+
+
+      setTotalVoted(voteCountResponse.data.voted_count.toString());
+      setNTotalVoted(voteCountResponse.data.non_voted_count.toString());
+
     } catch (error) {
       setError('Failed to fetch data');
     } finally {
       setLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     if (buserId) {
@@ -69,44 +89,67 @@ export default Dashboard = ({ navigation, toggleSidebar }) => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.infoContainer}>
-          <Text style={styles.constituencyText}>Washim Constituency</Text>
-          <Text style={styles.userIdText}>User Id: {buserId}</Text>
+      <HeaderFooterLayout
+        headerText="Dashboard"
+        leftIcon={<MaterialIcons name="menu" size={scaleFontSize(28)} color="black" />}
+        leftIconAction={toggleSidebar}
+        rightIcon={<FontAwesome name="refresh" size={scaleFontSize(28)} color="black" />}
+        rightIconAction={fetchVoterData}
+      >
+        <View style={styles.container}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.constituencyText}>Washim Constituency</Text>
+            <Text style={styles.userIdText}>User Id: {buserId}</Text>
+          </View>
+          <View style={styles.loadingGraphsContainer}>
+            <Animated.View style={[styles.graphWrapper, { transform: [{ rotate }] }]}>
+              <Progress.Circle
+                size={width * 0.22}
+                indeterminate
+                thickness={15}
+                color="gray"
+                unfilledColor="#e0e0e0"
+                borderWidth={0}
+              />
+            </Animated.View>
+          </View>
         </View>
-        <View style={styles.loadingGraphsContainer}>
-          <Animated.View style={[styles.graphWrapper, { transform: [{ rotate }] }]}>
-            <Progress.Circle
-              size={width * 0.22}
-              indeterminate
-              thickness={15}
-              color="gray"
-              unfilledColor="#e0e0e0"
-              borderWidth={0}
-            />
-          </Animated.View>
-        </View>
-      </View>
+      </HeaderFooterLayout>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={fetchVoterData}>
-          <Text style={styles.retryText}>Retry</Text>
-        </TouchableOpacity>
-      </View>
+      <HeaderFooterLayout
+        headerText="Dashboard"
+        leftIcon={<MaterialIcons name="menu" size={scaleFontSize(28)} color="black" />}
+        leftIconAction={toggleSidebar}
+        rightIcon={<FontAwesome name="refresh" size={scaleFontSize(28)} color="black" />}
+        rightIconAction={fetchVoterData}
+      >
+        <View style={styles.container}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={fetchVoterData}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </HeaderFooterLayout>
     );
   }
 
+
   return (
-    <>
-      <View style={styles.infoContainer}>
+    <HeaderFooterLayout
+      headerText="Dashboard"
+      leftIcon={<MaterialIcons name="menu" size={scaleFontSize(28)} color="black" />}
+      leftIconAction={toggleSidebar}
+      rightIcon={<FontAwesome name="refresh" size={scaleFontSize(28)} color="black" />}
+      rightIconAction={fetchVoterData}
+    >
+      {/* <View style={styles.infoContainer}>
         <Text style={styles.constituencyText}>Washim Constituency</Text>
         <Text style={styles.userIdText}>User Id: {buserId}</Text>
-      </View>
+      </View> */}
 
       <View style={styles.totalVotersContainer}>
         <LinearGradient
@@ -114,10 +157,27 @@ export default Dashboard = ({ navigation, toggleSidebar }) => {
           locations={[0.3, 1]}
           style={styles.gradient}
         >
-          <Text style={styles.gradientText}>Total Voters Count</Text>
+          <Text style={styles.gradientText}>Total Voters</Text>
           <Text style={styles.gradientText}>{voterCounts.total}</Text>
         </LinearGradient>
       </View>
+
+
+
+      <View style={styles.statsRow}>
+        <Pressable style={[styles.statsBox, styles.statsBoxYellow]}
+          onPress={() => navigation.navigate('BoothVotedList', { buserId })}>
+          <Text style={styles.statsLabel}>Total Voted</Text>
+          <Text style={styles.statsValue}>{totalVoted}</Text>
+        </Pressable>
+
+        <Pressable style={[styles.statsBox, styles.statsBoxCyan]}
+          onPress={() => navigation.navigate('BoothNVoted', { buserId })}>
+          <Text style={styles.statsLabel}>Total Non-Voted</Text>
+          <Text style={styles.statsValue}>{totalNVoted}</Text>
+        </Pressable>
+      </View>
+
 
       <Text style={styles.overviewText}>Overview</Text>
 
@@ -183,7 +243,7 @@ export default Dashboard = ({ navigation, toggleSidebar }) => {
           </View>
         </View>
       </View>
-    </>
+    </HeaderFooterLayout>
   );
 }
 
@@ -218,8 +278,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '100%',
     padding: 20,
-    backgroundColor: 'white'
-
   },
   gradient: {
     borderRadius: 8,
@@ -241,13 +299,10 @@ const styles = StyleSheet.create({
     marginLeft: width * 0.05,
     marginBottom: height * 0.02,
     marginTop: height * 0.03,
-    backgroundColor: 'white'
-
   },
   graphsContainer: {
     flex: 1,
     marginBottom: height * 0.1,
-    backgroundColor: 'white'
   },
   row: {
     flexDirection: 'row',
@@ -313,6 +368,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: height * 0.08,
+    marginVertical: "1.8%",
+    marginHorizontal: '5%',
+    columnGap: 15
+  },
+  statsBox: {
+    flex: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3
+  },
+  statsBoxBlue: {
+    backgroundColor: '#DAE3FF',
+  },
+  statsBoxGreen: {
+    backgroundColor: '#D3FFDB',
+  },
+  statsBoxYellow: {
+    backgroundColor: '#FFEFB2',
+  },
+  statsBoxCyan: {
+    backgroundColor: '#B8F7FE',
+  },
+  statsLabel: {
+    fontSize: width * 0.03,
+    fontWeight: '500',
+  },
+  statsValue: {
+    fontSize: width * 0.05,
+    fontWeight: '700',
+  },
 });
 
-
+export default withSidebar(Newdashuser);

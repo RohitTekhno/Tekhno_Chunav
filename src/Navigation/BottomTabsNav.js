@@ -3,13 +3,12 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import Dashboard from '../Dashboard/Dashboard';
-import UsersList from '../Users/UsersList';
-import Towns from '../Towns/Towns';
-import Profile from '../Profile/Profile';
-import Booths from '../Booth/Booths';
 import { useNavigation } from '@react-navigation/native';
-import ProfileButton from '../Profile/ProfileButton';
+import Dashboard from '../Admin/Dashboard/Dashboard';
+import ProfileButton from '../Admin/Profile/ProfileButton';
+import Towns from '../Admin/Towns/Towns';
+import Booths from '../Admin/Booth/Booths';
+import Profile from '../Admin/Profile/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,20 +40,6 @@ const AdminBottomTabsNav = () => {
                 }}
             />
 
-            <Tab.Screen name='User List' component={UsersList}
-                options={{
-                    tabBarLabel: 'User List',
-                    headerShown: true,
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialIcons name="list" size={24} color="black" />
-                    ),
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 20 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    )
-                }}
-            />
             <Tab.Screen name='Towns' component={Towns}
                 options={{
                     tabBarLabel: 'Towns',

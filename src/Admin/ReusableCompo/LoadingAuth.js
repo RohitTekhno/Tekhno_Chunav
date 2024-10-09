@@ -6,6 +6,7 @@ import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
 const LoadingAuth = () => {
     const [loading, setLoading] = useState(true);
     const { isAuthenticated } = useContext(AuthenticationContext)
+    console.log(isAuthenticated);
 
     const navigation = useNavigation();
     useEffect(() => {

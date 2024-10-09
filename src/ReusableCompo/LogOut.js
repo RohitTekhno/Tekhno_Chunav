@@ -92,13 +92,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     gradient: {
-        flex: 0.45,
+        flex: 0.5,
         justifyContent: 'space-between',
         alignItems: 'center',
     },
     contentContainer: {
         width: '100%',
-        height: height * 0.325,
+        height: height * 0.3,
         alignItems: 'center',
         marginTop: topMargin,
     },
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     image: {
         width: width * 0.35,
         height: width * 0.35,
-        marginVertical: 20,
+        marginTop: 20,
     },
     bottomView: {
         width: '100%',

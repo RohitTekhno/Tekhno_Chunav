@@ -11,6 +11,7 @@ import BoothUserLogin from '../ReusableCompo/Logins/BoothUserLogin';
 import AdminLogin from '../ReusableCompo/Logins/AdminLogin';
 import { BoothUserContext } from '../BoothUser/ContextApi/BuserContext';
 import BoothUserMainStack from './BoothUserMainStack';
+import TownBottomTabNav from './TownBottomTabNav';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +29,8 @@ const StackNavigation = () => {
             {isAuthenticated ? (
                 <Stack.Screen name="Admin" component={AdminMainStack} />
             ) : isTuserAuthenticated ? (
-                <Stack.Screen name="TownUser" component={TownUserMainStack} />
+                // <Stack.Screen name="TownUser" component={TownUserMainStack} />
+                <Stack.Screen name="TownUser" component={TownBottomTabNav} />
             ) : isBuserAuthenticated ? (
                 <Stack.Screen name="BoothUser" component={BoothUserMainStack} />
             ) : (

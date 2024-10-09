@@ -4,7 +4,7 @@ import axios from 'axios';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import { ActivityIndicator } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import EditVoterForm from '../../ReusableCompo/EditVoterForm';
+import EditVoterForm from './EditVoterForm';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -91,7 +91,7 @@ const Totalvoters = () => {
             }
             return voter;
         });
-
+0
         setFilteredVoters(updatedFilteredVoters);
     }
 
@@ -130,11 +130,13 @@ const Totalvoters = () => {
         let backgroundColor = 'white';
 
         if (item.voter_favour_id === 1) {
-            backgroundColor = '#d3f5d3';
+            backgroundColor = '#d3f5d3';//red
         } else if (item.voter_favour_id === 2) {
             backgroundColor = '#f5d3d3';
         } else if (item.voter_favour_id === 3) {
             backgroundColor = '#f5f2d3';
+        } else if (item.voter_favour_id === 4) {
+            backgroundColor = '#c9daff';
         }
 
         return (
@@ -172,7 +174,6 @@ const Totalvoters = () => {
                         onChangeText={handleSearch}
                     />
 
-
                     <View style={styles.voterCountContainer}>
                         <Text style={styles.updatedVotersText}>Updated Voters: {updatedVoters}</Text>
                         <Text style={styles.remainingVotersText}>Remaining Voters: {remainingVoters}</Text>
@@ -180,10 +181,9 @@ const Totalvoters = () => {
                 </LinearGradient>
 
                 {(loading) ? (
-
                     < View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'small'} />
-                        <Text>Loading...</Text>
+                        <Text style={{ color: 'black' }}>Loading...</Text>
+                        <ActivityIndicator size={'small'} color='#3C4CAC' />
                     </View>
                 ) : (
                     <>

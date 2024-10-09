@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import EditVoterForm from '../ReusableCompo/EditVoterForm'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -13,10 +13,9 @@ const UpdateVoter = () => {
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [searchText, setSearchText] = useState('');
-    const [loading, setLoading] = useState(false);
     const [selectedVoter, setSelectedVoter] = useState(null);
-    const [initialVoters, setInitialVoters] = useState([]);
     const [isFormVisible, setFormVisible] = useState(false)
+    const [refreshing, setRefreshing] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
         axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
@@ -31,13 +30,13 @@ const UpdateVoter = () => {
 
 
     const handleSearch = (text) => {
-        setLoading(true);
+        setRefreshing(true);
         setSearchText(text);
         const filtered = voters.filter(voter =>
             voter.voter_id.toString().includes(text) || voter.voter_name.toLowerCase().includes(text.toLowerCase())
         );
         setFilteredVoters(filtered);
-        setLoading(false);
+        setRefreshing(false);
     };
 
 
@@ -55,9 +54,9 @@ const UpdateVoter = () => {
     const handleSelectedVoterDetails = (newDetails) => {
         const updatedFilteredVoters = filteredVoters.map(voter => {
             if (voter.voter_id.toString() === newDetails.voter_id.toString()) {
-                return { ...voter, ...newDetails }; 
+                return { ...voter, ...newDetails };
             }
-            return voter; 
+            return voter;
         });
 
         setFilteredVoters(updatedFilteredVoters);
@@ -71,21 +70,31 @@ const UpdateVoter = () => {
             .join(' ');
     };
 
-    useEffect(() => {
-        setLoading(true);
+    const fetchUpdatedVoters = async () => {
+        setRefreshing(true);
         axios.get('http://192.168.200.23:8000/api/total_voters/')
             .then(response => {
                 const votersData = response.data;
                 setVoters(votersData);
-                // setFilteredVoters(votersData);
-                // setInitialVoters(votersData);
-                setLoading(false);
+                setFilteredVoters(votersData);
+                setRefreshing(false);
             })
             .catch(error => {
                 console.error('Error fetching voters data:', error);
-                setLoading(false);
+                setRefreshing(false);
             });
+    }
+
+
+    useEffect(() => {
+        fetchUpdatedVoters()
     }, []);
+
+    const handleRefresh = () => {
+        setRefreshing(true);
+        fetchUpdatedVoters();
+        setRefreshing(false);
+    };
 
     const renderItem = ({ item }) => {
         let backgroundColor = 'white';
@@ -124,8 +133,7 @@ const UpdateVoter = () => {
                 onChangeText={handleSearch}
             />
 
-            {(loading) ? (
-
+            {(refreshing) ? (
                 < View style={styles.loadingContainer}>
                     <ActivityIndicator size={'small'} color={'black'} />
                     <Text>wait a minute...</Text>
@@ -137,7 +145,13 @@ const UpdateVoter = () => {
                         keyExtractor={item => item.voter_id.toString()}
                         renderItem={renderItem}
                         contentContainerStyle={styles.flatListContent}
-                        extraData={filteredVoters} // This helps in ensuring re-render
+                        extraData={filteredVoters}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                            />
+                        }
                     />
 
                     <EditVoterForm
@@ -157,7 +171,7 @@ export default UpdateVoter
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
         backgroundColor: 'white',
     },
     gradient: {
@@ -167,9 +181,7 @@ const styles = StyleSheet.create({
     },
     loadingContainer: {
         flex: 1,
-        // justifyContent: 'center',
         alignItems: 'center',
-        marginTop: height * 0.05
     },
     searchBar: {
         width: "100%",

@@ -30,6 +30,8 @@ const TempEditedVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter })
     const [casteOptions, setCasteOptions] = useState([]);
     const statusOptions = [{ label: 'Alive', value: 1 }, { label: 'Dead', value: 2 }];
     const maritalOptions = [{ label: 'Single', value: 1 }, { label: 'Married', value: 2 }];
+
+
     const genderOptions = [
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' },
@@ -74,6 +76,7 @@ const TempEditedVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter })
         fetchCasteData();
     }, [selectedVoter]);
 
+    
     const handleCloseEditForm = () => {
         resetFields()
         onClose()

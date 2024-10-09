@@ -89,7 +89,7 @@ const CastWiseVoters = () => {
     );
 
     return (
-        <CustomTUserBottomTabs showFooter={true}>
+        <CustomTUserBottomTabs showFooter={false}>
             < View style={styles.container} >
                 <DropDownPicker
                     open={open}
@@ -105,31 +105,29 @@ const CastWiseVoters = () => {
                 {loading ?
                     (
                         <View style={styles.loadingContainer}>
-                            <ActivityIndicator size={'large'} color={'black'} />
+                            <ActivityIndicator size={'small'} color={'black'} />
                             <Text>Loading...</Text>
                         </View>
                     ) :
                     <>
                         {selectedCast ?
                             <>
-                                {voters && voters.length > 0 ? (
-                                    <View style={styles.selectedCastContainer}>
-                                        <FlatList
-                                            data={voters}
-                                            keyExtractor={(item) => item.voter_id.toString()}
-                                            renderItem={renderVoterItem}
-                                            contentContainerStyle={styles.voterList}
-                                        />
-                                        <VoterDetailsPopUp
-                                            isModalVisible={isModalVisible}
-                                            selectedVoter={selectedVoter}
-                                            setIsModalVisible={setIsModalVisible}
-                                        />
-                                    </View>) :
-                                    (<Text style={{ alignItems: 'center', textAlign: 'center' }}>No Data Found..</Text>)
-                                }
+                                <View style={styles.selectedCastContainer}>
+                                    <FlatList
+                                        data={voters}
+                                        keyExtractor={(item) => item.voter_id.toString()}
+                                        renderItem={renderVoterItem}
+                                        contentContainerStyle={styles.voterList}
+                                        ListEmptyComponent={<Text style={{ alignItems: 'center', textAlign: 'center' }}>No Data Found..</Text>}
+                                    />
+                                    <VoterDetailsPopUp
+                                        isModalVisible={isModalVisible}
+                                        selectedVoter={selectedVoter}
+                                        setIsModalVisible={setIsModalVisible}
+                                    />
+                                </View>
                             </> :
-                            <Text style={{ textAlign: 'center' }}>No selected Cast</Text>
+                            <Text style={{ textAlign: 'center', fontSize: 16 }}>No selected Cast</Text>
                         }
                     </>
                 }
@@ -144,8 +142,8 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
         marginVertical: 10,
-        height: height * 0.8,
-        backgroundColor: 'white',
+        height: height * 0.774,
+        // backgroundColor: 'red',
     },
     picker: {
         width: '100%',
@@ -171,7 +169,7 @@ const styles = StyleSheet.create({
     },
     voterText: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 15,
     },
     loadingContainer: {
         flex: 1,

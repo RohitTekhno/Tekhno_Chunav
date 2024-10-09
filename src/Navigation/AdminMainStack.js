@@ -23,6 +23,9 @@ import ReligionCasteList from '../Admin/Filter/ReligionCasteList'
 import TBVotersPDF from '../Admin/Voters/TBVotersPdf'
 import axios from 'axios'
 import TownVoters from '../Admin/Towns/TownVoters'
+import GenderWise from '../Admin/Filter/GenderWise'
+import BoothAscending from '../Admin/Filter/BoothAscending'
+import TownAscending from '../Admin/Filter/TownAscending'
 
 
 
@@ -37,39 +40,89 @@ const AdminMainStack = () => {
             <Stack.Screen name="Dashboard" component={Dashboard}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={30} color="black"
+                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                     headerRight: () => (<ProfileButton />)
                 }}
             />
 
+            <Stack.Screen name='Voters' component={TBVotersPDF}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false, headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='GenderWise' component={GenderWise}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
+                            onPress={() => navigation.toggleDrawer()} />
+                    ),
+                }}
+            />
+
+
+            <Stack.Screen name='BoothAscending' component={BoothAscending} options={{
+                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                headerLeft: () => (
+                    <MaterialIcons name="menu" size={width * 0.05} color="black"
+                        //style={{ marginLeft: 10 }}
+                        onPress={() => navigation.toggleDrawer()} />
+                ),
+            }}
+            />
+
+
+            <Stack.Screen name='TownAscending' component={TownAscending}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
+                            onPress={() => navigation.toggleDrawer()} />
+                    ),
+                }}
+            />
+
             <Stack.Screen name='Total Voters' component={Totalvoters}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 }}
             />
 
             <Stack.Screen name='Towns Users' component={TownUsers} options={{
-                headerShown: false, headerTitleAlign: 'center',
+                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                 headerLeft: () => (
-                    <MaterialIcons name="menu" size={24} color="black"
-                        style={{ marginLeft: 10 }}
+                    <MaterialIcons name="menu" size={width * 0.05} color="black"
+                        //style={{ marginLeft: 10 }}
                         onPress={() => navigation.toggleDrawer()} />
                 ),
             }} />
             <Stack.Screen name='Booth Users' component={BoothUsers} options={{
-                headerShown: false, headerTitleAlign: 'center',
+                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                 headerLeft: () => (
-                    <MaterialIcons name="menu" size={24} color="black"
-                        style={{ marginLeft: 10 }}
+                    <MaterialIcons name="menu" size={width * 0.05} color="black"
+                        //style={{ marginLeft: 10 }}
                         onPress={() => navigation.toggleDrawer()} />
                 ),
             }} />
@@ -89,11 +142,11 @@ const AdminMainStack = () => {
             <Stack.Screen name='Town Voters' component={TownVoters}
                 options={({ route }) => ({
                     headerShown: false,
-                    headerTitleAlign: 'center',
+                    headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitle: route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters',
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 })}
@@ -101,7 +154,7 @@ const AdminMainStack = () => {
 
             <Stack.Screen name='Booths' component={Booths}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitleStyle: {
                         fontSize: height * 0.02,
                     },
@@ -116,11 +169,11 @@ const AdminMainStack = () => {
             <Stack.Screen name='Booth Voters' component={BoothVoters}
                 options={({ route }) => ({
                     headerShown: false,
-                    headerTitleAlign: 'center',
+                    headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitle: route.params.boothId ? `Voters in Booth : ${route.params.boothId}  ` : 'Booth Voters',
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 })}
@@ -128,20 +181,20 @@ const AdminMainStack = () => {
 
             <Stack.Screen name='Updated Voters' component={BoothUser_ActivityLog}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 }}
             />
             <Stack.Screen name='Age Wise Voters' component={AgewiseVoters}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={24} color="black"
-                            style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={width * 0.05} color="black"
+                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 }}
@@ -149,11 +202,11 @@ const AdminMainStack = () => {
 
             <Stack.Screen name='Voted' component={Voted}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerShadowVisible: false, headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
+                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
                         </Pressable>
                     ),
                 }}
@@ -161,14 +214,14 @@ const AdminMainStack = () => {
 
             <Stack.Screen name='Nvoted' component={Nvoted}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitleStyle: {
                         fontSize: 22
                     },
                     headerShadowVisible: false, headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
+                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
                         </Pressable>
                     ),
                 }}
@@ -176,33 +229,20 @@ const AdminMainStack = () => {
 
             <Stack.Screen name='Castwise' component={ReligionCasteList}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitleStyle: {
                         fontSize: 22
                     },
                     headerShadowVisible: false, headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
+                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
                         </Pressable>
                     ),
                 }}
             />
 
-            <Stack.Screen name='Voters' component={TBVotersPDF}
-                options={{
-                    headerShown: false, headerTitleAlign: 'center',
-                    headerTitleStyle: {
-                        fontSize: 22
-                    },
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
-                    ),
-                }}
-            />
+
 
             <Stack.Screen name='Registration' component={TownUserReg} options={{ headerShown: false }} />
             <Stack.Screen name='Profile' component={Profile} options={{ headerShown: false }} />

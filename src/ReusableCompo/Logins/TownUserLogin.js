@@ -13,7 +13,7 @@ const { height, width } = Dimensions.get('screen');
 const TownUserLogin = () => {
     const { setUserName, setUserId, login } = useContext(TownUserContext);
 
-    const [username, setUsername] = useState("Tuser");
+    const [username, setUsername] = useState("9632587410");
     const [password, setPassword] = useState("123@Pass");
     const [isTextSecure, setTextSecure] = useState(true);
     const [isLoading, setLoading] = useState(false);
@@ -57,7 +57,7 @@ const TownUserLogin = () => {
             try {
                 Vibration.vibrate(100);
                 const response = await axios.post('http://192.168.200.23:8000/api/town_user_login/', {
-                    town_user_name: username,
+                    town_user_contact_number: username,
                     town_user_password: password,
                 });
 

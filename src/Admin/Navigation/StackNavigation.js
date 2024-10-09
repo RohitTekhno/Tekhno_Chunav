@@ -33,6 +33,9 @@ import Nvoted from '../Voters/Nvoted';
 import DropdownSelector from '../Voters/DropdownSelector';
 import VoterListSection from '../Voters/VoterListSection';
 import ReligionCasteList from '../Filter/ReligionCasteList';
+import BoothAscending from '../Filter/BoothAscending';
+import TownAscending from '../Filter/TownAscending';
+import GenderWise from '../Filter/GenderWise';
 
 
 const Stack = createNativeStackNavigator();
@@ -110,6 +113,20 @@ const StackNavigation = () => {
                     }} />
 
 
+                    <Stack.Screen name='BoothAscending' component={BoothAscending} options={{
+                    }} />
+
+
+                    <Stack.Screen name='TownAscending' component={TownAscending} options={{
+                    }} />
+
+
+                    <Stack.Screen name='GenderWise' component={GenderWise} options={{
+                    }} />
+                    
+
+
+
                     <Stack.Screen name='VotingBarStats' component={VotingBarStats} options={{
                         headerShown: true, headerTitleAlign: 'center',
                         headerLeft: () => (
@@ -117,7 +134,8 @@ const StackNavigation = () => {
                                 style={{ marginLeft: 10 }}
                                 onPress={() => navigation.toggleDrawer()} />
                         ),
-                    }} />
+                }} />
+                
                     <Stack.Screen name='Towns Users' component={TownUsers} options={{
                        
                     }} />

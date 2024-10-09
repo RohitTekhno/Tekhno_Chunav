@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import ColorLegendModal from '../../../ReusableCompo/ColorLegendModal';
+import ColorLegendModal from './ColorLegendModal';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as FileSystem from 'expo-file-system';
@@ -12,12 +12,10 @@ import * as Sharing from 'expo-sharing';
 const { height, width } = Dimensions.get('screen');
 
 const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
-
     const [name, setName] = useState('');
     const [parentName, setParentName] = useState('');
     const [contact, setContact] = useState(null);
     const [voterFavourType, setVoterFavourType] = useState(null)
-
     const [caste, setCaste] = useState(null);
     const [currentStatus, setCurrentStatus] = useState(null);
     const [maritalStatus, setMaritalStatus] = useState(null);
@@ -27,11 +25,11 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
     const [casteOptions, setCasteOptions] = useState([]);
     const [townName, setTownName] = useState(null);
     const [boothName, setBoothName] = useState(null);
+
     const [openCaste, setOpenCaste] = useState(false);
     const [openCurrentStatus, setOpenCurrentStatus] = useState(false);
     const [openMaritalStatus, setOpenMaritalStatus] = useState(false);
     const [openGender, setOpenGender] = useState(false);
-    const [openUpdate, setUpdate] = useState(false)
 
     const [color, setColor] = useState('black');
     const [modalVisible, setModalVisible] = useState(false);
@@ -44,7 +42,10 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
         { label: 'Other', value: 'other' },
     ];
 
+
     const handleSelectedVoterType = (item) => {
+        console.log(item);
+
         setVoterFavourType(item.id);
         setTypeColor(item.id)
 
@@ -60,8 +61,8 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
         if (voterId && item.id) {
             sendCheckboxStateToAPI(voterId, item.id)
         }
-
     };
+
 
     const setTypeColor = (id) => {
         let selectedColor = 'black';
@@ -75,6 +76,9 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                 break;
             case 3:
                 selectedColor = '#FBBE17';
+                break;
+            case 4:
+                selectedColor = '#0284f5';//blue
                 break;
         }
         setColor(selectedColor);
@@ -149,7 +153,6 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
     const handleCloseEditForm = () => {
         resetFields()
         onClose()
-
     }
 
     const handlePdfIconClick = async (voterId) => {
@@ -188,12 +191,12 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
     };
 
     const handleSubmit = async () => {
+        setLoading(true);
         const editedVoter = {
             "voter_id": selectedVoter.voter_id,
             "voter_name": name,
             "voter_favour_id": voterFavourType,
         }
-        setLoading(true);
 
         try {
             const apiUrl = `http://192.168.200.23:8000/api/voters/${selectedVoter.voter_id}/`;
@@ -208,7 +211,6 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                 voter_marital_status_id: maritalStatus,
                 voter_favour_id: voterFavourType,
             });
-
 
             Alert.alert("Success", "Voter details updated successfully.");
         } catch (error) {
@@ -250,7 +252,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                             <TouchableOpacity onPress={() => handlePdfIconClick(selectedVoter.voter_id)}>
                                 <FontAwesome name="file-pdf-o" size={22} color="#db2b1f" style={styles.pdfIcon} />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <TouchableOpacity onPress={() => { setModalVisible(true) }}>
                                 <Ionicons name="radio-button-on" size={24} color={color} />
                             </TouchableOpacity>
                         </View>
@@ -350,7 +352,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                             <Text style={{ color: '#E54394', textAlign: 'center', paddingVertical: 10, fontSize: 17, fontWeight: '600' }}>Cancel</Text>
                         </Pressable>
                         <Pressable onPress={handleSubmit} style={styles.submitButton}>
-                            <Text style={{ color: 'white', textAlign: 'center', paddingVertical: 10, }}>
+                            <Text style={{ color: 'white', textAlign: 'center', paddingVertical: 10, fontSize: 17, fontWeight: '600' }}>
                                 {loading ? 'Submitting...' : 'Submit'}
                             </Text>
                         </Pressable>

@@ -70,37 +70,37 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Age:</Text>
-                                <Text style={styles.value}>{selectedVoter.voter_age}</Text>
+                                <Text style={styles.value}>{selectedVoter.voter_age || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Gender:</Text>
-                                <Text style={styles.value}>{selectedVoter.voter_gender}</Text>
+                                <Text style={styles.value}>{selectedVoter.voter_gender || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Town:</Text>
-                                <Text style={styles.value}>{selectedVoter.town_name}</Text>
+                                <Text style={styles.value}>{selectedVoter.town_name || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Booth:</Text>
-                                <Text style={styles.value}>{selectedVoter.booth_name}</Text>
+                                <Text style={styles.value}>{selectedVoter.booth_name || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Contact:</Text>
-                                <Text style={styles.value}>{selectedVoter.voter_contact_number}</Text>
+                                <Text style={styles.value}>{selectedVoter.voter_contact_number || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Caste:</Text>
-                                <Text style={styles.value}>{selectedVoter.voter_cast_name}</Text>
+                                <Text style={styles.value}>{selectedVoter.voter_cast_name || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>Live Status:</Text>
-                                <Text style={styles.value}>{selectedVoter.live_status_type}</Text>
+                                <Text style={styles.value}>{selectedVoter.live_status_type || 'N/A'}</Text>
                             </View>
 
                             <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.closeButton}>
@@ -126,9 +126,9 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '90%',
-        maxWidth: 400,
-        height: '70%',
-        maxHeight: 500,
+        // maxWidth: 400,
+        // height: '70%',
+        // maxHeight: 500,
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 35,
+        marginBottom: 15,
     },
     modalTitle: {
         fontSize: 20,
@@ -149,22 +149,22 @@ const styles = StyleSheet.create({
     detailRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 8, // Reduce margin to minimize the gap
+        margin: 5,
     },
     label: {
-        flex: 0.4, // Adjust flex to reduce gap
+        flex: 0.4,
         fontSize: 16,
         fontWeight: 'bold',
     },
     value: {
-        flex: 0.6, // Adjust flex to reduce gap
+        flex: 0.6,
         fontSize: 16,
-        textAlign: 'right',
+        textAlign: 'left',
     },
     closeButton: {
-        width: '100%',
-        marginTop: 50,
-        paddingVertical: 10,
+        width: "90%",
+        marginTop: 20,
+        paddingVertical: 12,
         paddingHorizontal: 20,
         backgroundColor: 'black',
         borderRadius: 5,
@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: 'white',
         fontSize: 16,
+        fontWeight: '500',
         textAlign: 'center'
     },
 });

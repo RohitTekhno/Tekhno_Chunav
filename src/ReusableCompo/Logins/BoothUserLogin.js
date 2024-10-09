@@ -13,8 +13,8 @@ const { height, width } = Dimensions.get('screen')
 const BoothUserLogin = () => {
     const navigation = useNavigation()
     const { setBuserId, loginBuser } = useContext(BoothUserContext)
-    const [username, setUsername] = useState("User")
-    const [password, setPassword] = useState("Buser")
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
     const [isTextSecure, setTextSecure] = useState(true)
     const [isLoading, setLoading] = useState(false)
     const [nameError, setNameError] = useState('');
@@ -58,7 +58,7 @@ const BoothUserLogin = () => {
             try {
                 const response = await axios.post(`http://192.168.200.23:8000/api/user_login/`,
                     {
-                        "user_name": username,
+                        "user_phone": username,
                         "user_password": password
                     })
 

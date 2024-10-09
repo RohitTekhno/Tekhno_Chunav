@@ -118,9 +118,9 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
     };
 
     return (
-        <HeaderFooterLayout 
-        showHeader={false}
-        showFooter={false}>
+        <HeaderFooterLayout
+            showHeader={false}
+            showFooter={false}>
             <View style={{ height: height * 0.3, width: width }}>
                 <LinearGradient
                     colors={['#3C4CAC', '#F04393']}

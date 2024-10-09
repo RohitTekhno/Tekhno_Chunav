@@ -1,22 +1,45 @@
-import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Linking, Pressable, Alert } from 'react-native';
+import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import React, { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
+
 const { height } = Dimensions.get('screen');
 const topMargin = height * 0.1;
 
-
 const LogOut = () => {
     const navigation = useNavigation();
-    const { logout } = useContext(AuthenticationContext)
+    const { logout } = useContext(AuthenticationContext);
 
     const handleLogOut = async () => {
-        logout()
-    }
+        try {
+            // Make the logout request without token
+            const response = await axios.post(
+                'http://192.168.200.23:8000/api/politician_logout/',
+                {},
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                // Clear any user-related data if needed
+                logout();
+                navigation.replace('Entry');
+            } else {
+                Alert.alert('Error', 'Logout failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            Alert.alert('Error', 'Something went wrong. Please try again.');
+        }
+    };
+
     const handleGoBack = () => {
-        navigation.goBack()
+        navigation.goBack();
     };
 
     return (
@@ -31,39 +54,23 @@ const LogOut = () => {
                 <View style={styles.contentContainer}>
                     <Text style={styles.bigText}>Log Out?</Text>
                     <Text style={styles.text}>Are you sure you want to log out?</Text>
-                    <Image source={require('../Assets/bye.png')}
+                    <Image
+                        source={require('../Assets/bye.png')}
                         style={{ width: 140, height: 140, marginVertical: 20 }}
                     />
                 </View>
 
                 <View style={styles.bottomView}>
-                    <Pressable onPress={handleLogOut}
-                        style={{
-                            width: 150,
-                            backgroundColor: '#E54394',
-                            justifyContent: 'center',
-                            alignSelf: 'center',
-                            paddingVertical: 10,
-                            paddingHorizontal: 40,
-                            borderRadius: 4,
-                            margin: 20
-                        }}>
-                        <Text style={{ color: 'white', fontSize: 16, textAlign: 'center' }}>Log Out</Text>
+                    <Pressable
+                        onPress={handleLogOut}
+                        style={styles.logoutButton}
+                    >
+                        <Text style={styles.logoutButtonText}>Log Out</Text>
                     </Pressable>
 
-                    <Pressable onPress={handleGoBack} style={{
-                        width: 150,
-                        backgroundColor: '#9095A1',
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        paddingVertical: 10,
-                        paddingHorizontal: 40,
-                        borderRadius: 4,
-                        margin: 20
-                    }}>
-                        <Text style={{ color: 'white', fontSize: 16, textAlign: 'center' }}>Cancel</Text>
+                    <Pressable onPress={handleGoBack} style={styles.cancelButton}>
+                        <Text style={styles.cancelButtonText}>Cancel</Text>
                     </Pressable>
-
                 </View>
             </LinearGradient>
         </SafeAreaView>
@@ -94,7 +101,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#fff',
-        fontSize: 16
+        fontSize: 16,
     },
     bottomView: {
         width: '100%',
@@ -104,16 +111,34 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 15,
         borderTopLeftRadius: 15,
     },
-    sectionTitle: {
-        color: '#3C4CAC',
-        fontWeight: 'bold',
-        fontSize: 16,
+    logoutButton: {
+        width: 150,
+        backgroundColor: '#E54394',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 4,
+        margin: 20,
     },
-    infoContainer: {
-        flexDirection: 'row',
-        borderBottomWidth: 1.5,
-        borderColor: '#9095A1',
-        columnGap: 10,
-        padding: 5,
+    logoutButtonText: {
+        color: 'white',
+        fontSize: 16,
+        textAlign: 'center',
+    },
+    cancelButton: {
+        width: 150,
+        backgroundColor: '#9095A1',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 4,
+        margin: 20,
+    },
+    cancelButtonText: {
+        color: 'white',
+        fontSize: 16,
+        textAlign: 'center',
     },
 });

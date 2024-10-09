@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import ColorLegendModal from '../../ReusableCompo/ColorLegendModal'
+import ColorLegendModal from './ColorLegendModal'
 import { StatusBar } from 'expo-status-bar';
 
 const AboutUs = () => {
@@ -16,6 +16,7 @@ const AboutUs = () => {
             </TouchableOpacity>
             <ColorLegendModal isVisible={modalVisible}
                 closeModal={() => { setModalVisible(false) }} onSelect={(item) => {
+                    console.log(item);
                 }} />
         </View>
     )

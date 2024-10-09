@@ -6,31 +6,11 @@ const topMargin = height * 0.1;
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import SendWhatsAppMessage from './SendWhatsAppMessage';
+
 
 const ContactUs = () => {
 
-    const sendWhatsAppMessage = (phoneNumber) => {
-        let message = "Hello, this is a test message from my React Native app.";
-
-        // URL Scheme for WhatsApp
-        let url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`;
-
-        // Check if WhatsApp is installed on the device
-        Linking.canOpenURL(url)
-            .then((supported) => {
-                if (!supported) {
-                    Alert.alert(
-                        'WhatsApp is not installed',
-                        'Please install WhatsApp to send a message.',
-                        [{ text: 'OK' }]
-                    );
-                } else {
-                    return Linking.openURL(url);
-                }
-            })
-            .catch((err) => console.error("An error occurred", err));
-    };
+   
 
 
     return (

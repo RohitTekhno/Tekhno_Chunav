@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TextInput, Dimensions, Pressable, Animated, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TextInput, Dimensions, Pressable, Animated, Alert, RefreshControl } from 'react-native';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -30,26 +30,28 @@ export default Townvoterlist = ({ route, navigation }) => {
   const [isSelectMultiple, setSelectMultiple] = useState(false)
   const [checkedAll, setCheckedAll] = useState(false)
   const [selectedVoterIds, setSelectedVoterIds] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
 
+
+  const fetchVoters = async () => {
+    try {
+      setRefreshing(true)
+      const response = await axios.get(`http://192.168.200.23:8000/api/get_voter_list_by_town_user/${userId}/`);
+      if (response.data && Array.isArray(response.data)) {
+        setVoters(response.data);
+        setFilteredVoters(response.data);
+      } else {
+        setError('Unexpected API response format...');
+      }
+    } catch (error) {
+      setError('Error fetching data. Please try again later...');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchVoters = async () => {
-      try {
-        const response = await axios.get(`http://192.168.200.23:8000/api/get_voter_list_by_town_user/${userId}/`);
-        if (response.data && Array.isArray(response.data)) {
-          setVoters(response.data);
-          setFilteredVoters(response.data);
-        } else {
-          setError('Unexpected API response format...');
-        }
-      } catch (error) {
-        setError('Error fetching data. Please try again later...');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchVoters();
   }, [userId]);
 
@@ -213,6 +215,12 @@ export default Townvoterlist = ({ route, navigation }) => {
   }
 
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchVoters();
+    setRefreshing(false);
+  };
+
 
   const renderItem = ({ item }) => {
 
@@ -267,77 +275,81 @@ export default Townvoterlist = ({ route, navigation }) => {
   };
 
   return (
-    <CustomTUserBottomTabs headerText={'Town Voter List'} showHeader={false} showFooter={true}>
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="grey" />
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder='Search by voter’s name or ID'
-            style={styles.searchInput}
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="grey" />
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder='Search by voter’s name or ID'
+          style={styles.searchInput}
+        />
+      </View>
+
+      {isSelectMultiple && (
+        <View style={styles.checkboxContainer}>
+          <View style={styles.checkboxIcons}>
+            <Pressable onPress={() => { showConfirmAlert("Send Message From Whatsapp", send_WhatsApp_Message) }}>
+              <Icon name="whatsapp" size={30} color="green" />
+            </Pressable>
+
+            <Pressable onPress={() => { showConfirmAlert("Send Text Message", send_Text_Message) }}>
+              <MaterialCommunityIcons name="message-text" size={30} color="purple" />
+            </Pressable>
+          </View>
+
+          <View style={styles.checkboxActions}>
+            <Pressable onPress={handleCancleAll}>
+              <MaterialIcons name="cancel" size={30} color="red" />
+            </Pressable>
+            <Checkbox
+              color='black'
+              status={checkedAll ? 'checked' : 'unchecked'}
+              onPress={handleSelectAll}
+            />
+
+          </View>
+        </View>
+      )}
+
+      {refreshing ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={'small'} color={'black'} />
+          <Text>Loading...</Text>
+        </View>
+      ) : (
+        <View style={{ flex: 1 }}>
+          <FlatList
+            data={filteredVoters}
+            keyExtractor={item => item.voter_id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            renderItem={renderItem}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
+          />
+
+          <VoterDetailsPopUp
+            isModalVisible={isModalVisible}
+            selectedVoter={selectedVoter}
+            setIsModalVisible={setIsModalVisible}
           />
         </View>
-
-        {isSelectMultiple && (
-          <View style={styles.checkboxContainer}>
-            <View style={styles.checkboxIcons}>
-              <Pressable onPress={() => { showConfirmAlert("Send Message From Whatsapp", send_WhatsApp_Message) }}>
-                <Icon name="whatsapp" size={30} color="green" />
-              </Pressable>
-
-              <Pressable onPress={() => { showConfirmAlert("Send Text Message", send_Text_Message) }}>
-                <MaterialCommunityIcons name="message-text" size={30} color="purple" />
-              </Pressable>
-            </View>
-
-            <View style={styles.checkboxActions}>
-              <Pressable onPress={handleCancleAll}>
-                <MaterialIcons name="cancel" size={30} color="red" />
-              </Pressable>
-              <Checkbox
-                color='black'
-                status={checkedAll ? 'checked' : 'unchecked'}
-                onPress={handleSelectAll}
-              />
-
-            </View>
-          </View>
-        )}
-
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size={'large'} color={'black'} />
-            <Text>Loading...</Text>
-          </View>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <FlatList
-              data={filteredVoters}
-              keyExtractor={item => item.voter_id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContent}
-              renderItem={renderItem}
-              ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-            />
-
-            <VoterDetailsPopUp
-              isModalVisible={isModalVisible}
-              selectedVoter={selectedVoter}
-              setIsModalVisible={setIsModalVisible}
-            />
-          </View>
-        )}
-      </View>
-    </CustomTUserBottomTabs>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
-    height: height * 0.82,
-    backgroundColor: 'white',
+    height: height * 0.816,
+    backgroundColor: 'white'
   },
   nav: {
     flexDirection: 'row',

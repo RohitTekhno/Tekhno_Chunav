@@ -75,9 +75,9 @@ const AgewiseVoters = () => {
     };
 
     return (
-        <HeaderFooterLayout 
-        showFooter={true}
-        headerText='Age Wise Voters'
+        <HeaderFooterLayout
+            showFooter={true}
+            headerText='Age Wise Voters'
         >
             <View style={styles.container}>
                 <DropDownPicker
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         borderColor: '#9095A1',
-        paddingTop:'6%'
+        paddingTop: '6%'
     },
     searchTextInput: {
         borderColor: '#9095A1',
