@@ -117,13 +117,6 @@ function VoterList({ route, navigation, }) {
   }, [search, voters]);
 
 
-
-
-
-
-
-
-
   const hideMenu = () => {
     setMenuVisible(false);
   };
@@ -193,11 +186,6 @@ function VoterList({ route, navigation, }) {
     red: false,
     blue: false
   });
-
-
-
-
-
 
 
   const sendCheckboxStateToAPI = async (voter_id, checkboxID) => {
@@ -294,7 +282,6 @@ function VoterList({ route, navigation, }) {
   };
 
 
-
   const navigateToFavour = () => {
     const greenRecords = voters.filter(voter => voter.color === 'green');
     navigation.navigate('Favour', { greenRecords });
@@ -309,9 +296,6 @@ function VoterList({ route, navigation, }) {
     const yellowRecords = voters.filter(voter => voter.color === 'yellow');
     navigation.navigate('Yellow', { yellowRecords });
   };
-
-
-
 
   // const updateVoterDetails = async (voterId, votedStatus) => {
   //   try {
@@ -496,8 +480,6 @@ function VoterList({ route, navigation, }) {
     }
   };
 
-
-
   const updateVoterThumbStatus = async (voterId, thumbStatus) => {
     try {
       const apiUrl = `http://192.168.200.23:8000/api/voter_confirmation/${voterId}/`;
@@ -559,9 +541,6 @@ function VoterList({ route, navigation, }) {
       Alert.alert('Error', 'Failed to toggle thumb status. Please try again.');
     }
   };
-
-
-
 
   const selectAllVoters = () => {
     setSelectedItems(filteredData.map(item => item.voter_id));
@@ -678,8 +657,6 @@ function VoterList({ route, navigation, }) {
   }, []);
 
 
-
-
   const exitSelection = () => {
     setIsSelecting(false);
     setSelectedItems([]);
@@ -688,20 +665,6 @@ function VoterList({ route, navigation, }) {
   const handleGoBack = () => {
     navigation.goBack();
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // sidebar functionality 
 
 
   const toggleSidebar = () => {
@@ -724,10 +687,7 @@ function VoterList({ route, navigation, }) {
   };
 
 
-
   return (
-
-
     <TouchableWithoutFeedback onPress={hideMenu}>
       <HeaderFooterLayout
         headerText="Voter List"
@@ -748,12 +708,9 @@ function VoterList({ route, navigation, }) {
               onChangeText={setSearch}
             />
           </View>
-
-
           <Header />
 
           {renderColorCircles()}
-
 
           <FlatList
             data={filteredData}
@@ -801,13 +758,6 @@ function VoterList({ route, navigation, }) {
             )}
             ListEmptyComponent={<Text>Loading</Text>}
           />
-
-
-
-
-
-
-
 
           <Modal
             visible={contactModalVisible}
@@ -1071,11 +1021,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     paddingHorizontal: 15
   },
-
-
-
-
-
   // header 
   heading: {
     fontSize: scaleFontSize(24),
@@ -1083,8 +1028,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flex: 1,
   },
-
-
   // search bar
   searchContainer: {
     flexDirection: 'row',
@@ -1108,8 +1051,6 @@ const styles = StyleSheet.create({
     color: '#333',
     paddingVertical: height * 0.01,
   },
-
-
   // assign color to multiple voter 
   colorCirclesContainer: {
     flexDirection: 'row',
@@ -1135,10 +1076,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
 
-
   // voter record card
-
-
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -1221,12 +1159,7 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 20,
     borderBottomStartRadius: 20
   },
-
-
-
   // footer
-
-
   bottomButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -1258,10 +1191,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     // marginTop: 3,
   },
-
-
   // edit voter information modal
-
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -1384,15 +1314,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-
-
-
-
-
   // color modal
-
-
-
   overlay: {
     flex: 1,
     justifyContent: 'center',
@@ -1421,10 +1343,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-
-
   // assign cast to multiple 
-
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',

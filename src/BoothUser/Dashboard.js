@@ -47,9 +47,6 @@ function Newdashuser({ navigation, toggleSidebar }) {
       const voteCountResponse = await axios.get(
         `http://192.168.200.23:8000/api/get_voted_and_non_voted_count_by_booth_user/${buserId}/`
       );
-      console.log(voteCountResponse)
-
-
       setTotalVoted(voteCountResponse.data.voted_count.toString());
       setNTotalVoted(voteCountResponse.data.non_voted_count.toString());
 
