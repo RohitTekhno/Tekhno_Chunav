@@ -28,7 +28,7 @@ export default function WboothUsers() {
       setUsers(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching booth users:', error);
+      Alert.alert('Error fetching booth users:', error);
       setLoading(false);
     }
   };
@@ -61,7 +61,6 @@ export default function WboothUsers() {
         Alert.alert('Error', 'Failed to delete the user.');
       }
     } catch (error) {
-      console.error('Error deleting user:', error);
       Alert.alert('Error', 'Failed to delete the user.');
     }
   };

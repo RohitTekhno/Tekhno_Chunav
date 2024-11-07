@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import axios from 'axios';
@@ -80,7 +80,7 @@ const WardVotingBarStats = () => {
             setDoubted(doubtedCount);
             setNonVoted(nonVotedCount);
         } catch (error) {
-            console.error('Error fetching voter data:', error);
+            Alert.alert('Error fetching voter data:', error);
         }
     };
 

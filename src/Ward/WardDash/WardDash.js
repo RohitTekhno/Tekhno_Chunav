@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, Modal, TouchableOpacity, TouchableWithoutFeedback, RefreshControl } from 'react-native';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, Modal, TouchableOpacity, TouchableWithoutFeedback, RefreshControl, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
@@ -46,7 +46,7 @@ function WardDash({ toggleSidebar }) {
       const nonVotedResponse = await axios.get(`http://192.168.1.31:8000/api/voter_details_by_confirmation/${wardUserId}/2/`);
       setTotalNonVoted(nonVotedResponse.data.length.toString());
     } catch (error) {
-      console.error('Error fetching data:', error);
+      Alert.alert('Error fetching data:', error);
     }
     setRefreshing(false);
   };

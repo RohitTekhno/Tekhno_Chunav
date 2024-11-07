@@ -47,7 +47,6 @@ const WTempEditedVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }
             }));
             setCasteOptions(casteData);
         } catch (error) {
-            console.error('Error fetching caste data:', error);
             Alert.alert('Error', 'Failed to load caste data');
         }
     };

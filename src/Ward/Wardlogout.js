@@ -36,7 +36,6 @@ export default function Wardlogout() {
                 Alert.alert('Error', 'Logout failed. Please try again.');
             }
         } catch (error) {
-            console.error('Logout error:', error);
             Alert.alert('Error', 'Something went wrong. Please try again.');
         }
     };

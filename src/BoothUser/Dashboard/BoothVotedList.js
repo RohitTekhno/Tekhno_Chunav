@@ -54,7 +54,7 @@ export default function BoothVotedList({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size={'small'} />
+        <ActivityIndicator size={'large'} color={'black'} />
         <Text>
           {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
         </Text>

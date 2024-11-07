@@ -35,7 +35,7 @@ export default function WuserwiseLocation({ navigation }) {
                 );
                 setVoterData(response.data);
             } catch (error) {
-                console.error('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error);
             } finally {
                 setLoading(false);
             }
@@ -72,7 +72,6 @@ export default function WuserwiseLocation({ navigation }) {
                 Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
@@ -149,8 +148,8 @@ export default function WuserwiseLocation({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 15,
-        marginBottom: height * 0.1,
+        // marginHorizontal: 15,
+        // marginBottom: height * 0.1,
     },
     contentContainer: {
         flex: 1,
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         paddingHorizontal: 8,
-        marginVertical: '6%',
+        marginVertical: 10,
         borderWidth: 1,
         borderColor: 'black',
     },
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         paddingHorizontal: 8,
-        marginVertical: '6%',
+        marginVertical: 10,
         borderColor: 'black',
     },
     voterItem: {

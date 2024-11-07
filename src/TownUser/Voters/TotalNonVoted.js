@@ -85,7 +85,7 @@ const TotalNonVoted = () => {
 
             {loading ? (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} />
+                    <ActivityIndicator size={'large'} color={'black'} />
                     <Text>Loading...</Text>
                 </View>
             ) : (

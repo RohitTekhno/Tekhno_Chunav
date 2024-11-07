@@ -79,12 +79,42 @@ export default function WardNvoted({ route, navigation }) {
         setIsModalVisible(true); // Show the modal
       })
       .catch(error => {
-        console.error('Error fetching voter details:', error);
         Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
       });
   };
 
   const renderItem = ({ item }) => {
+
+    let backgroundColor = 'white';
+
+    // Set background color based on voter_favour_id
+    switch (item.voter_favour_id) {
+      case 1:
+        backgroundColor = '#d3f5d3';
+        break;
+      case 2:
+        backgroundColor = '#f5d3d3';
+        break;
+      case 3:
+        backgroundColor = '#f5f2d3';
+        break;
+      case 4:
+        backgroundColor = '#c9daff';
+        break;
+      case 5:
+        backgroundColor = 'skyblue';
+        break;
+      case 6:
+        backgroundColor = '#fcacec';
+        break;
+      case 7:
+        backgroundColor = '#dcacfa';
+        break;
+
+      default:
+        backgroundColor = 'white';
+    }
+
 
     return (
       <Pressable onPress={() => handleVoterPress(item)}>
@@ -119,7 +149,7 @@ export default function WardNvoted({ route, navigation }) {
 
       {loading ?
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} />
+          <ActivityIndicator size={'large'} color={'black'} />
           <Text>
             {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
           </Text>

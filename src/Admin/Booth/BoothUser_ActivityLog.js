@@ -72,7 +72,7 @@ const BoothUser_ActivityLog = (routes) => {
             <View style={styles.listContainer}>
                 {loading ? (
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'small'} />
+                        <ActivityIndicator size={'large'} color={'black'} />
                         <Text>Loading...</Text>
                     </View>
                 ) : (

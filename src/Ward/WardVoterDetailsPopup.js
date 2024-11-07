@@ -40,7 +40,6 @@ export default function WardVoterDetailsPopup({ isModalVisible, setIsModalVisibl
             }
 
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         }
     };

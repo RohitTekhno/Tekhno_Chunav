@@ -103,7 +103,6 @@ export default function Wardvoterlist({ route, navigation }) {
         setFormVisible(true); // Show the modal
       })
       .catch(error => {
-        console.error('Error fetching voter details:', error);
         Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
       });
   };
@@ -126,6 +125,7 @@ export default function Wardvoterlist({ route, navigation }) {
     } else if (item.voter_favour_id === 7) {
       backgroundColor = '#dcacfa';
     }
+
 
     return (
       <View style={[styles.itemContainer, { backgroundColor }]}>

@@ -41,7 +41,7 @@ export default function WLocationWise({ navigation }) {
             setBoothItems(boothOptions);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching booth data:', error);
+            Alert.alert('Error fetching booth data:', error);
             setLoading(false);
         }
     };
@@ -56,7 +56,7 @@ export default function WLocationWise({ navigation }) {
                 setVoterData(response.data);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error);
                 setLoading(false);
             }
         }
@@ -89,7 +89,7 @@ export default function WLocationWise({ navigation }) {
                 Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            console.error('Error downloading PDF:', error);
+            Alert.alert('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
@@ -167,7 +167,7 @@ export default function WLocationWise({ navigation }) {
                             data={filteredVoterData}
                             keyExtractor={(item) => item.voter_id.toString()}
                             renderItem={renderVoterItem}
-                            ListEmptyComponent={<Text>No voters found.</Text>}
+                            ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20, fontSize: 18, color: 'grey' }}>No voters found.</Text>}
                         />
                     </View>
                 )}
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         paddingHorizontal: 8,
-        marginVertical: '6%',
+        marginVertical: 10,
         borderWidth: 1,
         borderColor: 'black',
     },
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         paddingHorizontal: 8,
-        marginVertical: '6%',
+        marginVertical: 10,
         borderColor: 'black',
     },
     voterItem: {

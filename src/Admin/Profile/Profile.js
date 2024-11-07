@@ -11,14 +11,6 @@ const { width, height } = Dimensions.get('screen')
 const Profile = () => {
     const navigation = useNavigation();
 
-    const handleGoBack = () => {
-        navigation.goBack()
-    };
-
-    const handleNotificationBtn = () => {
-        Alert.alert("Notification Pressed...")
-    }
-
     return (
         <>
             <View style={{ height: height * 0.3 }}>

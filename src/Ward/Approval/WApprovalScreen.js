@@ -70,7 +70,6 @@ const WApprovalScreen = ({ route }) => {
       const response = await axios.get(`http://192.168.1.31:8000/api/get_temp_voter_data_user_prabhag_user/${voter_id}`);
       setSelectedVoter(response.data);
     } catch (error) {
-      console.error('Error fetching voter details:', error);
       Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
     }
   };
@@ -109,7 +108,7 @@ const WApprovalScreen = ({ route }) => {
         setVoters(voterData)
       }
     } catch (error) {
-      console.error(error, "Failed to Approve voters.. Try again!!!");
+      Alert.alert(error, "Failed to Approve voters.. Try again!!!");
     } finally {
       setSearchText('')
       setSelectedVoterIds([]);
@@ -139,7 +138,7 @@ const WApprovalScreen = ({ route }) => {
         setVoters(voterData)
       }
     } catch (error) {
-      console.error(error, "Failed to Approve voters.. Try again!!!");
+      Alert.alert(error, "Failed to Approve voters.. Try again!!!");
     } finally {
       setSearchText('')
       setSelectedVoterIds([]);
@@ -156,7 +155,6 @@ const WApprovalScreen = ({ route }) => {
       }));
       setCasteOptions(casteData);
     } catch (error) {
-      console.error('Error fetching caste data:', error);
       Alert.alert('Error', 'Failed to load caste data');
     }
   };
@@ -193,7 +191,7 @@ const WApprovalScreen = ({ route }) => {
         setVoters(voterData)
       }
     } catch (error) {
-      console.error(error, 'failed to reject voter ');
+      Alert.alert(error, 'failed to reject voter ');
     } finally {
       setSearchText('')
     }

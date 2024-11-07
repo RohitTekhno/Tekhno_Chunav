@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 20,
+        paddingHorizontal: 15,
+        paddingTop: 25,
     },
     text: {
         color: 'black',
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         backgroundColor: 'white',
-        padding: 20,
+        paddingHorizontal: 10,
     },
     footer: {
         position: 'absolute',

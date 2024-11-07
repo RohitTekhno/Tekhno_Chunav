@@ -37,7 +37,7 @@ export default function Wsignup({ navigation }) {
                 setItems(boothsData);
             })
             .catch(error => {
-                console.error('Error fetching booths:', error);
+                Alert.alert('Error fetching booths:', error);
             });
     }, []);
 
@@ -102,7 +102,6 @@ export default function Wsignup({ navigation }) {
                     { text: 'OK', onPress: () => navigation.navigate('WardDash') },
                 ]);
             } catch (error) {
-                console.error('Signup failed', error);
                 Alert.alert('Error', 'Signup failed. Please try again.');
             } finally {
                 setLoading(false);

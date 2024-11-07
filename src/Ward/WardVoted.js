@@ -66,7 +66,6 @@ export default function WardVoted({ route, navigation }) {
         setIsModalVisible(true); // Show the modal
       })
       .catch(error => {
-        console.error('Error fetching voter details:', error);
         Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
       });
   };
@@ -75,7 +74,6 @@ export default function WardVoted({ route, navigation }) {
   const renderItem = ({ item }) => {
     let backgroundColor = 'white';
 
-    // Set background color based on voter_favour_id
     switch (item.voter_favour_id) {
       case 1:
         backgroundColor = '#d3f5d3';
