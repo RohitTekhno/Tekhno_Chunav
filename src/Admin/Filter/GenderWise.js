@@ -1,6 +1,5 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ActivityIndicator } from 'react-native-paper';
@@ -19,13 +18,12 @@ export default function GenderWise() {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
             })
             .catch(error => {
-                console.error('Error fetching voter details:', error);
                 Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
             });
     };
@@ -62,21 +60,17 @@ export default function GenderWise() {
     const fetchVoters = async (genderValue) => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.200.23:8000/api/get_male_female_voters_by_all/gender/${genderValue}/`);
+            const response = await axios.get(`http://192.168.1.31:8000/api/get_male_female_voters_by_all/gender/${genderValue}/`);
             setFilteredVoters(response.data);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching voters:', error);
             Alert.alert('Error', 'Failed to fetch voters. Please try again.');
             setLoading(false);
         }
     };
 
     return (
-        <HeaderFooterLayout
-            showFooter={true}
-            headerText='Gender Wise Voters'
-        >
+        <>
             <View style={styles.container}>
                 <DropDownPicker
                     open={openGender}
@@ -132,21 +126,20 @@ export default function GenderWise() {
                     </View>
                 )}
             </View>
-        </HeaderFooterLayout>
+        </>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 15,
-        marginBottom: height * 0.1
+        paddingHorizontal: 15,
+        backgroundColor: 'white'
     },
     dropdown: {
         backgroundColor: 'white',
         borderRadius: 8,
         borderColor: '#9095A1',
-        marginVertical: '6%',
     },
     dropdownContainer: {
         width: '100%',

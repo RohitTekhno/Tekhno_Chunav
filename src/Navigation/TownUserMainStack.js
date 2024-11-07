@@ -1,31 +1,29 @@
-import { Dimensions, Pressable } from 'react-native';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import BuserRegisteration from '../TownUser/BuserRegisteration'
+import BuserRegisteration from '../TownUser/Profile/BuserRegisteration'
 import LogOut from '../ReusableCompo/LogOut';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
-import RightManuBtn from '../TownUser/ExtraComponents/RightManuBtn';
-import TboothUsers from '../TownUser/TboothUsers';
-import TotalNonVoted from '../TownUser/TotalNonVoted'
-import TotalVoted from '../TownUser/TotalVoted'
-import TownBooths from '../TownUser/TownBooths';
-import TownProfile from '../TownUser/TownProfile';
-import Towndash from '../TownUser/Dashboard/TuserDashboard';
-import Townvoterlist from '../TownUser/Townvoterlist';
-import CastWiseVoters from '../TownUser/CastWiseVoters';
-import BoothVoters from '../TownUser/BoothVoters';
-import UpdateVoter from '../TownUser/UpdateVoter';
-import ApprovalScreen from '../TownUser/ApprovalScreen';
+import RightManuBtn from '../TownUser/Dashboard/RightManuBtn';
+import TboothUsers from '../TownUser/Filter/TboothUsers';
+import TotalNonVoted from '../TownUser/Voters/TotalNonVoted'
+import TotalVoted from '../TownUser/Voters/TotalVoted'
+import TownDashboard from '../TownUser/Dashboard/TuserDashboard';
+import ApprovalScreen from '../TownUser/Voters/ApprovalScreen';
+import TownBooths from '../TownUser/Booths/TownBooths';
+import BoothVoters from '../TownUser/Booths/BoothVoters';
+import TownProfile from '../TownUser/Profile/TownProfile';
+import CastWiseVoters from '../TownUser/Filter/CastWiseVoters';
+import TownVoters from '../TownUser/Voters/TownVoters';
 
 const Stack = createNativeStackNavigator();
-const { height, width } = Dimensions.get('screen')
 const TownUserMainStack = () => {
     const navigation = useNavigation();
 
     return (
         <Stack.Navigator initialRouteName='Dashboard'>
-            <Stack.Screen name='Dashboard' component={Towndash}
+            <Stack.Screen name='Dashboard' component={TownDashboard}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
                     headerTitleStyle: {
@@ -40,7 +38,8 @@ const TownUserMainStack = () => {
                     headerRight: () => (<RightManuBtn />)
                 }}
             />
-            <Stack.Screen name='Town Voters List' component={Townvoterlist}
+
+            <Stack.Screen name='Voters List' component={TownVoters}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
                     headerTitleStyle: {
@@ -48,14 +47,15 @@ const TownUserMainStack = () => {
                     },
                     headerShadowVisible: false,
                     headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
-            <Stack.Screen name='Town Booths' component={TownBooths}
+
+            <Stack.Screen name='Total Booths' component={TownBooths}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
                     headerTitleStyle: {
@@ -63,13 +63,29 @@ const TownUserMainStack = () => {
                     },
                     headerShadowVisible: false,
                     headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
+            <Stack.Screen name='Approval Voters' component={ApprovalScreen}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
             <Stack.Screen name='Booth Users' component={TboothUsers}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
@@ -78,23 +94,24 @@ const TownUserMainStack = () => {
                     },
                     headerShadowVisible: false,
                     headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
+
 
             <Stack.Screen name='Total Voted' component={TotalVoted}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
@@ -106,10 +123,10 @@ const TownUserMainStack = () => {
                         fontSize: 22
                     },
                     headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
@@ -121,11 +138,12 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5, }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
@@ -137,41 +155,10 @@ const TownUserMainStack = () => {
                         fontSize: 22
                     },
                     headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
-                    ),
-                }}
-            />
-
-            <Stack.Screen name='Update Voter' component={UpdateVoter}
-                options={{
-                    headerShown: true, headerTitleAlign: 'center',
-                    headerTitleStyle: {
-                        fontSize: 22
-                    },
-                    headerShadowVisible: false,
-                    headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
-                    ),
-                }}
-            />
-
-            <Stack.Screen name='Approval Voters' component={ApprovalScreen}
-                options={{
-                    headerShown: true, headerTitleAlign: 'center',
-                    headerTitleStyle: {
-                        fontSize: 22
-                    },
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={30} color="black" />
-                        </Pressable>
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />

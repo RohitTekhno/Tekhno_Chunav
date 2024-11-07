@@ -9,8 +9,7 @@ import {
     Alert,
     Animated
 } from 'react-native';
-import React, { useEffect, useState, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
@@ -18,10 +17,12 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 
 const Booths = () => {
+    const { language, toggleLanguage } = useContext(LanguageContext);
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(true);
@@ -39,26 +40,19 @@ const Booths = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/booths/');
+            const response = await axios.get('http://192.168.1.31:8000/api/booths/');
             const formattedTowns = response.data;
 
             if (Array.isArray(formattedTowns)) {
                 setBooths(formattedTowns);
             } else {
-                console.error('Expected an array of booths');
+                Alert.alert('Expected an array of booths');
             }
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            Alert.alert('Error fetching data:', error);
             setLoading(false);
         }
-    };
-
-    const toTitleCase = (str) => {
-        return str
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ');
     };
 
     useEffect(() => {
@@ -86,7 +80,7 @@ const Booths = () => {
 
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/generate_pdf/', {
+            const response = await axios.get('http://192.168.1.31:8000/api/generate_pdf/', {
                 responseType: 'arraybuffer',
             });
 
@@ -99,29 +93,27 @@ const Booths = () => {
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            Alert.alert('Success', 'PDF has been saved to your device!');
+            //Alert.Alert.Alert.Alert.Alert.Alert.Alert.alert('Success', 'PDF has been saved to your device!');
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
             } else {
-                Alert.alert('Error', 'Sharing not available on this device.');
+                Alert.Alert.Alert.Alert.Alert.Alert.Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            console.error('Error downloading PDF:', error);
-            Alert.alert('Error', 'Failed to download the PDF.');
+            Alert.Alert.Alert.Alert.Alert.Alert.Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
         }
     };
 
-
     return (
         <HeaderFooterLayout
-            headerText="Booths List"
-            showFooter={true}
+            headerText={language === 'en' ? "Booths" : 'बूथ'}
+            showFooter={false}
             leftIcon={true}
             rightIcon={true}
-            leftIconName="chevron-left"
+            leftIconName="keyboard-backspace"
             rightIconName="file-pdf"
             onRightIconPress={handlePDFClick}
         >
@@ -131,58 +123,50 @@ const Booths = () => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder="search by user’s name or ID"
+                        placeholder={language === 'en' ? "search booth by name or ID" : 'नाव किंवा आयडीद्वारे बूथ शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
 
-
                 {(loading) ?
-                    (<View style={styles.loadingContainer}>
+                    <View style={styles.loadingContainer}>
                         <ActivityIndicator size={'small'} />
-                        <Text>Loading...</Text>
+                        <Text>
+                            {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
+                        </Text>
                     </View>
-                    ) : (
-                        <View style={styles.listContainer}>
-                            {searchedBooth.length > 0 ? (
-                                <FlatList
-                                    data={searchedBooth}
-                                    keyExtractor={item => item.booth_id.toString()}
-                                    showsVerticalScrollIndicator={false}
-                                    renderItem={({ item }) => (
-                                        <Pressable
-                                            style={styles.voterItem}
-                                            onPress={() => {
-                                                navigation.navigate('Booth Voters', { boothId: item.booth_id });
-                                            }}
-                                        >
-                                            <Text style={styles.boothIdText}>{item.booth_id}</Text>
-                                            <Text style={{ flex: 1 }}>{toTitleCase(item.booth_name)}</Text>
-                                        </Pressable>
-                                    )}
-                                />
-                            ) : (
-                                <Text style={styles.noDataText}>No results found</Text>
-                            )}
-                        </View>
-                    )
+                    :
+                    <FlatList
+                        data={searchedBooth}
+                        keyExtractor={item => item.booth_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => (
+                            <Pressable style={styles.voterItem}
+                                onPress={() => { navigation.navigate('Booth Voters', { boothId: item.booth_id }) }}
+                            >
+                                <Text style={styles.boothIdText}>{item.booth_id}</Text>
+                                <Text style={styles.boothNameText}>{item.booth_name}</Text>
+                            </Pressable>
+                        )}
+
+                        ListEmptyComponent={() => (
+                            <Text style={styles.noDataText}>
+                                {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
+                            </Text>
+                        )}
+                    />
                 }
 
                 {pdfLoading && (
                     <View style={styles.pdfLoadingOverlay}>
                         <ActivityIndicator size="large" color="white" />
-                        <Text style={styles.pdfLoadingText}>Generating PDF...</Text>
+                        <Text style={styles.pdfLoadingText}>
+                            {language === 'en' ? 'Generating PDF...' : 'PDF व्युत्पन्न करत आहे...'}
+                        </Text>
                     </View>
                 )}
-
-                {/* <Animated.View style={[styles.pdfButtonContainer, { transform: [{ scale: scaleValue }] }]}>
-                    <Pressable onPress={handlePDFClick} style={styles.pdfButton}>
-                        <FontAwesome6 name="file-pdf" size={30} color="white" />
-                        <Text style={styles.pdfButtonText}>Generate PDF</Text>
-                    </Pressable>
-                </Animated.View> */}
             </View>
-        </HeaderFooterLayout>
+        </HeaderFooterLayout >
     );
 };
 
@@ -190,8 +174,8 @@ export default Booths;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingHorizontal: 20,
-        height: height * 0.77,
         backgroundColor: 'white',
     },
     searchContainer: {
@@ -202,25 +186,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
-        marginVertical: 5,
+        marginVertical: 10,
         columnGap: 20,
     },
     searchInput: {
         flex: 1,
         paddingVertical: 10,
     },
-    listContainer: {},
     voterItem: {
         flex: 1,
         paddingVertical: 10,
-        paddingHorizontal: 15,
+        paddingHorizontal: 10,
         marginVertical: 5,
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 1,
         borderWidth: 0.1,
-        gap: 10,
+        gap: 15,
         alignItems: 'center',
+        flexWrap: 'wrap',
+
     },
     boothIdText: {
         borderWidth: 1,
@@ -229,6 +214,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         borderRadius: 3,
         fontWeight: '700',
+    },
+    boothNameText: {
+        flex: 1,
+        flexWrap: 'wrap',
     },
     noDataText: {
         textAlign: 'center',
@@ -240,6 +229,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+
     },
     pdfButtonContainer: {
         alignSelf: 'center',
@@ -259,7 +249,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     pdfLoadingOverlay: {
-        height: '120%',
         position: 'absolute',
         top: 0,
         left: 0,

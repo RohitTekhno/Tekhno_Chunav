@@ -48,9 +48,6 @@ const CustomDrawerContent = ({ navigation }) => {
                     />
                 </View>
                 <View style={{ marginTop: 20 }}>
-                    <View style={{ height: 100 }}>
-
-                    </View>
                     <TouchableOpacity onPress={() => { navigation.navigate("About Us") }} style={styles.drawerList} >
                         <Entypo name="info-with-circle" size={25} color="white" />
                         <Text style={styles.drawerListText}>About Us</Text>
@@ -109,7 +106,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         padding: 10,
         paddingLeft: 15,
-        marginVertical: height * 0.01,
+        marginVertical: 12,
         flexDirection: 'row',
         alignItems: 'center',
         columnGap: width * 0.05,

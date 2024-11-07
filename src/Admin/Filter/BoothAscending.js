@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Animated } from 'react-native';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Animated, Alert } from 'react-native';
 import axios from 'axios';
 
 export default function BoothAscending() {
@@ -30,7 +29,7 @@ export default function BoothAscending() {
 
   const fetchBoothData = () => {
     setLoading(true);
-    axios.get('http://192.168.200.23:8000/api/booth_voting_percentage/')
+    axios.get('http://192.168.1.31:8000/api/booth_voting_percentage/')
       .then(response => {
 
         const sortedData = response.data.sort((a, b) => a.voted_percentage - b.voted_percentage);
@@ -38,7 +37,7 @@ export default function BoothAscending() {
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching data:', error);
+        Alert.alert('Error fetching data:', error);
         setLoading(false);
       });
   };
@@ -91,44 +90,41 @@ export default function BoothAscending() {
   };
 
   return (
-    <HeaderFooterLayout
-      headerText='Booth Analysis'
-      showFooter={false}
-    >
-      <View style={styles.container}>
-        {/* Search Bar */}
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search Booths..."
-          value={searchText}
-          onChangeText={setSearchText}
-        />
 
-        {/* Show loading spinner while data is being fetched */}
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <FlatList
-            data={filteredData}
-            keyExtractor={(item) => item.booth_id.toString()}
-            renderItem={renderItem}
-            contentContainerStyle={styles.flatListContent}
-            refreshing={refreshing}
-            onRefresh={fetchBoothData}
-          />
-        )}
-      </View>
-    </HeaderFooterLayout>
+    <View style={styles.container}>
+      {/* Search Bar */}
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search Booths..."
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+
+      {/* Show loading spinner while data is being fetched */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={filteredData}
+          keyExtractor={(item) => item.booth_id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.flatListContent}
+          refreshing={refreshing}
+          onRefresh={fetchBoothData}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 15,
+    paddingTop: 20,
   },
   searchBar: {
-    height: 40,
+    height: 45,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,

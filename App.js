@@ -1,27 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthenticationProvider } from './src/Admin/Context_Api/AuthenticationContext';
 import StackNavigation from './src/Navigation/StackNavigation';
 import DrawerNavigationComp from './src/Navigation/DrawerNavigationComp'
-import { TownUserProvider } from './src/TownUser/ContextApi/TownUserProvider';
-import { BoothUserProvider } from './src/BoothUser/ContextApi/BuserContext';
-import AdminBottomTabsNav from './src/Navigation/BottomTabsNav';
+import { TownUserProvider } from './src/ContextApi/TownUserProvider';
+import { BoothUserProvider } from './src/ContextApi/BuserContext';
+import { LanguageProvider } from './src/ContextApi/LanguageContext';
+import { AuthenticationProvider } from './src/ContextApi/AuthenticationContext';
+import { WardUserProvider } from './src/ContextApi/WardUserContext';
 
 export default function App() {
   return (
     <>
       <StatusBar style="light" translucent={true} />
-      <AuthenticationProvider>
-        <BoothUserProvider>
-          <TownUserProvider>
-            <NavigationContainer>
-              <DrawerNavigationComp>
-                <StackNavigation />
-              </DrawerNavigationComp>
-            </NavigationContainer>
-          </TownUserProvider>
-        </BoothUserProvider>
-      </AuthenticationProvider>
+      <LanguageProvider>
+        <AuthenticationProvider>
+          <WardUserProvider>
+            <TownUserProvider>
+              <BoothUserProvider>
+                <NavigationContainer>
+                  <DrawerNavigationComp>
+                    <StackNavigation />
+                  </DrawerNavigationComp>
+                </NavigationContainer>
+              </BoothUserProvider>
+            </TownUserProvider>
+          </WardUserProvider>
+        </AuthenticationProvider>
+      </LanguageProvider>
     </>
   );
 }

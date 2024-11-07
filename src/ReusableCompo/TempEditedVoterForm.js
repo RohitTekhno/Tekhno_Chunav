@@ -1,13 +1,7 @@
 import { Dimensions, Modal, StyleSheet, Text, TextInput, View, TouchableOpacity, Pressable, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import ColorLegendModal from './ColorLegendModal';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -40,14 +34,13 @@ const TempEditedVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter })
 
     const fetchCasteData = async () => {
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/cast/');
+            const response = await axios.get('http://192.168.1.31:8000/api/cast/');
             const casteData = response.data.map(cast => ({
                 label: `${cast.cast_id} - ${cast.cast_name}`,
                 value: cast.cast_id,
             }));
             setCasteOptions(casteData);
         } catch (error) {
-            console.error('Error fetching caste data:', error);
             Alert.alert('Error', 'Failed to load caste data');
         }
     };
@@ -76,7 +69,7 @@ const TempEditedVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter })
         fetchCasteData();
     }, [selectedVoter]);
 
-    
+
     const handleCloseEditForm = () => {
         resetFields()
         onClose()
@@ -98,7 +91,7 @@ const TempEditedVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter })
 
 
         try {
-            const apiUrl = `http://192.168.200.23:8000/api/update_voter_data/${selectedVoter.temp_voter_data_voter_id}/`;
+            const apiUrl = `http://192.168.1.31:8000/api/update_voter_data/${selectedVoter.temp_voter_data_voter_id}/`;
             const response = await axios.put(apiUrl, updatedData);
 
             Alert.alert("Success", "Voter details updated successfully.");

@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import ResponsivePoll from './ResponsivePoll';
@@ -22,7 +22,7 @@ export default function ExitPoll() {
 
     const getVotersByUserwise = async () => {
         try {
-            const result = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${buserId}/`);
+            const result = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_user_wise/${buserId}/`);
             const totalVoterDetails = result.data.voters;
 
             const totalVoterCount = totalVoterDetails.length;
@@ -37,7 +37,7 @@ export default function ExitPoll() {
                 Doubted: Doubted,
             });
         } catch (error) {
-            console.error(error);
+            Alert.alert("Failed to fetch data ", error);
         }
     };
 

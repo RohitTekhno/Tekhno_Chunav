@@ -1,6 +1,5 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ActivityIndicator } from 'react-native-paper';
@@ -19,13 +18,12 @@ const AgewiseVoters = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
             })
             .catch(error => {
-                console.error('Error fetching voter details:', error);
                 Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
             });
     };
@@ -64,85 +62,76 @@ const AgewiseVoters = () => {
         try {
             setLoading(true);
             const [minAge, maxAge] = ageValue.split(',').map(Number);
-            const response = await axios.get(`http://192.168.200.23:8000/api/age_wise_voter/${minAge}/${maxAge}/`);
+            const response = await axios.get(`http://192.168.1.31:8000/api/age_wise_voter/${minAge}/${maxAge}/`);
             setFilteredVoters(response.data);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching voters:', error);
             Alert.alert('Error', 'Failed to fetch voters. Please try again.');
             setLoading(false);
         }
     };
 
     return (
-        <HeaderFooterLayout
-            showFooter={true}
-            headerText='Age Wise Voters'
-        >
-            <View style={styles.container}>
-                <DropDownPicker
-                    open={openAge}
-                    value={ageValue}
-                    items={ageItems}
-                    setOpen={setOpenAge}
-                    setValue={setAgeValue}
-                    setItems={setAgeItems}
-                    placeholder='Select Age Range'
-                    searchable={true}
-                    searchPlaceholder="Search age range..."
-                    placeholderStyle={styles.placeholder}
-                    style={styles.dropdown}
-                    searchTextInputStyle={styles.searchTextInput}
-                    containerStyle={styles.dropdownContainer}
-                    dropDownContainerStyle={[styles.dropdownMenu, { zIndex: 999 }]}
-                    maxHeight={200}
-                />
+        <View style={styles.container}>
+            <DropDownPicker
+                open={openAge}
+                value={ageValue}
+                items={ageItems}
+                setOpen={setOpenAge}
+                setValue={setAgeValue}
+                setItems={setAgeItems}
+                placeholder='Select Age Range'
+                searchable={true}
+                searchPlaceholder="Search age range..."
+                placeholderStyle={styles.placeholder}
+                style={styles.dropdown}
+                searchTextInputStyle={styles.searchTextInput}
+                containerStyle={styles.dropdownContainer}
+                dropDownContainerStyle={[styles.dropdownMenu, { zIndex: 999 }]}
+                maxHeight={200}
+            />
 
-                {loading && ageValue ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size='small' />
-                        <Text style={styles.loadingText}>Loading...</Text>
-                    </View>
-                ) : (
-                    <View style={styles.listContainer}>
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            scrollEnabled={!openAge}
-                            renderItem={({ item }) => (
-                                <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
-                                    <View style={styles.voterDetails}>
-                                        <View style={styles.voterIdContainer}>
-                                            <Text>{item.voter_id}</Text>
-                                        </View>
-                                        <Text>{toTitleCase(item.voter_name)}</Text>
+            {loading && ageValue ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size='small' />
+                    <Text style={styles.loadingText}>Loading...</Text>
+                </View>
+            ) : (
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={filteredVoters}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        scrollEnabled={!openAge}
+                        renderItem={({ item }) => (
+                            <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
+                                <View style={styles.voterDetails}>
+                                    <View style={styles.voterIdContainer}>
+                                        <Text>{item.voter_id}</Text>
                                     </View>
-                                </Pressable>
-                            )}
-                        />
-
-                        <VoterDetailsPopUp
-                            isModalVisible={isModalVisible}
-                            selectedVoter={selectedVoter}
-                            setIsModalVisible={setIsModalVisible}
-                        />
-
-                        {filteredVoters.length === 0 && !loading && (
-                            <Text style={styles.noDataText}>No results found</Text>
+                                    <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                                </View>
+                            </Pressable>
                         )}
-                    </View>
-                )}
-            </View>
-        </HeaderFooterLayout>
+                        ListEmptyComponent={() => <Text style={styles.noDataText}>No voters found</Text>}
+                    />
+
+                    <VoterDetailsPopUp
+                        isModalVisible={isModalVisible}
+                        selectedVoter={selectedVoter}
+                        setIsModalVisible={setIsModalVisible}
+                    />
+                </View>
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 15,
-        marginBottom: height * 0.1
+        paddingHorizontal: 15,
+        backgroundColor: 'white',
     },
     dropdown: {
         backgroundColor: 'white',

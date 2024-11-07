@@ -2,13 +2,10 @@ import { Alert, Dimensions, Image, View, StyleSheet, Text, } from 'react-native'
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import TopNavCompo from '../ReusableCompo/TopNavCompo';
 import CustomeTextInput from './CustomeTextInput';
-import { StatusBar } from 'expo-status-bar';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+
 
 const { width, height } = Dimensions.get('screen')
 const Profile = () => {
@@ -23,7 +20,7 @@ const Profile = () => {
     }
 
     return (
-        <HeaderFooterLayout headerText={'Profile'} showHeader={false} showFooter={true}>
+        <>
             <View style={{ height: height * 0.3 }}>
                 <LinearGradient
                     colors={['#3C4CAC', '#F04393']}
@@ -37,9 +34,9 @@ const Profile = () => {
                 <View style={styles.profileDetailsView}>
                     <View style={styles.profileImageView}>
                         <View style={styles.profileImageCircle}>
-                            <Image source={require('../Assets/Cover.png')} style={styles.profileImage} />
+                            <Image source={require('../../../assets/Cover.png')} style={styles.profileImage} />
                         </View>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold',marginTop:10 }}>Politician</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Politician</Text>
                         <Text>User</Text>
                     </View>
                     <View style={{
@@ -78,7 +75,7 @@ const Profile = () => {
                     <Text style={styles.logOutButtonTxt}>Log Out</Text>
                 </Pressable>
             </View>
-        </HeaderFooterLayout>
+        </ >
     );
 };
 

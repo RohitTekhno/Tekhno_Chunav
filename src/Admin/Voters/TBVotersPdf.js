@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Animated, Easing, Modal, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 
 
@@ -23,7 +22,7 @@ export default function TBVotersPdf() {
   useEffect(() => {
     const fetchFamilyGroups = async () => {
       try {
-        const response = await axios.get(`http://192.168.200.23:8000/api/get_family_groups_for_admin/`);
+        const response = await axios.get(`http://192.168.1.31:8000/api/get_family_groups_for_admin/`);
         if (response.status === 200) {
           setData(response.data);
           initializeArrowAnimations(response.data);
@@ -31,7 +30,7 @@ export default function TBVotersPdf() {
           setError('Data not found');
         }
       } catch (error) {
-        console.error('Error fetching family group data:', error);
+        Alert.alert('Error fetching family group data:', error);
         setError('Error fetching data');
       } finally {
         setLoading(false);
@@ -70,25 +69,24 @@ export default function TBVotersPdf() {
       setModalLoading(true);
       setModalVisible(true);
       try {
-        const response = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_group_id/${id}/`);
+        const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_group_id/${id}/`);
         if (response.status === 200) {
           setMembers(response.data.voters);
         } else {
           // Handle unexpected status codes
-          alert(`Failed to fetch voters. Status code: ${response.status}. Please try again.`);
+          Alert.alert(`Failed to fetch voters. Status code: ${response.status}. Please try again.`);
         }
       } catch (error) {
         // Differentiate between error types
         if (error.response) {
           // The request was made and the server responded with a status code
-          alert(`Error: ${error.response.data.message || 'Failed to fetch voters. Please try again.'}`);
+          Alert.alert(`Error: ${error.response.data.message || 'Failed to fetch voters. Please try again.'}`);
         } else if (error.request) {
           // The request was made but no response was received
-          alert('No response from the server. Please check your network connection and try again.');
+          Alert.alert('No response from the server. Please check your network connection and try again.');
         } else {
           // Something happened in setting up the request
-          console.error('Error:', error.message);
-          alert('An unexpected error occurred. Please try again.');
+          Alert.alert('An unexpected error occurred. Please try again.');
         }
       } finally {
         setModalLoading(false);
@@ -109,7 +107,7 @@ export default function TBVotersPdf() {
 
       console.log('Removing voter with ID:', selectedVoter.voter_id);
 
-      const response = await axios.patch(`http://192.168.200.23:8000/api/remove_voter_from_family_group/${selectedVoter.voter_id}/`, {
+      const response = await axios.patch(`http://192.168.1.31:8000/api/remove_voter_from_family_group/${selectedVoter.voter_id}/`, {
         voter_id: selectedVoter.voter_id,
       });
 
@@ -120,11 +118,9 @@ export default function TBVotersPdf() {
 
         setMembers(members.filter((member) => member.voter_id !== selectedVoter.voter_id));
       } else {
-        console.error('Unexpected response:', response);
         Alert.alert('Error', 'Unexpected response from the server');
       }
     } catch (error) {
-      console.error('Error removing voter:', error);
       Alert.alert('Error', `Failed to remove voter from the group: ${error.message}`);
     } finally {
       setRemovalLoading(false);
@@ -180,71 +176,67 @@ export default function TBVotersPdf() {
   };
 
   return (
-    <HeaderFooterLayout
-      headerText="Family"
-      showFooter={false}
-    >
-      <View style={styles.container}>
-        {loading ? (
-          <Text style={{ textAlign: 'center' }}>Loading...</Text>
-        ) : error ? (
-          <Text style={styles.errorText}>{error}</Text>
-        ) : (
-          <FlatList
-            data={data}
-            keyExtractor={(item) => item.family_group_id.toString()}
-            renderItem={renderItem}
-            ListEmptyComponent={<Text>No family groups available</Text>}
-          />
-        )}
 
-        {/* Members Modal */}
-        <Modal visible={modalVisible} transparent={true} animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Group Members</Text>
-              <View style={{ alignSelf: 'center', flex: 1 }}>
-                {renderModalContent()}
-              </View>
-              <TouchableOpacity style={styles.closeButton} onPress={() => {
-                setModalVisible(false)
-                setMembers([])
-              }}>
-                <Text style={styles.closeButtonText}>Close</Text>
+    <View style={styles.container}>
+      {loading ? (
+        <Text style={{ textAlign: 'center' }}>Loading...</Text>
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.family_group_id.toString()}
+          renderItem={renderItem}
+          ListEmptyComponent={<Text style={{ textAlign: 'center', fontSize: 18, color: 'grey' }}>Family groups not available</Text>}
+        />
+      )}
+
+      {/* Members Modal */}
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Group Members</Text>
+            <View style={{ alignSelf: 'center', flex: 1 }}>
+              {renderModalContent()}
+            </View>
+            <TouchableOpacity style={styles.closeButton} onPress={() => {
+              setModalVisible(false)
+              setMembers([])
+            }}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confirmation Modal for Removal */}
+      <Modal visible={confirmModalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.actionModal}>
+            <Text style={styles.modalTitle}>Remove Voter</Text>
+            <Text>Are you sure you want to remove {selectedVoter?.voter_name} from the family group?</Text>
+            <View style={styles.confirmButtonContainer}>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={handleRemoveVoter}
+                disabled={removalLoading}
+              >
+                <Text style={styles.confirmButtonText}>
+                  {removalLoading ? 'Removing...' : 'Remove'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setConfirmModalVisible(false)}
+                disabled={removalLoading}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>
-
-        {/* Confirmation Modal for Removal */}
-        <Modal visible={confirmModalVisible} transparent={true} animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.actionModal}>
-              <Text style={styles.modalTitle}>Remove Voter</Text>
-              <Text>Are you sure you want to remove {selectedVoter?.voter_name} from the family group?</Text>
-              <View style={styles.confirmButtonContainer}>
-                <TouchableOpacity
-                  style={styles.confirmButton}
-                  onPress={handleRemoveVoter}
-                  disabled={removalLoading}
-                >
-                  <Text style={styles.confirmButtonText}>
-                    {removalLoading ? 'Removing...' : 'Remove'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => setConfirmModalVisible(false)}
-                  disabled={removalLoading}
-                >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </View>
-    </HeaderFooterLayout>
+        </View>
+      </Modal>
+    </View>
   );
 }
 

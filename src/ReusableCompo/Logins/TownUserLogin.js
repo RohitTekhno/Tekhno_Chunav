@@ -4,22 +4,20 @@ import React, { useContext, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TownUserContext } from '../../TownUser/ContextApi/TownUserProvider';
+import { TownUserContext } from '../../ContextApi/TownUserProvider';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
 
 const { height, width } = Dimensions.get('screen');
 
 const TownUserLogin = () => {
-    const { setUserName, setUserId, login } = useContext(TownUserContext);
+    const { setUserName, login } = useContext(TownUserContext);
 
-    const [username, setUsername] = useState("9632587410");
-    const [password, setPassword] = useState("123@Pass");
+    const [username, setUsername] = useState("1234567001");
+    const [password, setPassword] = useState("townuser123");
     const [isTextSecure, setTextSecure] = useState(true);
     const [isLoading, setLoading] = useState(false);
     const [nameError, setNameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const [loginError, setLoginError] = useState('');
 
     const validate = () => {
         let isValid = true;
@@ -51,26 +49,21 @@ const TownUserLogin = () => {
     };
 
     const handleLogin = async () => {
-        setLoginError('');
         if (validate()) {
             setLoading(true);
             try {
                 Vibration.vibrate(100);
-                const response = await axios.post('http://192.168.200.23:8000/api/town_user_login/', {
+                const response = await axios.post('http://192.168.1.31:8000/api/town_user_login/', {
                     town_user_contact_number: username,
                     town_user_password: password,
                 });
 
                 if (response.status === 200) {
-                    const { town_user_id } = response.data;
-                    login(town_user_id)
+                    login(response.data.token)
                     setUserName(username);
-                    setUserId(town_user_id);
                 }
             } catch (error) {
-                setLoginError('Invalid username or password.');
-                Alert.alert(loginError)
-                console.error(error);
+                Alert.alert("Alert", 'Invalid username or password.');
             } finally {
                 setLoading(false);
             }
@@ -95,6 +88,8 @@ const TownUserLogin = () => {
                         value={username}
                         placeholder='Enter username here ...'
                         onChangeText={setUsername}
+                        textContentType='username'
+                        keyboardType='number-pad'
                         style={styles.input}
                         accessibilityLabel="Username input"
                         accessibilityHint="Enter your username"
@@ -110,6 +105,7 @@ const TownUserLogin = () => {
                             placeholder='Enter password here ...'
                             onChangeText={setPassword}
                             secureTextEntry={isTextSecure}
+                            textContentType='password'
                             style={styles.passwordInput}
                             accessibilityLabel="Password input"
                             accessibilityHint="Enter your password"

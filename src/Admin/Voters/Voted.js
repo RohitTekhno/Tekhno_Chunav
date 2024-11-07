@@ -1,11 +1,9 @@
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 
 const { width, height } = Dimensions.get('screen');
@@ -21,14 +19,13 @@ export default function Voted({ route }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
             .then(response => {
 
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
             })
             .catch(error => {
-                console.error('Error fetching voter details:', error);
                 Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
             });
     };
@@ -56,7 +53,7 @@ export default function Voted({ route }) {
 
 
     useEffect(() => {
-        axios.get(`http://192.168.200.23:8000/api/vote_confirmation/1/`)
+        axios.get(`http://192.168.1.31:8000/api/vote_confirmation/1/`)
             .then(response => {
 
                 if (response.data && Array.isArray(response.data)) {
@@ -67,7 +64,7 @@ export default function Voted({ route }) {
                 setLoading(false);
             })
             .catch(error => {
-                console.error('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error);
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });
@@ -75,12 +72,25 @@ export default function Voted({ route }) {
 
 
 
-
+    const getBackgroundColor = (voter_favour_id) => {
+        switch (voter_favour_id) {
+            case 1:
+                return '#d3f5d3';
+            case 2:
+                return '#f5d3d3';
+            case 3:
+                return '#f5f2d3';
+            case 4:
+                return '#c9daff';
+            default:
+                return 'white';
+        }
+    };
 
     return (
         <HeaderFooterLayout
             headerText="Voted"
-            showHeader={true}
+            showHeader={false}
             showFooter={false}>
 
             <View style={styles.container}>
@@ -107,7 +117,9 @@ export default function Voted({ route }) {
                                 keyExtractor={item => item.voter_id.toString()}
                                 showsVerticalScrollIndicator={false}
                                 renderItem={({ item, index }) => (
-                                    <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
+                                    <Pressable style={[styles.voterItem, styles.selectedVoterItem,
+                                    { backgroundColor: getBackgroundColor(item.voter_favour_id) }]}
+                                        onPress={() => { handleVoterPress(item.voter_id) }}>
                                         <View style={styles.voterDetails}>
                                             <View style={styles.indexBox}>
                                                 {/* <Text style={styles.indexText}>{index + 1}</Text> */}
@@ -143,8 +155,9 @@ export default function Voted({ route }) {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingHorizontal: 15,
-        paddingBottom: '32%'
+        backgroundColor: 'white',
     },
     searchContainer: {
         borderColor: '#9095A1',

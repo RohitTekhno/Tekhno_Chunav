@@ -25,10 +25,8 @@ const SendWhatsAppMessage = () => {
 
             if (errorMessages.length > 0) {
                 Alert.alert('Error', `${errorMessages.length} messages failed to send.`);
-                console.error('Errors:', errorMessages);
             }
         } catch (error) {
-            console.error('Error sending messages:', error);
             Alert.alert('Error', 'Failed to send messages. Please try again.');
         }
     };

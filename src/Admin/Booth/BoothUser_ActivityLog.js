@@ -1,16 +1,12 @@
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
-const { width, height } = Dimensions.get('screen');
 
 const BoothUser_ActivityLog = (routes) => {
-
     const { userId } = routes.route.params;
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
@@ -24,16 +20,16 @@ const BoothUser_ActivityLog = (routes) => {
 
     const fetchData = async () => {
         try {
-            const statesResponse = await axios.get(`http://192.168.200.23:8000/api/edited_voters/${userId}/`);
+            const statesResponse = await axios.get(`http://192.168.1.31:8000/api/edited_voters/${userId}/`);
             const formattedTowns = statesResponse.data;
             if (Array.isArray(formattedTowns)) {
                 setBoothUsers(formattedTowns);
             } else {
-                console.error('Expected an array of boothUsers');
+                Alert.alert('Expected an array of boothUsers');
             }
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            Alert.alert('Error fetching data:', error);
             setLoading(false);
         }
     };
@@ -50,15 +46,6 @@ const BoothUser_ActivityLog = (routes) => {
         fetchData();
     }, [userId]);
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'small'} />
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
-
     const renderVoterField = (label, value) => {
         if (value) {
             return (
@@ -71,57 +58,55 @@ const BoothUser_ActivityLog = (routes) => {
     };
 
     return (
-        <HeaderFooterLayout
-            headerText="Updated Voters"
-            showFooter={false}
-            leftIcon={true}
-            rightIcon={true}
-            leftIconName="chevron-left"
-        >
-            <View style={styles.container}>
-                <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={20} color="grey" />
-                    <TextInput
-                        value={searchedValue}
-                        onChangeText={text => setSearchValue(text)}
-                        placeholder="Search by user’s name or ID"
-                        style={styles.searchInput}
-                    />
-                </View>
-
-                <View style={styles.listContainer}>
-                    {searchedTown.length > 0 ? (
-                        <FlatList
-                            data={searchedTown}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item, index }) => (
-                                <Pressable style={styles.voterItem}>
-                                    <View style={styles.voterDetails}>
-                                        <Text style={{
-                                            borderWidth: 1, borderColor: '#3C4CAC', padding: 5,
-                                            textAlign: 'center', borderRadius: 2, fontWeight: '700'
-                                        }}>{index + 1}</Text>
-                                    </View>
-                                    <View>
-                                        <Text style={{ color: '#9095A1', fontWeight: '600' }}>ID: {item.voter_id}</Text>
-                                        <Text style={{ color: '#3C4CAC', fontWeight: '600' }}>Name: {tot(item.voter_name)}</Text>
-                                        {renderVoterField('Parent Name', item.voter_parent_name)}
-                                        {renderVoterField('Age', item.voter_age)}
-                                        {renderVoterField('Gender', item.voter_gender)}
-                                        {renderVoterField('Contact', item.voter_contact_number)}
-                                        {renderVoterField('Caste', item.cast_name)}
-                                        {renderVoterField('Updated Date', item.voter_updated_date)}
-                                    </View>
-                                </Pressable>
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-                </View>
+        <View style={styles.container}>
+            <View style={styles.searchContainer}>
+                <Ionicons name="search" size={20} color="grey" />
+                <TextInput
+                    value={searchedValue}
+                    onChangeText={text => setSearchValue(text)}
+                    placeholder="Search by user’s name or ID"
+                    style={styles.searchInput}
+                />
             </View>
-        </HeaderFooterLayout>
+
+            <View style={styles.listContainer}>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size={'small'} />
+                        <Text>Loading...</Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={searchedTown}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item, index }) => (
+                            <Pressable style={styles.voterItem}>
+                                <View style={styles.voterDetails}>
+                                    <Text style={{
+                                        borderWidth: 1, borderColor: '#3C4CAC', padding: 5,
+                                        textAlign: 'center', borderRadius: 2, fontWeight: '700'
+                                    }}>{index + 1}</Text>
+                                </View>
+                                <View>
+                                    <Text style={{ color: '#9095A1', fontWeight: '600' }}>ID: {item.voter_id}</Text>
+                                    <Text style={{ color: '#3C4CAC', fontWeight: '600' }}>Name: {toTitleCase(item.voter_name)}</Text>
+                                    {renderVoterField('Parent Name', item.voter_parent_name)}
+                                    {renderVoterField('Age', item.voter_age)}
+                                    {renderVoterField('Gender', item.voter_gender)}
+                                    {renderVoterField('Contact', item.voter_contact_number)}
+                                    {renderVoterField('Caste', item.cast_name)}
+                                    {renderVoterField('Updated Date', item.voter_updated_date)}
+                                </View>
+                            </Pressable>
+                        )}
+                        ListEmptyComponent={() => (
+                            <Text style={styles.noDataText}>No results found</Text>
+                        )}
+                    />
+                )}
+            </View>
+        </View>
     );
 };
 

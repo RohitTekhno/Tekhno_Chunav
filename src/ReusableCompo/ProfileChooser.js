@@ -56,6 +56,22 @@ const ProfileChooser = () => {
                             locations={[0.3, 1]}
                             style={styles.linearGradientBtn}
                         >
+                            <Pressable style={styles.pressableStyle} onPress={() => { navigation.navigate('WardUserLogin') }}>
+                                <View style={{ marginLeft: width * 0.04 }}>
+                                    <FontAwesome name="user-circle-o" size={30} color="#3C4CAC" />
+                                </View>
+                                <View style={{ flex: 1, alignItems: 'center' }}>
+                                    <Text style={styles.textStyle}>Ward User</Text>
+                                </View>
+                            </Pressable>
+                        </LinearGradient>
+
+
+                        <LinearGradient
+                            colors={['#3C4CAC', '#F04393']}
+                            locations={[0.3, 1]}
+                            style={styles.linearGradientBtn}
+                        >
                             <Pressable style={styles.pressableStyle} onPress={() => { navigation.navigate('TownUserLogin') }}>
                                 <View style={{ marginLeft: width * 0.04 }}>
                                     <FontAwesome name="user-circle-o" size={30} color="#3C4CAC" />

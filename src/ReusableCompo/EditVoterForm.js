@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import ColorLegendModal from './ColorLegendModal';
+import ColorLegendModal from '../ReusableCompo/ColorLegendModal';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
@@ -44,6 +43,8 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
 
 
     const handleSelectedVoterType = (item) => {
+        console.log(item);
+
         setVoterFavourType(item.id);
         setTypeColor(item.id)
 
@@ -75,35 +76,46 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             case 3:
                 selectedColor = '#FBBE17';
                 break;
+            case 4:
+                selectedColor = '#0284f5';
+                break;
+            case 5:
+                selectedColor = 'skyblue';
+                break;
+            case 6:
+                selectedColor = 'pink';
+                break;
+            case 7:
+                selectedColor = 'purple';
+                break;
         }
+
         setColor(selectedColor);
     }
 
 
     const sendCheckboxStateToAPI = async (voterId, checkboxID) => {
         try {
-            const response = await axios.put(`http://192.168.200.23:8000/api/favour/${voterId}/`, {
+            const response = await axios.put(`http://192.168.1.31:8000/api/favour/${voterId}/`, {
                 voter_favour_id: checkboxID,
             });
             if (response.status !== 200) {
                 throw new Error('Failed to update checkbox state.');
             }
         } catch (error) {
-            console.error('Error updating checkbox state:', error.message);
             alert('Failed to update checkbox state. Please try again.');
         }
     };
 
     const fetchCasteData = async () => {
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/cast/');
+            const response = await axios.get('http://192.168.1.31:8000/api/cast/');
             const casteData = response.data.map(cast => ({
                 label: `${cast.cast_id} - ${cast.cast_name}`,
                 value: cast.cast_id,
             }));
             setCasteOptions(casteData);
         } catch (error) {
-            console.error('Error fetching caste data:', error);
             Alert.alert('Error', 'Failed to load caste data');
         }
     };
@@ -152,7 +164,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
 
     const handlePdfIconClick = async (voterId) => {
         try {
-            const response = await axios.get(`http://192.168.200.23:8000/api/generate_voter_pdf/${voterId}`, {
+            const response = await axios.get(`http://192.168.1.31:8000/api/generate_voter_pdf/${voterId}`, {
                 params: { voter_id: voterId },
                 responseType: 'arraybuffer', // Request the response as an array buffer
             });
@@ -170,7 +182,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            Alert.alert('Success', 'PDF has been saved to your device!');
+            //Alert.alert('Success', 'PDF has been saved to your device!');
 
             // Share or open the PDF file
             if (await Sharing.isAvailableAsync()) {
@@ -180,7 +192,6 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             }
 
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         }
     };
@@ -193,23 +204,38 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             "voter_favour_id": voterFavourType,
         }
 
+        // Dynamically updating only the fields that are changed
+        let updatedFields = {};
+
+        if (name !== '') updatedFields.voter_name = name;
+        if (parentName !== '') updatedFields.voter_parent_name = parentName;
+        if (contact !== '') updatedFields.voter_contact_number = contact;
+        if (caste !== '') updatedFields.voter_cast_id = caste;
+        if (age !== '') updatedFields.voter_age = age;
+        if (gender !== '') updatedFields.voter_gender = gender;
+        if (currentStatus !== '') updatedFields.voter_live_status_id = currentStatus;
+        if (maritalStatus !== '') updatedFields.voter_marital_status_id = maritalStatus;
+        if (voterFavourType !== '') updatedFields.voter_favour_id = voterFavourType;
+
+        // If a field is empty, set it to null
+        if (name === '') updatedFields.voter_name = null;
+        if (parentName === '') updatedFields.voter_parent_name = null;
+        if (contact === '') updatedFields.voter_contact_number = null;
+        if (caste === '') updatedFields.voter_cast_id = null;
+        if (age === '') updatedFields.voter_age = null;
+        if (gender === '') updatedFields.voter_gender = null;
+        if (currentStatus === '') updatedFields.voter_live_status_id = null;
+        if (maritalStatus === '') updatedFields.voter_marital_status_id = null;
+        if (voterFavourType === '') updatedFields.voter_favour_id = null;
+
+
         try {
-            const apiUrl = `http://192.168.200.23:8000/api/voters/${selectedVoter.voter_id}/`;
-            const response = await axios.patch(apiUrl, {
-                voter_name: name,
-                voter_parent_name: parentName,
-                voter_contact_number: contact,
-                voter_cast_id: caste,
-                voter_age: age,
-                voter_gender: gender,
-                voter_live_status_id: currentStatus,
-                voter_marital_status_id: maritalStatus,
-                voter_favour_id: voterFavourType,
-            });
+            const apiUrl = `http://192.168.1.31:8000/api/voters/${selectedVoter.voter_id}/`;
+            const response = await axios.patch(apiUrl, updatedFields);
 
             Alert.alert("Success", "Voter details updated successfully.");
         } catch (error) {
-            Alert.error("Error", "Failed to update voter details.");
+            Alert.alert("Error", "Failed to update voter details.");
         } finally {
             setLoading(false);
             onEditVoter(editedVoter)

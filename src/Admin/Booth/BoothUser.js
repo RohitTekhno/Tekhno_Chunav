@@ -28,16 +28,16 @@ const BoothUsers = () => {
 
     const fetchData = async () => {
         try {
-            const statesResponse = await axios.get('http://192.168.200.23:8000/api/booth_user_info/');
+            const statesResponse = await axios.get('http://192.168.1.31:8000/api/booth_user_info/');
             const formattedTowns = statesResponse.data;
             if (Array.isArray(formattedTowns)) {
                 setBoothUsers(formattedTowns);
             } else {
-                console.error('Expected an array of boothUsers');
+                Alert.alert('Expected an array of boothUsers');
             }
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            Alert.alert('Error fetching data:', error);
             setLoading(false);
         }
     };
@@ -52,7 +52,7 @@ const BoothUsers = () => {
 
     const deleteUser = async (userId) => {
         try {
-            const response = await axios.post('http://192.168.200.23:8000/api/delete_user/', {
+            const response = await axios.post('http://192.168.1.31:8000/api/delete_user/', {
                 user_id: userId,
             }, {
                 headers: {
@@ -61,16 +61,13 @@ const BoothUsers = () => {
             });
 
             if (response.status === 200 || response.status === 204) {
-
                 await fetchData();
-
-
                 Alert.alert('Success', 'User has been deleted successfully.');
             } else {
                 Alert.alert('Error', 'Failed to delete the user.');
             }
         } catch (error) {
-            console.error('Error deleting user:', error);
+            Alert.alert('Error deleting user:', error);
             if (error.response) {
                 Alert.alert('Error', `Failed to delete the user: ${error.response.data.message || 'Unexpected error'}`);
             } else if (error.request) {
@@ -100,7 +97,7 @@ const BoothUsers = () => {
     const handlePDFClick = async () => {
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/generate_booth_user_pdf/', {
+            const response = await axios.get('http://192.168.1.31:8000/api/generate_booth_user_pdf/', {
                 responseType: 'arraybuffer',
             });
 
@@ -113,7 +110,7 @@ const BoothUsers = () => {
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            Alert.alert('Success', 'PDF has been saved to your device!');
+            //Alert.alert('Success', 'PDF has been saved to your device!');
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
@@ -121,7 +118,6 @@ const BoothUsers = () => {
                 Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
@@ -145,7 +141,7 @@ const BoothUsers = () => {
             showFooter={false}
             leftIcon={true}
             rightIcon={true}
-            leftIconName="chevron-left"
+            leftIconName="keyboard-backspace"
             rightIconName="file-pdf"
             onRightIconPress={handlePDFClick}
         >

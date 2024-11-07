@@ -1,11 +1,9 @@
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator, Checkbox } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 
 const { width, height } = Dimensions.get('screen');
@@ -25,13 +23,12 @@ const TownVoters = ({ route }) => {
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
             })
             .catch(error => {
-                console.error('Error fetching voter details:', error);
                 Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
             });
     };
@@ -91,7 +88,7 @@ const TownVoters = ({ route }) => {
 
 
     useEffect(() => {
-        axios.get(`http://192.168.200.23:8000/api/town_wise_voter_list/${townId}/`)
+        axios.get(`http://192.168.1.31:8000/api/town_wise_voter_list/${townId}/`)
             .then(response => {
                 if (response.data && Array.isArray(response.data)) {
                     setVoters(response.data);
@@ -103,7 +100,7 @@ const TownVoters = ({ route }) => {
                 setLoading(false);
             })
             .catch(error => {
-                console.error('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error);
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });
@@ -121,21 +118,9 @@ const TownVoters = ({ route }) => {
     };
 
 
-    // if (loading) {
-    //     return (
-    //         <HeaderFooterLayout showHeader={false} showFooter={true}>
-
-    //             <View style={styles.loadingContainer}>
-    //                 <ActivityIndicator size={'small'} />
-    //                 <Text>Loading...</Text>
-    //             </View>
-    //         </HeaderFooterLayout>
-    //     );
-    // }
-
     const send_WhatsApp_Message = async () => {
         try {
-            const response = await axios.post(`http://192.168.200.23:8000/api/send_whatsapp_message/`, {
+            const response = await axios.post(`http://192.168.1.31:8000/api/send_whatsapp_message/`, {
                 "voter_ids": selectedVoters
             });
 
@@ -144,13 +129,13 @@ const TownVoters = ({ route }) => {
                 exitSelectionMode();
             }
         } catch (error) {
-            console.error("Error sending WhatsApp message:", error);
+            Alert.alert("Error sending WhatsApp message:", error);
         }
     };
 
     const send_Text_Message = async () => {
         try {
-            const response = await axios.post(`http://192.168.200.23:8000/api/send_text_message/`, {
+            const response = await axios.post(`http://192.168.1.31:8000/api/send_text_message/`, {
                 "voter_ids": selectedVoters
             });
 
@@ -159,7 +144,7 @@ const TownVoters = ({ route }) => {
                 exitSelectionMode();
             }
         } catch (error) {
-            console.error("Error sending text message:", error);
+            Alert.alert("Error sending text message:", error);
         }
     };
 
@@ -183,15 +168,16 @@ const TownVoters = ({ route }) => {
 
     return (
         <HeaderFooterLayout
-            headerText={`Voters in Town : ${route.params.townId}`}
+            headerText={`${route.params.townName} Voters`}
             showHeader={true}
             showFooter={false}
             leftIcon={true}
             rightIcon={true}
-            leftIconName="chevron-left"
+            leftIconName="keyboard-backspace"
             rightIconName={getIconName()}
             onRightIconPress={sortVotersAlphabetically}
         >
+
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
@@ -218,38 +204,37 @@ const TownVoters = ({ route }) => {
                     </View>
                     :
                     <View style={styles.listContainer}>
-                        {filteredVoters.length > 0 ? (
-                            <FlatList
-                                data={filteredVoters}
-                                keyExtractor={item => item.voter_id.toString()}
-                                showsVerticalScrollIndicator={false}
-                                renderItem={({ item }) => (
-                                    <Pressable
-                                        style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem]}
-                                        onPress={() => handleVoterPress(item.voter_id)}
-                                        onLongPress={() => handleLongPress(item.voter_id)}
-                                    >
-                                        <View style={styles.voterDetails}>
-                                            <View style={{
-                                                borderRightWidth: 1, borderColor: '#D9D9D9',
-                                                width: 60, alignItems: 'center',
-                                            }}>
-                                                <Text>{item.voter_id}</Text>
-                                            </View>
-                                            <Text>{toTitleCase(item.voter_name)}</Text>
+                        <FlatList
+                            data={filteredVoters}
+                            keyExtractor={item => item.voter_id.toString()}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                                <Pressable
+                                    style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem]}
+                                    onPress={() => handleVoterPress(item.voter_id)}
+                                    onLongPress={() => handleLongPress(item.voter_id)}
+                                >
+                                    <View style={styles.voterDetails}>
+                                        <View style={{
+                                            borderRightWidth: 1, borderColor: '#D9D9D9',
+                                            width: 60, alignItems: 'center', justifyContent: 'center'
+                                        }}>
+                                            <Text>{item.voter_id}</Text>
                                         </View>
-                                        {isSelectionMode && (
-                                            <Checkbox
-                                                status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
-                                                onPress={() => toggleVoterSelection(item.voter_id)}
-                                            />
-                                        )}
-                                    </Pressable>
-                                )}
-                            />
-                        ) : (
-                            <Text style={styles.noDataText}>No results found</Text>
-                        )}
+                                        <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                                    </View>
+                                    {isSelectionMode && (
+                                        <Checkbox
+                                            status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
+                                            onPress={() => toggleVoterSelection(item.voter_id)}
+                                        />
+                                    )}
+                                </Pressable>
+                            )}
+                            ListEmptyComponent={() => (
+                                <Text style={styles.noDataText}>No data found</Text>
+                            )}
+                        />
                     </View>
                 }
 

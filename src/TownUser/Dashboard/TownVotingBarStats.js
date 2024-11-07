@@ -1,31 +1,84 @@
-import React from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import axios from 'axios';
+import React, { memo, useContext, useEffect, useState } from 'react';
+import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { TownUserContext } from '../../ContextApi/TownUserProvider';
 
 const { width, height } = Dimensions.get('screen');
 
-const TownVotingBarStats = ({ TotalVoters = 100, Favorable = 50, Non_Favorable = 20, Doubted = 10, Non_Voted = 20 }) => {
-    const perPercent = TotalVoters > 0 ? TotalVoters / 100 : 1;
+const TownVotingBarStats = memo(() => {
+    const { userId } = useContext(TownUserContext)
+    const [totalVoters, setTotalVoters] = useState(100);
+    const [favorable, setFavorable] = useState(0);
+    const [nonFavorable, setNonFavorable] = useState(0);
+    const [doubted, setDoubted] = useState(0);
+    const [nonVoted, setNonVoted] = useState(0);
 
-    const data = [
-        { label: 'Favorable', value: Math.round(Favorable / perPercent) },
-        { label: 'Non Favorable', value: Math.round(Non_Favorable / perPercent) },
-        { label: 'Doubted', value: Math.round(Doubted / perPercent) },
-        { label: 'Non Voted', value: Math.round(Non_Voted / perPercent) },
-    ];
+    const perPercent = totalVoters > 0 ? totalVoters / 100 : 1;
 
-    const colorData = [
-        { labelL: 'red', value: '#34A853' },
-        { labelL: 'red', value: '#EA4335' },
-        { labelL: 'red', value: '#FBBC04' },
-        { labelL: 'red', value: '#545454' },
-    ];
+    const data = React.useMemo(() => [
+        { label: 'Favorable', value: Math.round(favorable / perPercent) },
+        { label: 'Non Favorable', value: Math.round(nonFavorable / perPercent) },
+        { label: 'Doubted', value: Math.round(doubted / perPercent) },
+        { label: 'Non Voted', value: Math.round(nonVoted / perPercent) },
+    ], [favorable, nonFavorable, doubted, nonVoted, totalVoters]);
 
-    const animatedValues = data.map((item) => useSharedValue(0));
+    const colorData = ['#34A853', '#EA4335', '#FBBC04', '#545454'];
+    const animatedValues = data.map(() => useSharedValue(0));
 
-    data.forEach((item, index) => {
-        animatedValues[index].value = withTiming(isNaN(item.value) ? 0 : item.value, { duration: 1000 });
-    });
+    React.useEffect(() => {
+        data.forEach((item, index) => {
+            animatedValues[index].value = withTiming(item.value, { duration: 1000 });
+        });
+    }, [data, animatedValues]);
+
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://192.168.1.31:8000/api/get_voter_list_by_town_user/${userId}/`);
+            const voterList = response.data;
+
+            let favorableCount = 0;
+            let nonFavorableCount = 0;
+            let doubtedCount = 0;
+            let nonVotedCount = 0;
+
+            voterList.forEach((voter) => {
+                switch (voter.favour_id) {
+                    case 1:
+                    case 4:
+                    case 5:
+                        favorableCount++;
+                        break;
+                    case 2:
+                        nonFavorableCount++;
+                        break;
+                    case 3:
+                        doubtedCount++;
+                        break;
+                    case 0:
+                    case null:
+                        nonVotedCount++;
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            setTotalVoters(voterList.length);
+            setFavorable(favorableCount);
+            setNonFavorable(nonFavorableCount);
+            setDoubted(doubtedCount);
+            setNonVoted(nonVotedCount);
+        } catch (error) {
+            Alert.alert('Error fetching voter data:', error);
+        }
+    };
+
 
     return (
         <View style={styles.container}>
@@ -34,9 +87,10 @@ const TownVotingBarStats = ({ TotalVoters = 100, Favorable = 50, Non_Favorable =
                 <View style={styles.barChart}>
                     {data.map((item, index) => {
                         const animatedStyle = useAnimatedStyle(() => ({
-                            height: animatedValues[index].value * 2,
-                            backgroundColor: colorData[index].value,
+                            height: animatedValues[index].value * 1.8,
+                            backgroundColor: colorData[index],
                         }));
+
                         return (
                             <View key={index} style={styles.barContainer}>
                                 <Text style={styles.barText}>{item.value}%</Text>
@@ -72,7 +126,7 @@ const TownVotingBarStats = ({ TotalVoters = 100, Favorable = 50, Non_Favorable =
             </View>
         </View>
     );
-};
+});
 
 export default TownVotingBarStats;
 
@@ -85,7 +139,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     graphTitle: {
-        fontSize: height * 0.017,
+        fontSize: height * 0.018,
         fontWeight: '700',
         textAlign: 'center',
     },
@@ -105,7 +159,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
     },
     bar: {
-        width: width * 0.15,
+        width: width * 0.1,
     },
     legendContainer: {
         flexDirection: 'row',
@@ -118,8 +172,8 @@ const styles = StyleSheet.create({
     legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        columnGap: 5,
         marginVertical: 5,
+        columnGap: 10
     },
     legendColor: {
         height: 10,
@@ -128,6 +182,6 @@ const styles = StyleSheet.create({
     },
     legendLabel: {
         fontSize: height * 0.014,
-        color: 'black'
+        color: 'black',
     },
 });

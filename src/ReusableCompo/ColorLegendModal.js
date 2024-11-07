@@ -5,12 +5,15 @@ import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity } from 'react-native';
 
 const legendData = [
+    { id: '0', color: '#000000', label: 'Pending' },
     { id: '1', color: '#188357', label: 'Favourable' },
     { id: '2', color: '#FF3030', label: 'Non-Favourable' },
     { id: '3', color: '#FBBE17', label: 'Doubted' },
-    { id: '4', color: '#000000', label: 'Pending' },
-    { id: '5', color: '#59320C', label: 'Chocolate' },
-    { id: '6', color: '#F99D4D', label: 'Golden' },
+    { id: '5', color: 'skyblue', label: 'Pro' },
+    { id: '4', color: '#0284f5', label: 'Pro Plus' },
+    { id: '6', color: 'pink', label: 'No vote' },
+    { id: '7', color: 'purple', label: 'No vote Voted' }
+
 ];
 
 const ColorLegendModal = ({ isVisible, closeModal, onSelect }) => {

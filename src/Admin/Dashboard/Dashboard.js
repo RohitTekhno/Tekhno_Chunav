@@ -1,12 +1,11 @@
-import { Dimensions, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import VotingBarStats from './VotingBarStats';
 import CastDonotStat from './CastDonotStat';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
-import { AuthenticationContext } from '../Context_Api/AuthenticationContext';
+
 
 const { height, width } = Dimensions.get('screen');
 
@@ -29,7 +28,7 @@ const Dashboard = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result1 = await axios.get(`http://192.168.200.23:8000/api/voter_favour_counts/`);
+            const result1 = await axios.get(`http://192.168.1.31:8000/api/voter_favour_counts/`);
             setVoterCounter({
                 TotalVoters: result1.data.Total_Voters,
                 Favorable: result1.data.Favourable,
@@ -38,44 +37,44 @@ const Dashboard = () => {
                 Non_Voted: result1.data.Pending
             });
         } catch (error) {
-            console.error(error);
+            Alert.alert("Failed to fetch data ", error);
         }
     };
 
     // NEW API call for voted and non-voted count
     const getVotedAndNonVotedCount = async () => {
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/get_voted_and_non_voted_count/');
+            const response = await axios.get('http://192.168.1.31:8000/api/get_voted_and_non_voted_count/');
             setTotalVoted(response.data.voted_count.toString());
             setNTotalVoted(response.data.non_voted_count.toString());
         } catch (error) {
-            console.error('Error fetching voted and non-voted count:', error);
+            Alert.alert('Error fetching voted and non-voted count:', error);
         }
     };
 
     const getAllCounts = () => {
-        axios.get('http://192.168.200.23:8000/api/voter_count/')
+        axios.get('http://192.168.1.31:8000/api/voter_count/')
             .then(response => {
                 setTotalVoters(response.data.count.toString());
             })
             .catch(error => {
-                console.error('Error fetching total voters count:', error);
+                Alert.alert('Error fetching total voters count:', error);
             });
 
-        axios.get('http://192.168.200.23:8000/api/towns/')
+        axios.get('http://192.168.1.31:8000/api/towns/')
             .then(response => {
                 setTotalTowns(response.data.length.toString());
             })
             .catch(error => {
-                console.error('Error fetching total towns:', error);
+                Alert.alert('Error fetching total towns:', error);
             });
 
-        axios.get('http://192.168.200.23:8000/api/booths/')
+        axios.get('http://192.168.1.31:8000/api/booths/')
             .then(response => {
                 setTotalBooths(response.data.length.toString());
             })
             .catch(error => {
-                console.error('Error fetching total booths count:', error);
+                Alert.alert('Error fetching total booths count:', error);
             });
 
     }
@@ -95,77 +94,75 @@ const Dashboard = () => {
     }
 
     return (
-        <HeaderFooterLayout showHeader={false} showFooter={true}>
-            <ScrollView style={styles.container}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={handleRefresh}
-                    />}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-            >
-                <View style={styles.headerContainer}>
-                    <Text style={styles.title}>Washim Constituency</Text>
-                    <Pressable onPress={() => { navigation.navigate('Total Voters') }} style={{
-                        height: height * 0.1, borderRadius: 10,
-                        paddingVertical: '2%',
-                        width: '100%',
-                    }}>
-                        <LinearGradient
-                            colors={['#3C4CAC', '#F04393']}
-                            locations={[0.3, 1]}
-                            style={styles.gradient}
-                        >
-                            <Text style={styles.gradientText}>Total Voters Count</Text>
-                            <Text style={styles.gradientText}>{totalVoters}</Text>
-                        </LinearGradient>
+        <ScrollView style={styles.container}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                />}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+        >
+            <View style={styles.headerContainer}>
+                <Text style={styles.title}>Washim Constituency</Text>
+                <Pressable onPress={() => { navigation.navigate('Total Voters') }} style={{
+                    height: height * 0.1, borderRadius: 10,
+                    paddingVertical: '2%',
+                    width: '100%',
+                }}>
+                    <LinearGradient
+                        colors={['#3C4CAC', '#F04393']}
+                        locations={[0.3, 1]}
+                        style={styles.gradient}
+                    >
+                        <Text style={styles.gradientText}>Total Voters Count</Text>
+                        <Text style={styles.gradientText}>{totalVoters}</Text>
+                    </LinearGradient>
+                </Pressable>
+            </View>
+
+            <View style={styles.statsContainer}>
+                <View style={styles.statsRow}>
+                    <Pressable onPress={() => { navigation.navigate('Towns') }} style={[styles.statsBox, styles.statsBoxBlue]}>
+                        <Text style={styles.statsLabel}>Total Town Count</Text>
+                        <Text style={styles.statsValue}>{totalTowns}</Text>
+                    </Pressable>
+
+                    <Pressable onPress={() => { navigation.navigate('Booths'); }} style={[styles.statsBox, styles.statsBoxGreen]}>
+                        <Text style={styles.statsLabel}>Total Booth Count</Text>
+                        <Text style={styles.statsValue}>{totalBooths}</Text>
                     </Pressable>
                 </View>
 
-                <View style={styles.statsContainer}>
-                    <View style={styles.statsRow}>
-                        <Pressable onPress={() => { navigation.navigate('Towns') }} style={[styles.statsBox, styles.statsBoxBlue]}>
-                            <Text style={styles.statsLabel}>Total Town Count</Text>
-                            <Text style={styles.statsValue}>{totalTowns}</Text>
-                        </Pressable>
+                <View style={styles.statsRow}>
+                    <Pressable style={[styles.statsBox, styles.statsBoxYellow]} onPress={() => { navigation.navigate('Voted') }}>
+                        <Text style={styles.statsLabel}>Total Voted Count</Text>
+                        <Text style={styles.statsValue}>{totalVoted}</Text>
+                    </Pressable>
 
-                        <Pressable onPress={() => { navigation.navigate('Booths'); }} style={[styles.statsBox, styles.statsBoxGreen]}>
-                            <Text style={styles.statsLabel}>Total Booth Count</Text>
-                            <Text style={styles.statsValue}>{totalBooths}</Text>
-                        </Pressable>
-                    </View>
+                    <Pressable style={[styles.statsBox, styles.statsBoxCyan]} onPress={() => { navigation.navigate('Nvoted') }}>
+                        <Text style={styles.statsLabel}>Total Non-Voted Count</Text>
+                        <Text style={styles.statsValue}>{totalNVoted}</Text>
+                    </Pressable>
+                </View>
+            </View>
 
-                    <View style={styles.statsRow}>
-                        <Pressable style={[styles.statsBox, styles.statsBoxYellow]} onPress={() => { navigation.navigate('Voted') }}>
-                            <Text style={styles.statsLabel}>Total Voted Count</Text>
-                            <Text style={styles.statsValue}>{totalVoted}</Text>
-                        </Pressable>
-
-                        <Pressable style={[styles.statsBox, styles.statsBoxCyan]} onPress={() => { navigation.navigate('Nvoted') }}>
-                            <Text style={styles.statsLabel}>Total Non-Voted Count</Text>
-                            <Text style={styles.statsValue}>{totalNVoted}</Text>
-                        </Pressable>
-                    </View>
+            <View style={styles.votingStatsContainer}>
+                <View style={styles.votingStatsBox}>
+                    <VotingBarStats
+                        TotalVoters={votersCounter.TotalVoters}
+                        Favorable={votersCounter.Favorable}
+                        Non_Favorable={votersCounter.Non_Favorable}
+                        Doubted={votersCounter.Doubted}
+                        Non_Voted={votersCounter.Non_Voted}
+                    />
                 </View>
 
-                <View style={styles.votingStatsContainer}>
-                    <View style={styles.votingStatsBox}>
-                        <VotingBarStats
-                            TotalVoters={votersCounter.TotalVoters}
-                            Favorable={votersCounter.Favorable}
-                            Non_Favorable={votersCounter.Non_Favorable}
-                            Doubted={votersCounter.Doubted}
-                            Non_Voted={votersCounter.Non_Voted}
-                        />
-                    </View>
-
-                    <View style={styles.votingStatsBox}>
-                        <CastDonotStat />
-                    </View>
+                <View style={styles.votingStatsBox}>
+                    <CastDonotStat />
                 </View>
-            </ScrollView>
-        </HeaderFooterLayout>
+            </View>
+        </ScrollView>
     );
 };
 
@@ -173,7 +170,6 @@ export default Dashboard;
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: height * 0.05,
         paddingHorizontal: 15,
         backgroundColor: 'white',
     },

@@ -1,10 +1,10 @@
 import { ActivityIndicator, Alert, Dimensions, Image, Pressable, StyleSheet, Text, TextInput, Vibration, View } from 'react-native';
 import React, { useContext, useState } from 'react';
 
-import { AuthenticationContext } from '../../Admin/Context_Api/AuthenticationContext';
 import Feather from '@expo/vector-icons/Feather';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
+import { AuthenticationContext } from '../../ContextApi/AuthenticationContext';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -16,7 +16,6 @@ const AdminLogin = () => {
     const [isLoading, setLoading] = useState(false);
     const [nameError, setNameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const [loginError, setLoginError] = useState('');
 
     const toggleSecureText = () => {
         setTextSecure(!isTextSecure);
@@ -48,25 +47,22 @@ const AdminLogin = () => {
     };
 
     const logInUser = async () => {
-        setLoginError('');
         if (validate()) {
             try {
                 Vibration.vibrate(100);
                 setLoading(true);
 
-                const response = await axios.post('http://192.168.200.23:8000/api/politician_login/', {
+                const response = await axios.post('http://192.168.1.31:8000/api/politician_login/', {
                     politician_name: username,
                     politician_password: password,
                 });
 
                 if (response.status === 200) {
-                    const userId = response.data.politician_id;
-                    login(userId);
+                    const responseData = response.data.token;
+                    login(responseData);
                 }
             } catch (error) {
-                console.error(error);
-                setLoginError('Invalid credentials. Please try again.');
-                Alert.alert(loginError)
+                Alert.alert('Alert', 'Invalid credentials. Please try again.');
             } finally {
                 setLoading(false);
             }

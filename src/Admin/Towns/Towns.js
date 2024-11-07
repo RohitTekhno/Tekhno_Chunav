@@ -1,5 +1,5 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert, Animated } from 'react-native';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import { ActivityIndicator } from 'react-native-paper';
@@ -7,11 +7,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
-const API_BASE_URL = 'http://192.168.200.23:8000/api/';
+const API_BASE_URL = 'http://192.168.1.31:8000/api/';
 
 const Towns = () => {
+    const { language, toggleLanguage } = useContext(LanguageContext);
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(true);
@@ -31,10 +33,9 @@ const Towns = () => {
             if (Array.isArray(formattedTowns)) {
                 setTowns(formattedTowns);
             } else {
-                console.error('Expected an array of towns');
+                Alert.alert('Expected an array of towns');
             }
         } catch (error) {
-            console.error('Error fetching data:', error);
             Alert.alert('Error', 'Failed to fetch town data. Please try again later.');
         } finally {
             setLoading(false);
@@ -71,7 +72,7 @@ const Towns = () => {
             const base64 = btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));
             const fileUri = FileSystem.documentDirectory + 'booths_report.pdf';
             await FileSystem.writeAsStringAsync(fileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
-            Alert.alert('Success', 'PDF has been saved to your device!');
+            //Alert.alert('Success', 'PDF has been saved to your device!');
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
@@ -79,7 +80,6 @@ const Towns = () => {
                 Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
@@ -90,12 +90,11 @@ const Towns = () => {
         fetchData();
     }, []);
 
-
     return (
         <HeaderFooterLayout
-            headerText={'Town List'}
+            headerText={language === 'en' ? 'Town List' : 'नगर यादी'}
             showHeader={true}
-            showFooter={true}
+            showFooter={false}
             rightIconName="file-pdf"
             onRightIconPress={handlePDFClick}
         >
@@ -105,38 +104,51 @@ const Towns = () => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={setSearchValue}
-                        placeholder='Search by user’s name or ID'
+                        placeholder={language === 'en' ? 'Search Town by name or ID' : 'नाव किंवा आयडीनुसार नगर शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
 
-                {(loading) ?
-                    (<View style={styles.loadingContainer}>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
                         <ActivityIndicator size={'small'} />
-                        <Text>Loading...</Text>
+                        <Text>
+                            {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
+                        </Text>
                     </View>
-                    ) : (
-                        <View style={styles.listContainer}>
-                            {searchedTown.length > 0 ? (
-                                <FlatList
-                                    data={searchedTown}
-                                    keyExtractor={item => item.town_id.toString()}
-                                    showsVerticalScrollIndicator={false}
-                                    renderItem={({ item }) => (
-                                        <Pressable style={styles.voterItem} onPress={() => navigation.navigate('Town Voters', { townId: item.town_id })}>
-                                            <View style={styles.voterDetails}>
-                                                <Text style={styles.townId}>{item.town_id}</Text>
-                                                <Text>{toTitleCase(item.town_name)}</Text>
-                                            </View>
-                                        </Pressable>
-                                    )}
-                                />
-                            ) : (
-                                <Text style={styles.noDataText}>No results found</Text>
+                ) : (
+                    <View style={styles.listContainer}>
+                        <FlatList
+                            data={searchedTown}
+                            keyExtractor={(item, index) => index.toString()}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({ item, index }) => (
+                                <Pressable
+                                    style={styles.voterItem}
+                                    onPress={() => navigation.navigate('Town Voters', { townId: item.town_id, townName: item.town_name })}
+                                >
+                                    <View style={styles.voterDetails}>
+                                        <Text style={styles.index}>{index + 1}</Text>
+                                        {/* <Text style={styles.townId}>{item.town_id}</Text> */}
+                                        <Text>{toTitleCase(item.town_name)}</Text>
+                                    </View>
+                                </Pressable>
                             )}
-                        </View>
-                    )
-                }
+                            ListEmptyComponent={() => (
+                                <Text style={styles.noDataText}>
+                                    {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
+                                </Text>
+                            )}
+                        />
+
+                    </View>
+                )}
+                {pdfLoading && (
+                    <View style={styles.pdfLoadingOverlay}>
+                        <ActivityIndicator size="large" color="white" />
+                        <Text style={styles.pdfLoadingText}>Generating PDF...</Text>
+                    </View>
+                )}
             </View>
         </HeaderFooterLayout>
     );
@@ -146,8 +158,8 @@ export default Towns;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingHorizontal: 15,
-        height: height * 0.84,
     },
     searchContainer: {
         borderColor: '#9095A1',
@@ -188,6 +200,14 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         fontWeight: '700',
     },
+    index: {
+        borderWidth: 1,
+        borderColor: 'blue',
+        width: 30,
+        textAlign: 'center',
+        borderRadius: 3,
+        fontWeight: '700',
+    },
     noDataText: {
         textAlign: 'center',
         marginVertical: 20,
@@ -198,5 +218,21 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    pdfLoadingOverlay: {
+        height: '120%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    pdfLoadingText: {
+        color: 'white',
+        fontSize: 18,
+        marginTop: 10,
+    },
 });

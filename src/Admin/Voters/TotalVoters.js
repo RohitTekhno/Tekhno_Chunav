@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, Dimensions, TouchableOpacity, Pressable, Alert, } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, Dimensions, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import axios from 'axios';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import { ActivityIndicator } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import EditVoterForm from './EditVoterForm';
+import EditVoterForm from '../../ReusableCompo/EditVoterForm';
 
 const { width, height } = Dimensions.get('screen');
 
 const Totalvoters = () => {
-
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [searchText, setSearchText] = useState('');
@@ -19,17 +17,16 @@ const Totalvoters = () => {
     const [remainingVoters, setRemainingVoters] = useState(0);
     const [sortState, setSortState] = useState(0);
     const [initialVoters, setInitialVoters] = useState([]);
-    const [isFormVisible, setFormVisible] = useState(false)
+    const [isFormVisible, setFormVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.200.23:8000/api/voters/${voter_id}`)
-            .then(response => {
-                setSelectedVoter(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching voter details:', error);
-                Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
-            });
+    const fetchVoterDetails = async (voter_id) => {
+        try {
+            const response = await axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`);
+            setSelectedVoter(response.data);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
+        }
     };
 
     const handleSearch = (text) => {
@@ -40,17 +37,15 @@ const Totalvoters = () => {
         setFilteredVoters(filtered);
     };
 
-
     const handleVoterEditForm = (voter_id) => {
         fetchVoterDetails(voter_id);
         setFormVisible(true);
     };
 
-
     const handleCloseEditForm = () => {
-        setFormVisible(false)
-        setSelectedVoter(null)
-    }
+        setFormVisible(false);
+        setSelectedVoter(null);
+    };
 
     const toTitleCase = (str) => {
         return str
@@ -59,88 +54,88 @@ const Totalvoters = () => {
             .join(' ');
     };
 
-
     const sortVotersAlphabetically = () => {
+        let sortedVoters;
         if (sortState === 0) {
-            const sortedVoters = [...filteredVoters].sort((a, b) => {
-                const nameA = a.voter_name ? a.voter_name.toLowerCase() : '';
-                const nameB = b.voter_name ? b.voter_name.toLowerCase() : '';
-                return nameA.localeCompare(nameB);
-            });
-            setFilteredVoters(sortedVoters);
+            sortedVoters = [...filteredVoters].sort((a, b) => a.voter_name.localeCompare(b.voter_name));
             setSortState(1);
         } else if (sortState === 1) {
-            const sortedVoters = [...filteredVoters].sort((a, b) => {
-                const nameA = a.voter_name ? a.voter_name.toLowerCase() : '';
-                const nameB = b.voter_name ? b.voter_name.toLowerCase() : '';
-                return nameB.localeCompare(nameA);
-            });
-            setFilteredVoters(sortedVoters);
+            sortedVoters = [...filteredVoters].sort((a, b) => b.voter_name.localeCompare(a.voter_name));
             setSortState(2);
         } else {
-            setFilteredVoters(initialVoters);
+            sortedVoters = initialVoters;
             setSortState(0);
+        }
+        setFilteredVoters(sortedVoters);
+    };
+
+    const handleSelectedVoterDetails = (newDetails) => {
+        const updatedFilteredVoters = filteredVoters.map(voter =>
+            voter.voter_id.toString() === newDetails.voter_id.toString() ? { ...voter, ...newDetails } : voter
+        );
+        setFilteredVoters(updatedFilteredVoters);
+    };
+
+    const fetchVoterData = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('http://192.168.1.31:8000/api/total_voters/');
+            const votersData = response.data;
+            setVoters(votersData);
+            setFilteredVoters(votersData);
+            setInitialVoters(votersData);
+        } catch (error) {
+            Alert.alert('Error fetching voters data:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-
-    const handleSelectedVoterDetails = (newDetails) => {
-        const updatedFilteredVoters = filteredVoters.map(voter => {
-            if (voter.voter_id.toString() === newDetails.voter_id.toString()) {
-                return { ...voter, ...newDetails };
-            }
-            return voter;
-        });
-0
-        setFilteredVoters(updatedFilteredVoters);
-    }
-
+    const fetchVoterCounts = async () => {
+        try {
+            const response = await axios.get('http://192.168.1.31:8000/api/voter_updated_counts/');
+            const { updated_count, remaining_count } = response.data;
+            setUpdatedVoters(updated_count);
+            setRemainingVoters(remaining_count);
+        } catch (error) {
+            Alert.alert('Error fetching voter counts:', error);
+        }
+    };
 
     useEffect(() => {
-        setLoading(true);
-        axios.get('http://192.168.200.23:8000/api/total_voters/')
-            .then(response => {
-                const votersData = response.data;
-                setVoters(votersData);
-                setFilteredVoters(votersData);
-                setInitialVoters(votersData);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching voters data:', error);
-                setLoading(false);
-            });
-
-
-        axios.get('http://192.168.200.23:8000/api/voter_updated_counts/')
-            .then(response => {
-                const { updated_count, remaining_count } = response.data;
-                setUpdatedVoters(updated_count);
-                setRemainingVoters(remaining_count);
-            })
-            .catch(error => {
-                console.error('Error fetching voter counts:', error);
-            });
+        fetchVoterData();
+        fetchVoterCounts();
     }, []);
 
-
-
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchVoterData();
+        await fetchVoterCounts();
+        setRefreshing(false);
+    };
 
     const renderItem = ({ item }) => {
         let backgroundColor = 'white';
 
-        if (item.voter_favour_id === 1) {
-            backgroundColor = '#d3f5d3';//red
-        } else if (item.voter_favour_id === 2) {
-            backgroundColor = '#f5d3d3';
-        } else if (item.voter_favour_id === 3) {
-            backgroundColor = '#f5f2d3';
-        } else if (item.voter_favour_id === 4) {
-            backgroundColor = '#c9daff';
+        switch (item.voter_favour_id) {
+            case 1:
+                backgroundColor = '#d3f5d3'; // red
+                break;
+            case 2:
+                backgroundColor = '#f5d3d3';
+                break;
+            case 3:
+                backgroundColor = '#f5f2d3';
+                break;
+            case 4:
+                backgroundColor = '#c9daff';
+                break;
+            default:
+                break;
         }
 
         return (
-            <TouchableOpacity style={[styles.itemContainer, { backgroundColor }]} onPress={() => { handleVoterEditForm(item.voter_id) }}>
+            <TouchableOpacity style={[styles.itemContainer, { backgroundColor }]} onPress={() => handleVoterEditForm(item.voter_id)}>
                 <View style={styles.idSection}>
                     <Text style={styles.itemText}>{item.voter_id}</Text>
                 </View>
@@ -152,77 +147,66 @@ const Totalvoters = () => {
     };
 
     return (
-        <HeaderFooterLayout
-            headerText="Total Voters"
-            showFooter={false}
-            leftIcon={true}
-            rightIcon={true}
-            leftIconName="chevron-left"
-            rightIconName=""
-        // onRightIconPress={sortVotersAlphabetically}
-        >
-            <View style={styles.container}>
-                <LinearGradient
-                    colors={['#3C4CAC', '#F04393']}
-                    locations={[0.3, 1]}
-                    style={styles.gradient}
-                >
-                    <TextInput
-                        style={styles.searchBar}
-                        placeholder="Search by ID or Name"
-                        value={searchText}
-                        onChangeText={handleSearch}
+        <View style={styles.container}>
+            <LinearGradient colors={['#3C4CAC', '#F04393']} locations={[0.3, 1]} style={styles.gradient}>
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Search by ID or Name"
+                    value={searchText}
+                    onChangeText={handleSearch}
+                />
+                <View style={styles.voterCountContainer}>
+                    <Text style={styles.updatedVotersText}>Updated Voters: {updatedVoters}</Text>
+                    <Text style={styles.remainingVotersText}>Remaining Voters: {remainingVoters}</Text>
+                </View>
+            </LinearGradient>
+
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color="#3C4CAC" />
+                    <Text style={{ color: 'black' }}>Wait a minute...</Text>
+                </View>
+            ) : (
+                <>
+                    <FlatList
+                        data={filteredVoters}
+                        keyExtractor={item => item.voter_id.toString()}
+                        renderItem={renderItem}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#3C4CAC']} />}
+                        contentContainerStyle={styles.flatListContent}
+                        ListEmptyComponent={(
+                            <Text style={{ alignSelf: 'center', color: 'black', }}>No voters found.</Text>
+                        )}
                     />
-
-                    <View style={styles.voterCountContainer}>
-                        <Text style={styles.updatedVotersText}>Updated Voters: {updatedVoters}</Text>
-                        <Text style={styles.remainingVotersText}>Remaining Voters: {remainingVoters}</Text>
-                    </View>
-                </LinearGradient>
-
-                {(loading) ? (
-                    < View style={styles.loadingContainer}>
-                        <Text style={{ color: 'black' }}>Loading...</Text>
-                        <ActivityIndicator size={'small'} color='#3C4CAC' />
-                    </View>
-                ) : (
-                    <>
-                        < FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            renderItem={renderItem}
-                            contentContainerStyle={styles.flatListContent}
-                        />
-                        <EditVoterForm
-                            isVisible={isFormVisible}
-                            onClose={handleCloseEditForm}
-                            selectedVoter={selectedVoter}
-                            onEditVoter={handleSelectedVoterDetails}
-                        />
-                    </>
-                )}
-            </View>
-        </HeaderFooterLayout >
+                    <EditVoterForm
+                        isVisible={isFormVisible}
+                        onClose={handleCloseEditForm}
+                        selectedVoter={selectedVoter}
+                        onEditVoter={handleSelectedVoterDetails}
+                    />
+                </>
+            )}
+        </View>
     );
-}
-export default Totalvoters;
+};
 
+export default Totalvoters;
 
 const styles = StyleSheet.create({
     container: {
-        marginHorizontal: 20,
+        flex: 1,
+        paddingHorizontal: 20,
         backgroundColor: 'white',
     },
     gradient: {
-        paddingVertical: 20,
         paddingHorizontal: 10,
         borderRadius: 10,
+        paddingVertical: 5,
     },
     loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
+        height: '100%',
+        paddingVertical: 20,
         alignItems: 'center',
-        marginTop: height * 0.05
     },
     searchBar: {
         width: "100%",
@@ -236,9 +220,9 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     voterCountContainer: {
-        marginVertical: 10,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingBottom: 10,
     },
     updatedVotersText: {
         color: '#43eb34',
@@ -261,11 +245,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         borderWidth: 1,
         borderColor: '#ccc',
-    },
-    voterRecord: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
     },
     idSection: {
         width: '20%',

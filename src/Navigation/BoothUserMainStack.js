@@ -3,20 +3,20 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { Dimensions, Pressable } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import Dashboard from '../BoothUser/Dashboard.js';
 import Voterlist from '../BoothUser/Voterlist.js'
-import CasteList from '../BoothUser/CasteList.js';
+// import CasteList from '../BoothUser/CasteList.js';
 import Polls from '../BoothUser/Polls.js';
 import Familylist from '../BoothUser/Familylist.js';
 import BoothVotedList from '../BoothUser/BoothVotedList.js';
 import BoothNVoted from '../BoothUser/BoothNVoted.js';
 import Family from '../BoothUser/Family.js';
 import ExitPoll from '../BoothUser/Exit Poll/ExitPoll.js';
-import Personal from '../BoothUser/Personal.js';
+import Personal from '../BoothUser/Profile/BuserProfile.js';
 import Favour from '../BoothUser/Favour.js';
 import Against from '../BoothUser/Nonfavour.js';
 import Yellow from '../BoothUser/Yellow.js';
 import LogOut from '../ReusableCompo/LogOut.js';
+import BoothDashbord from '../BoothUser/Dashboard/BoothDashbord.js';
 const Stack = createNativeStackNavigator();
 const { height, width } = Dimensions.get('screen')
 
@@ -27,7 +27,7 @@ const BoothUserMainStack = () => {
     return (
 
         <Stack.Navigator initialRouteName='Dashboard' screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='Dashboard' component={Dashboard}
+            <Stack.Screen name='Dashboard' component={BoothDashbord}
                 options={{
                     headerShown: false,
                     headerTitleAlign: 'center',
@@ -47,7 +47,7 @@ const BoothUserMainStack = () => {
             <Stack.Screen name="Favour" component={Favour} />
             <Stack.Screen name="Nonfavour" component={Against} />
             <Stack.Screen name="Yellow" component={Yellow} />
-            <Stack.Screen name="CasteList" component={CasteList} />
+            {/* <Stack.Screen name="CasteList" component={CasteList} /> */}
             <Stack.Screen name="Polls" component={Polls} />
             <Stack.Screen name="ExitPoll" component={ExitPoll} />
             <Stack.Screen name="Family" component={Family} />

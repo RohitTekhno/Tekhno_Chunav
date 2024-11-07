@@ -1,81 +1,151 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Dimensions, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Button } from 'react-native';
+import React, { useContext, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import { LanguageContext } from '../ContextApi/LanguageContext';
 
-export default function Help({ navigation }) {
+const { height } = Dimensions.get('screen');
+const topMargin = height * 0.1;
+
+export default function Help() {
+  const { language, toggleLanguage } = useContext(LanguageContext);
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
+  const accordionData = [
+    { question: 'What is Tekhno Marketing?', answer: 'Tekhno Marketing is a company providing IT solutions.' },
+    { question: 'How can I contact support?', answer: 'You can contact support through email or phone.' },
+    { question: 'Where is your office located?', answer: 'Our office is located in XYZ city, ABC street.' },
+    { question: 'Do you offer online services?', answer: 'Yes, we provide online services for our clients.' },
+    { question: 'What are your working hours?', answer: 'Our working hours are from 9 AM to 6 PM, Monday to Friday.' },
+  ];
+
+  const toggleAccordion = (index) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+  };
+
   return (
-    <LinearGradient
-      colors={['#FF9933', '#FFFFFF', '#138808']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={styles.container}
-    >
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={32} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Help</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.text}>
-          If you're experiencing any issues or have questions about using the Election Portal App, here are some ways to get help:
-        </Text>
-        <Text style={styles.subTitle}>Contact Support</Text>
-        <Text style={styles.text}>
-          For immediate assistance, please contact our support team at support@electionportal.com. Our dedicated team is available to help you with any questions or concerns you may have.
-        </Text>
-        <Text style={styles.subTitle}>FAQs</Text>
-        <Text style={styles.text}>
-          Check out our Frequently Asked Questions (FAQs) section for answers to common queries and troubleshooting tips. You can access the FAQs from the app's settings menu.
-        </Text>
-        <Text style={styles.subTitle}>Feedback</Text>
-        <Text style={styles.text}>
-          We value your feedback! If you have suggestions for improvements or feature requests, please send them to feedback@electionportal.com. Your input helps us make the app better for everyone.
-        </Text>
-      </ScrollView>
-    </LinearGradient>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#3C4CAC', '#F04393']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        locations={[0.1, 1]}
+        style={styles.gradient}
+      >
+        <View style={styles.contentContainer}>
+          <Text style={styles.bigText}>
+            {language === 'en' ? 'FREQUENTLY ASKED QUESTIONS' : 'वारंवार विचारले जाणारे प्रश्न'}
+          </Text>
+          <Text style={styles.text}>
+            {language === 'en' ? 'Find answers to common questions below' : 'खालील सामान्य प्रश्नांची उत्तरे शोधा'}
+          </Text>
+        </View>
+
+        <View style={styles.bottomView}>
+
+
+          <ScrollView>
+            {accordionData.map((item, index) => (
+              <View key={index} style={styles.accordionItem}>
+                <TouchableOpacity
+                  style={styles.accordionHeader}
+                  onPress={() => toggleAccordion(index)}
+                >
+                  <Text style={styles.questionText}>{language === 'en' ? item.question : translateToMarathi(item.question)}</Text>
+                </TouchableOpacity>
+                {expandedIndex === index && (
+                  <View style={styles.accordionContent}>
+                    <Text style={styles.answerText}>{language === 'en' ? item.answer : translateToMarathi(item.answer)}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
+
+// Example translation function
+const translateToMarathi = (text) => {
+  const translations = {
+    'What is Tekhno Marketing?': 'टेकनो मार्केटिंग म्हणजे काय?',
+    'Tekhno Marketing is a company providing IT solutions.': 'टेकनो मार्केटिंग एक IT सोल्यूशन कंपनी आहे.',
+    'How can I contact support?': 'मी सपोर्टशी कसे संपर्क करू शकतो?',
+    'You can contact support through email or phone.': 'तुम्ही ईमेल किंवा फोनद्वारे सपोर्टशी संपर्क साधू शकता.',
+    'Where is your office located?': 'तुमचे ऑफिस कुठे आहे?',
+    'Our office is located in XYZ city, ABC street.': 'आमचे कार्यालय XYZ शहरात, ABC रस्त्यावर आहे.',
+    'Do you offer online services?': 'तुम्ही ऑनलाइन सेवा देता का?',
+    'Yes, we provide online services for our clients.': 'होय, आम्ही आमच्या ग्राहकांसाठी ऑनलाइन सेवा देतो.',
+    'What are your working hours?': 'तुमचे कामाचे तास काय आहेत?',
+    'Our working hours are from 9 AM to 6 PM, Monday to Friday.': 'आमचे कामाचे तास सोमवार ते शुक्रवार सकाळी 9 ते संध्याकाळी 6 पर्यंत आहेत.'
+  };
+  return translations[text] || text;
+};
+
+
+
+
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
+  gradient: {
+    flex: 0.45,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  contentContainer: {
     width: '100%',
-    position: 'relative',
-    backgroundColor: 'black',
-    paddingVertical: 20,
-    paddingTop: 30
+    height: height * 0.325,
+    alignItems: 'center',
+    marginTop: topMargin,
   },
-  menuButton: {
-    position: 'absolute',
-    left: 20,
-    paddingTop: 10,
-  },
-  headerText: {
+  bigText: {
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    textAlign: 'center',
   },
   text: {
-    fontSize: 18,
-    textAlign: 'justify',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  bottomView: {
+    width: '100%',
+    height: height * 0.7,
+    padding: 20,
+    backgroundColor: 'white',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+  },
+  accordionItem: {
     marginBottom: 10,
   },
-  subTitle: {
-    fontSize: 25,
+  accordionHeader: {
+    padding: 15,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#DADADA',
+  },
+  questionText: {
+    fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+    color: '#3C4CAC',
+  },
+  accordionContent: {
+    padding: 15,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 5,
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: '#DADADA',
+  },
+  answerText: {
+    fontSize: 14,
+    color: '#333',
   },
 });

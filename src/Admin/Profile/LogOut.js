@@ -16,7 +16,7 @@ const LogOut = () => {
         try {
             // Make the logout request without token
             const response = await axios.post(
-                'http://192.168.200.23:8000/api/politician_logout/',
+                'http://192.168.1.31:8000/api/politician_logout/',
                 {},
                 {
                     headers: {
@@ -33,7 +33,6 @@ const LogOut = () => {
                 Alert.alert('Error', 'Logout failed. Please try again.');
             }
         } catch (error) {
-            console.error('Logout error:', error);
             Alert.alert('Error', 'Something went wrong. Please try again.');
         }
     };
@@ -55,7 +54,7 @@ const LogOut = () => {
                     <Text style={styles.bigText}>Log Out?</Text>
                     <Text style={styles.text}>Are you sure you want to log out?</Text>
                     <Image
-                        source={require('../Assets/bye.png')}
+                        source={require('../../../assets/bye.png')}
                         style={{ width: 140, height: 140, marginVertical: 20 }}
                     />
                 </View>

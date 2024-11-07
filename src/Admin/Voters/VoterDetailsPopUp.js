@@ -12,7 +12,7 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
     // Function to handle PDF download and save
     const handlePdfIconClick = async (voterId) => {
         try {
-            const response = await axios.get(`http://192.168.200.23:8000/api/generate_voter_pdf/${voterId}`, {
+            const response = await axios.get(`http://192.168.1.31:8000/api/generate_voter_pdf/${voterId}`, {
                 params: { voter_id: voterId },
                 responseType: 'arraybuffer', // Request the response as an array buffer
             });
@@ -30,7 +30,7 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            Alert.alert('Success', 'PDF has been saved to your device!');
+            //Alert.alert('Success', 'PDF has been saved to your device!');
 
             // Share or open the PDF file
             if (await Sharing.isAvailableAsync()) {
@@ -40,7 +40,6 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
             }
 
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         }
     };

@@ -1,137 +1,141 @@
-import { Entypo, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
-
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Linking } from 'react-native';
+import { Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { Dimensions } from 'react-native';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import TopNavCompo from '../Admin/ReusableCompo/TopNavCompo';
 
-const AboutUs = () => {
-    const [modalVisible, setModalVisible] = useState(false);
+const { height } = Dimensions.get('screen');
+const topMargin = height * 0.1;
+
+export default function About({ navigation }) {
+    const { language, toggleLanguage } = useContext(LanguageContext);
+    // const [expandedIndex, setExpandedIndex] = useState(null);
+
+
+    const handleGoBack = () => {
+        navigation.goBack();
+    };
+
 
     return (
-        <LinearGradient
-            colors={['#FF9933', '#FFFFFF', '#138808']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.container}
-        >
-            <View style={styles.header}>
-                <Text style={styles.headerText}>About Us</Text>
-            </View>
-            <ScrollView contentContainerStyle={styles.content}>
-                <Text style={styles.text}>
-                    • In the dynamic world of politics, efficiency and organization are key to successful campaign management.
-                    Our Election Portal App is designed with the specific needs of political parties in mind, providing a robust tool
-                    for karyakartas to manage voter information and polling booth activities seamlessly.
-                </Text>
+        <SafeAreaView style={styles.container}>
+            <LinearGradient
+                colors={['#3C4CAC', '#F04393']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                locations={[0.1, 1]}
+                style={styles.gradient}
+            >
 
-                <Text style={styles.subTitle}>Our Mission</Text>
-                <Text style={styles.text}>
-                    • At Election Portal, our mission is to empower political parties and their karyakartas with cutting-edge technology
-                    that simplifies the voting process, ensures accurate record-keeping, and enhances overall election management. We believe
-                    that by streamlining these processes, we can contribute to fairer and more transparent elections, fostering a stronger
-                    democratic process.
-                </Text>
-
-                <Text style={styles.subTitle}>What We Offer</Text>
-                <Text style={styles.text}>
-                    • The Election Portal App is a comprehensive solution that allows karyakartas to efficiently manage voter data during elections.
-                    Here’s how we make it happen:
-                </Text>
-                <Text style={styles.listItem}>• Real-time Voter Management: Karyakartas can easily mark and update records of each voter who casts their vote at polling booths. This ensures up-to-date and accurate voter lists.</Text>
-                <Text style={styles.listItem}>• Seamless Coordination: The app facilitates better communication and coordination among karyakartas and party leaders, ensuring everyone is on the same page.</Text>
-                <Text style={styles.listItem}>• Data Security: We prioritize the security of voter information, employing advanced encryption methods to protect data from unauthorized access.</Text>
-                <Text style={styles.listItem}>• User-friendly Interface: The app is designed to be intuitive and easy to navigate, so karyakartas can focus on their tasks without being bogged down by technical complexities.</Text>
-                <Text style={styles.listItem}>• Exit Polls: After voting is done, we provide fast and nearly accurate exit polls. This feature helps political parties gauge public opinion and predict election outcomes quickly and effectively.</Text>
-
-                <Text style={styles.subTitle}>Our Vision</Text>
-                <Text style={styles.text}>
-                    • We envision a future where technology plays a pivotal role in enhancing the electoral process. By providing a platform that
-                    integrates modern tech solutions with traditional political workflows, we aim to make elections more efficient, transparent, and accessible.
-                    Our goal is to support political parties in their efforts to engage with voters, understand their needs, and ensure that every vote is counted accurately.
-                </Text>
-
-                <Text style={styles.subTitle}>Why Choose Election Portal App?</Text>
-                <Text style={styles.listItem}>• Tailored for Political Parties: Unlike generic management tools, our app is specifically designed for the unique requirements of political campaign management.</Text>
-                <Text style={styles.listItem}>• Reliable and Scalable: Whether it's a local election or a national campaign, our app scales to meet the demands of your operations.</Text>
-                <Text style={styles.listItem}>• Dedicated Support: Our team is committed to providing exceptional support to ensure that your experience with the Election Portal App is smooth and trouble-free.</Text>
-
-                <Text style={styles.subTitle}>Join Us</Text>
-                <Text style={styles.text}>
-                    • We invite political parties and their dedicated karyakartas to join us in revolutionizing the way elections are managed. Together,
-                    we can make a significant impact on the democratic process, ensuring that it remains robust and true to its principles.
-                </Text>
-                <Text style={styles.text}>• Thank you for choosing the Election Portal App. Let’s work together for a brighter and more transparent electoral future.</Text>
-
-                <Text style={styles.subTitle}>Gallery</Text>
-                <View style={styles.imageContainer}>
-                    <Image source={require('../../assets/booth1.jpeg')} style={styles.image} />
-                    <Image source={require('../../assets/booth2.jpeg')} style={styles.image} />
-                    <Image source={require('../../assets/booth3.jpeg')} style={styles.image} />
-                    <Image source={require('../../assets/booth4.jpeg')} style={styles.image} />
+                <View style={styles.contentContainer}>
+                    <Text style={styles.headerText}>
+                        {language === 'en' ? 'About Us' : 'आमच्याबद्दल'}
+                    </Text>
+                    <Text style={styles.subText}>
+                        {language === 'en' ? 'Our mission is to empower political parties with cutting-edge technology.' : 'राजकीय पक्षांना अत्याधुनिक तंत्रज्ञानाने सक्षम करणे हे आमचे ध्येय आहे.'}
+                    </Text>
+                    <Image source={require('../../assets/booth1.jpeg')} style={styles.imageTop} />
                 </View>
-            </ScrollView>
-            <View style={styles.footer}>
-                <View style={styles.footerLeft}>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.instagram.com/tekhnologia_innovations/?igsh=MWE4Y21yeW80MW0yMg%3D%3D')}>
-                        <Entypo name="instagram" size={32} color="#fff" style={styles.icon} />
-                    </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.linkedin.com/company/tekhnologia-innovations-india-private-limited/')}>
-                        <FontAwesome name="linkedin" size={32} color="#fff" style={styles.icon} />
-                    </TouchableOpacity>
+                <View style={styles.bottomView}>
+                    <ScrollView contentContainerStyle={styles.content}>
+                        <Text style={styles.text}>
+                            {language === 'en' ? '• In the dynamic world of politics, efficiency and organization are key to successful campaign management...' : '• राजकारणाच्या गतिमान जगात, कार्यक्षमता आणि संघटना यशस्वी मोहीम व्यवस्थापनासाठी महत्त्वाच्या आहेत...'}
+                        </Text>
 
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.tekhnologiaindia.com/')}>
-                        <MaterialIcons name="public" size={32} color="#fff" style={styles.icon} />
-                    </TouchableOpacity>
+                        <Text style={styles.subTitle}>
+                            {language === 'en' ? 'Our Mission' : 'आमचे मिशन'}
+                        </Text>
+                        <Text style={styles.text}>
+                            {language === 'en' ? '• At Election Portal, our mission is to empower political parties and their karyakartas with cutting-edge technology...' : '• निवडणूक पोर्टलवर, राजकीय पक्ष आणि त्यांच्या कार्यकर्त्यांना अत्याधुनिक तंत्रज्ञानाने सक्षम करणे हे आमचे ध्येय आहे...'}
+                        </Text>
 
+                        <Text style={styles.subTitle}>
+                            {language === 'en' ? 'What We Offer ?' : 'आम्ही काय ऑफर करतो?'}
+                        </Text>
+                        <Text style={styles.listItem}>
+                            {language === 'en' ? '• Real-time Voter Management: Karyakartas can easily mark and update records of each voter...' : '• रिअल-टाइम मतदार व्यवस्थापन: कार्यकर्ता प्रत्येक मतदाराच्या नोंदी सहजपणे चिन्हांकित आणि अद्यतनित करू शकतात...'}
+                        </Text>
+
+                        <Text style={styles.subTitle}>
+                            {language === 'en' ? 'Our Vision' : 'आमची दृष्टी'}
+                        </Text>
+                        <Text style={styles.text}>
+                            {language === 'en' ? '• We envision a future where technology plays a pivotal role in enhancing the electoral process...' : '• आम्ही अशा भविष्याची कल्पना करतो जिथे तंत्रज्ञान निवडणूक प्रक्रिया सुधारण्यात महत्त्वाची भूमिका बजावते...'}
+                        </Text>
+
+                        <Text style={styles.subTitle}>
+                            {language === 'en' ? 'Gallery' : 'गॅलरी'}
+                        </Text>
+                        <View style={styles.imageContainer}>
+                            <Image source={require('../../assets/booth2.jpeg')} style={styles.image} />
+                            <Image source={require('../../assets/booth3.jpeg')} style={styles.image} />
+                            <Image source={require('../../assets/booth4.jpeg')} style={styles.image} />
+                        </View>
+                    </ScrollView>
                 </View>
-            </View>
-        </LinearGradient>
-    )
+
+
+            </LinearGradient>
+        </SafeAreaView>
+    );
 }
 
-export default AboutUs
 const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    header: {
-        flexDirection: 'row',
+    gradient: {
+        flex: 0.45,
+        justifyContent: 'space-between',
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: 40,
-        paddingBottom: 20,
-        backgroundColor: 'black',
-        width: '100%',
-        position: 'relative',
     },
-    menuButton: {
-        position: 'absolute',
-        left: 20,
+    contentContainer: {
+        width: '100%',
+        height: height * 0.325,
+        alignItems: 'center',
+        marginTop: topMargin,
     },
     headerText: {
         color: '#fff',
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
+    },
+    subText: {
+        color: '#fff',
+        fontSize: 18,
+        marginTop: 10,
+        textAlign: 'center',
+    },
+    imageTop: {
+        width: 200,
+        height: 100,
+        borderRadius: 20,
+        marginTop: 20,
+    },
+    bottomView: {
+        width: '100%',
+        height: height * 0.7,
+        padding: 30,
+        backgroundColor: 'white',
+        borderTopRightRadius: 15,
+        borderTopLeftRadius: 15,
+
     },
     content: {
         flexGrow: 1,
         paddingHorizontal: 20,
         paddingVertical: 20,
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center',
+
     },
     subTitle: {
-        fontSize: 25,
+        fontSize: 22,
         fontWeight: 'bold',
-        marginTop: 20,
-        marginBottom: 10,
+        marginVertical: 10,
     },
     text: {
         fontSize: 18,

@@ -2,9 +2,10 @@ import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View, Pressable, Ale
 import React, { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { AuthenticationContext } from '../Admin/Context_Api/AuthenticationContext';
-import { TownUserContext } from '../TownUser/ContextApi/TownUserProvider';
-import { BoothUserContext } from '../BoothUser/ContextApi/BuserContext';
+import { AuthenticationContext } from '../ContextApi/AuthenticationContext';
+import { TownUserContext } from '../ContextApi/TownUserProvider';
+import { BoothUserContext } from '../ContextApi/BuserContext';
+import { WardUserContext } from '../ContextApi/WardUserContext';
 
 const { height, width } = Dimensions.get('screen');
 const topMargin = height * 0.1;
@@ -21,6 +22,7 @@ const Button = ({ onPress, title, backgroundColor }) => (
 const LogOut = () => {
     const navigation = useNavigation();
     const { isTuserAuthenticated, logoutTuser } = useContext(TownUserContext);
+    const { logoutWuser, isWarduserAuthenticated } = useContext(WardUserContext)
     const { logout, isAuthenticated } = useContext(AuthenticationContext);
     const { isBuserAuthenticated, logoutBuser } = useContext(BoothUserContext)
 
@@ -34,6 +36,10 @@ const LogOut = () => {
                     text: "OK", onPress: async () => {
                         if (isAuthenticated) {
                             await logout();
+                        }
+
+                        if (isWarduserAuthenticated) {
+                            await logoutWuser();
                         }
 
                         if (isTuserAuthenticated) {

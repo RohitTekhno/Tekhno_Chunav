@@ -1,13 +1,29 @@
-import React, { useEffect } from 'react';
-import { Dimensions, Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Dimensions, Image, ImageBackground, StyleSheet, Text, View, PanResponder } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 const LaunchScreen = () => {
-
     const navigation = useNavigation();
+    const panResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponder: (evt, gestureState) => {
+                return Math.abs(gestureState.dx) > 30 || Math.abs(gestureState.dy) > 30; // Threshold for swiping
+            },
+            onPanResponderEnd: (evt, gestureState) => {
+                // Determine swipe direction
+                if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+                    // Horizontal swipe
+                    navigation.navigate('ProfileChooser');
+                } else {
+                    // Vertical swipe
+                    navigation.navigate('ProfileChooser');
+                }
+            },
+        })
+    ).current;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -17,14 +33,13 @@ const LaunchScreen = () => {
         return () => clearTimeout(timer);
     }, [navigation]);
 
-
     return (
         <LinearGradient
             colors={['#3C4CAC', '#F04393']}
             locations={[0.65, 1]}
             style={styles.linearGradient}
         >
-            <View style={styles.imageContainer}>
+            <View style={styles.imageContainer} {...panResponder.panHandlers}>
                 <ImageBackground
                     source={require('../../assets/Cover.png')}
                     style={styles.backgroundImage}
@@ -45,7 +60,7 @@ const LaunchScreen = () => {
                     style={{ width: width * 0.2, height: width * 0.2, alignSelf: 'center', marginVertical: width * 0.04 }}
                 />
             </View>
-        </LinearGradient >
+        </LinearGradient>
     );
 }
 
@@ -64,8 +79,8 @@ const styles = StyleSheet.create({
         left: 0,
     },
     backgroundImage: {
-        width: width * 1.1,//'105%',
-        height: height * 1,//'105%',
+        width: width * 1.1,
+        height: height * 1,
         justifyContent: 'center',
         alignItems: 'center',
         resizeMode: 'cover',
@@ -80,7 +95,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderBottomLeftRadius: height * 1,
         borderBottomRightRadius: height * 1,
-        // paddingTop: height * 0.4,
         paddingTop: "50%"
     },
     text: {
@@ -88,14 +102,13 @@ const styles = StyleSheet.create({
         fontSize: height * 0.022,
         fontWeight: 'bold',
     },
-
     smallLogoView: {
         width: width * 0.3,
         height: width * 0.3,
         borderRadius: (width * 0.3) / 2,
         backgroundColor: 'white',
-        left: width * 0.35,//130,
-        top: height * 0.57,//'55%',
+        left: width * 0.35,
+        top: height * 0.57,
         borderWidth: 3,
         borderColor: '#3C4CAC',
     }

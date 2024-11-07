@@ -1,11 +1,8 @@
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
-import Fontisto from '@expo/vector-icons/Fontisto';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
@@ -27,7 +24,7 @@ const Prediction = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result = await axios.get(`http://192.168.200.23:8000/api/get_voters_by_user_wise/${userId}/`);
+            const result = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_user_wise/${userId}/`);
             const totalVoterDetails = result.data.voters;
 
             const totalVoterCount = totalVoterDetails.length;
@@ -44,7 +41,7 @@ const Prediction = () => {
                 Non_Voted: pendingCount
             });
         } catch (error) {
-            console.error(error);
+            Alert.alert("Failed to fetch data", error);
         }
     };
 

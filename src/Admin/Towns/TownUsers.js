@@ -1,8 +1,6 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
@@ -26,15 +24,15 @@ const TownUsers = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/town_user_info/');
+            const response = await axios.get('http://192.168.1.31:8000/api/town_user_info/');
             const formattedTowns = response.data;
             if (Array.isArray(formattedTowns)) {
                 setTownUsers(formattedTowns);
             } else {
-                console.error('Expected an array of townUsers');
+                Alert.alert('Expected an array of townUsers');
             }
         } catch (error) {
-            console.error('Error fetching data:', error);
+            Alert.alert('Error fetching data:', error);
         } finally {
             setLoading(false);
         }
@@ -54,7 +52,7 @@ const TownUsers = () => {
     const handlePDFClick = async () => {
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.200.23:8000/api/generate_town_user_pdf/', {
+            const response = await axios.get('http://192.168.1.31:8000/api/generate_town_user_pdf/', {
                 responseType: 'arraybuffer',
             });
 
@@ -67,7 +65,7 @@ const TownUsers = () => {
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            Alert.alert('Success', 'PDF has been saved to your device!');
+            //Alert.alert('Success', 'PDF has been saved to your device!');
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
@@ -75,7 +73,6 @@ const TownUsers = () => {
                 Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            console.error('Error downloading PDF:', error);
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
@@ -84,13 +81,12 @@ const TownUsers = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            await axios.delete(`http://192.168.200.23:8000/api/delete_town_user/${userId}/`);
+            await axios.delete(`http://192.168.1.31:8000/api/delete_town_user/${userId}/`);
             // If the API deletion is successful, update the state
             const updatedUsers = townUsers.filter(user => user.town_user_id !== userId);
             setTownUsers(updatedUsers); // Now update the state
             Alert.alert('Success', 'User deleted successfully!');
         } catch (error) {
-            console.error('Error deleting user:', error);
             Alert.alert('Error', 'Failed to delete the user.');
         }
     };

@@ -7,26 +7,33 @@ import Dashboard from '../Admin/Dashboard/Dashboard'
 import LogOut from '../ReusableCompo/LogOut'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Profile from '../Admin/Profile/Profile'
-import React, { useEffect, useState } from 'react'
-import TownUserReg from '../Admin/Registeration/TownUserReg'
+import React, { useContext,  useRef } from 'react'
+import TownUserReg from '../Admin/Filter/TownUserReg'
 import TownUsers from '../Admin/Towns/TownUsers'
 import Towns from '../Admin/Towns/Towns'
 import Totalvoters from '../Admin/Voters/TotalVoters'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { Dimensions, Pressable } from 'react-native'
-import Octicons from '@expo/vector-icons/Octicons';
+import {  Animated, Dimensions, TouchableOpacity } from 'react-native'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Voted from '../Admin/Voters/Voted'
 import Nvoted from '../Admin/Voters/Nvoted'
-import ProfileButton from '../Admin/Profile/ProfileButton'
+import ProfileButton from '../Admin/Filter/ProfileButton'
 import ReligionCasteList from '../Admin/Filter/ReligionCasteList'
 import TBVotersPDF from '../Admin/Voters/TBVotersPdf'
-import axios from 'axios'
 import TownVoters from '../Admin/Towns/TownVoters'
 import GenderWise from '../Admin/Filter/GenderWise'
 import BoothAscending from '../Admin/Filter/BoothAscending'
 import TownAscending from '../Admin/Filter/TownAscending'
+import { FontAwesome5 } from '@expo/vector-icons'
 
+import RuralTowns from '../Admin/Filter/RuralTowns'
+import TownBooths from '../TownUser/Booths/TownBooths'
+import UrbanTowns from '../Admin/Filter/UrbanTowns'
+import { LanguageContext } from '../ContextApi/LanguageContext'
+import LocationWise from '../Admin/Filter/LocationWise'
+import WardUsers from '../Admin/Ward/WardUsers'
+import WardUserRegistration from '../Admin/Filter/WardUserRegistration'
 
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +41,9 @@ const { height, width } = Dimensions.get('screen')
 
 const AdminMainStack = () => {
     const navigation = useNavigation();
+    const scaleValue = useRef(new Animated.Value(1)).current;
+    const { language } = useContext(LanguageContext);
+
 
     return (
         <Stack.Navigator initialRouteName='Dashboard'>
@@ -43,89 +53,25 @@ const AdminMainStack = () => {
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <MaterialIcons name="menu" size={30} color="black"
-                            //style={{ marginLeft: 10 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                     headerRight: () => (<ProfileButton />)
                 }}
             />
 
-            <Stack.Screen name='Voters' component={TBVotersPDF}
-                options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitleStyle: {
-                        fontSize: 22
-                    },
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
-                        </Pressable>
-                    ),
-                }}
-            />
-
-            <Stack.Screen name='GenderWise' component={GenderWise}
-                options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                }}
-            />
-
-
-            <Stack.Screen name='BoothAscending' component={BoothAscending} options={{
-                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                headerLeft: () => (
-                    <MaterialIcons name="menu" size={width * 0.05} color="black"
-                        //style={{ marginLeft: 10 }}
-                        onPress={() => navigation.toggleDrawer()} />
-                ),
-            }}
-            />
-
-
-            <Stack.Screen name='TownAscending' component={TownAscending}
-                options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                }}
-            />
 
             <Stack.Screen name='Total Voters' component={Totalvoters}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
-                            onPress={() => navigation.toggleDrawer()} />
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
 
-            <Stack.Screen name='Towns Users' component={TownUsers} options={{
-                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                headerLeft: () => (
-                    <MaterialIcons name="menu" size={width * 0.05} color="black"
-                        //style={{ marginLeft: 10 }}
-                        onPress={() => navigation.toggleDrawer()} />
-                ),
-            }} />
-            <Stack.Screen name='Booth Users' component={BoothUsers} options={{
-                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                headerLeft: () => (
-                    <MaterialIcons name="menu" size={width * 0.05} color="black"
-                        //style={{ marginLeft: 10 }}
-                        onPress={() => navigation.toggleDrawer()} />
-                ),
-            }} />
             <Stack.Screen name='Towns' component={Towns}
                 options={{
                     headerShown: false, headerTitleAlign: 'center',
@@ -133,20 +79,19 @@ const AdminMainStack = () => {
                         fontSize: height * 0.02,
                     },
                     headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
-                        </Pressable>
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }} />
             <Stack.Screen name='Town Voters' component={TownVoters}
                 options={({ route }) => ({
                     headerShown: false,
                     headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitle: route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters',
+                    headerTitle: route.params.townName ? `Voters in Town : ${route.params.townName}  ` : 'Town Voters',
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={30} color="black"
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 })}
@@ -155,15 +100,21 @@ const AdminMainStack = () => {
             <Stack.Screen name='Booths' component={Booths}
                 options={{
                     headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitleStyle: {
-                        fontSize: height * 0.02,
-                    },
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                    headerTitle: 'Booth List',
+                    headerTitleStyle: { fontSize: 20, fontWeight: '600', color: 'black' },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
-                        </Pressable>
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
+                    headerRight: () => (
+                        <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => handlePDFClick()}>
+                            <FontAwesome5 name="file-pdf" size={24} color="black" />
+                        </TouchableOpacity>
+                    )
                 }}
             />
             <Stack.Screen name='Booth Voters' component={BoothVoters}
@@ -172,57 +123,120 @@ const AdminMainStack = () => {
                     headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitle: route.params.boothId ? `Voters in Booth : ${route.params.boothId}  ` : 'Booth Voters',
                     headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
+                        <MaterialIcons name="menu" size={30} color="black"
                             onPress={() => navigation.toggleDrawer()} />
                     ),
                 })}
             />
 
-            <Stack.Screen name='Updated Voters' component={BoothUser_ActivityLog}
-                options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                }}
-            />
-            <Stack.Screen name='Age Wise Voters' component={AgewiseVoters}
-                options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerLeft: () => (
-                        <MaterialIcons name="menu" size={width * 0.05} color="black"
-                            //style={{ marginLeft: 10 }}
-                            onPress={() => navigation.toggleDrawer()} />
-                    ),
-                }}
-            />
-
             <Stack.Screen name='Voted' component={Voted}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
-                        </Pressable>
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitleStyle: { fontSize: 22, fontWeight: '600' },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
 
             <Stack.Screen name='Nvoted' component={Nvoted}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: 'Not Voted',
+                    headerTitleStyle: { fontSize: 22, fontWeight: '600' },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+
+
+            <Stack.Screen name='Family' component={TBVotersPDF}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitleStyle: {
                         fontSize: 22
                     },
-                    headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
-                        </Pressable>
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Urban Towns' component={UrbanTowns}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitleStyle: { textAlign: 'center', fontSize: 22, fontWeight: '600' },
+                    headerTitle: language === 'en' ? 'Urban Towns' : 'शहरी यादी',
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }} />
+
+            <Stack.Screen name="Rural Towns" component={RuralTowns}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitleStyle: { textAlign: 'center', fontSize: 22, fontWeight: '600' },
+                    headerTitle: language === 'en' ? 'Rural Towns' : 'ग्रामीण यादी',
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Town Booths' component={TownBooths}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitleStyle: { textAlign: 'center', fontSize: 22, fontWeight: '600' },
+                    headerTitle: language === 'en' ? 'Town Booths' : 'शहरातील बूथ',
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Towns Users' component={TownUsers} options={{
+                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+            }} />
+
+            <Stack.Screen name='Booth Users' component={BoothUsers} options={{
+                headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+            }} />
+
+            <Stack.Screen name='Updated Voters' component={BoothUser_ActivityLog}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+            <Stack.Screen name='Age Wise Voters' component={AgewiseVoters}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitleStyle: { fontSize: 20, fontWeight: '600' },
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
@@ -234,17 +248,82 @@ const AdminMainStack = () => {
                         fontSize: 22
                     },
                     headerShadowVisible: false, headerLeft: () => (
-                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="chevron-left" size={width * 0.05} color="black" />
-                        </Pressable>
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
                     ),
                 }}
             />
 
 
+            <Stack.Screen name='GenderWise' component={GenderWise}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Booth Analysis' component={BoothAscending}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Town Analysis' component={TownAscending}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+
+            <Stack.Screen name='LocationWise Voters' component={LocationWise}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Ward Users' component={WardUsers}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
 
             <Stack.Screen name='Registration' component={TownUserReg} options={{ headerShown: false }} />
+            <Stack.Screen name='WardUser Register' component={WardUserRegistration}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}  >
+                            <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
             <Stack.Screen name='Profile' component={Profile} options={{ headerShown: false }} />
             <Stack.Screen name='LogOut' component={LogOut} options={{ headerShown: false }} />
         </Stack.Navigator>

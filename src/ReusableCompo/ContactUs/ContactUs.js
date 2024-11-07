@@ -1,4 +1,4 @@
-import { Dimensions, Image, Linking, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Image, Linking, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -33,7 +33,7 @@ const ContactUs = () => {
                     return Linking.openURL(url);
                 }
             })
-            .catch((err) => console.error("An error occurred", err));
+            .catch((err) => Alert.alert("An error occurred", err));
     };
 
 

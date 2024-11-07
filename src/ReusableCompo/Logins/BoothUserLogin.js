@@ -7,12 +7,12 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BoothUserContext, BoothUserProvider } from '../../BoothUser/ContextApi/BuserContext';
+import { BoothUserContext, BoothUserProvider } from '../../ContextApi/BuserContext';
 
 const { height, width } = Dimensions.get('screen')
 const BoothUserLogin = () => {
     const navigation = useNavigation()
-    const { setBuserId, loginBuser } = useContext(BoothUserContext)
+    const { loginBuser } = useContext(BoothUserContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [isTextSecure, setTextSecure] = useState(true)
@@ -56,20 +56,19 @@ const BoothUserLogin = () => {
 
         if (validate()) {
             try {
-                const response = await axios.post(`http://192.168.200.23:8000/api/user_login/`,
-                    {
-                        "user_phone": username,
-                        "user_password": password
-                    })
+                const response = await axios.post(`http://192.168.1.31:8000/api/user_login/`, {
+                    "user_phone": username,
+                    "user_password": password
+                })
+
+                console.log(response.data);
 
                 if (response.status === 200) {
-                    const userId = response.data.user_id
-                    setBuserId(userId)
-                    loginBuser(userId)
+                    const token = response.data.token
+                    loginBuser(token)
                 }
             } catch (error) {
-                console.error(error);
-                console.warn('Error', 'Invalid username or password.');
+                Alert.alert('Error', 'Invalid username or password.');
             }
             setLoading(false)
         }
@@ -108,6 +107,8 @@ const BoothUserLogin = () => {
                                 value={username}
                                 placeholder='Enter username here ...'
                                 onChangeText={setUsername}
+                                keyboardType='number-pad'
+                                textContentType='telephoneNumber'
                                 style={{
                                     width: '100%', borderWidth: 1, borderColor: '#BCC1CA',
                                     paddingVertical: 10, borderRadius: 8, marginVertical: 5,
@@ -130,6 +131,7 @@ const BoothUserLogin = () => {
                                     value={password}
                                     placeholder='Enter password here ...'
                                     onChangeText={setPassword}
+                                    textContentType='password'
                                     secureTextEntry={isTextSecure}
                                     style={{
                                         flex: 1, padding: 10

@@ -1,15 +1,14 @@
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, RefreshControl } from 'react-native';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, RefreshControl, Alert } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import TownVotingBarStats from './TownVotingBarStats';
-import { TownUserContext } from '../ContextApi/TownUserProvider';
-import CustomTUserBottomTabs from '../../Navigation/CustomBottonNav';
+import { TownUserContext } from '../../ContextApi/TownUserProvider';
 
 const { height, width } = Dimensions.get('screen');
 
-const Towndash = () => {
+const TownDashboard = () => {
     const navigation = useNavigation();
     const { userId } = useContext(TownUserContext);
     const [totalVoters, setTotalVoters] = useState(0);
@@ -32,18 +31,18 @@ const Towndash = () => {
             setter(count);
             finalSetter(count);
         } catch (error) {
-            console.error(`Error fetching data from :`, error);
+            Alert.alert(`Error fetching data from :`, error);
             setError(error.response ? error.response.data.message : 'Error fetching data');
         }
     };
 
     const loadData = () => {
         if (userId) {
-            fetchData(`http://192.168.200.23:8000/api/get_voter_list_by_town_user/${userId}`, setTotalVoters, setFinalTotalVoters);
-            fetchData(`http://192.168.200.23:8000/api/get_booth_names_by_town_user/${userId}`, setTotalBoothsCount, setFinalTotalBoothsCount);
-            fetchData(`http://192.168.200.23:8000/api/town_user_id/${userId}/confirmation/1/`, setTotalVoted, setFinalTotalVoted);
-            fetchData(`http://192.168.200.23:8000/api/town_user_id/${userId}/confirmation/2/`, setTotalNonVoted, setFinalTotalNonVoted);
-            fetchData(`http://192.168.200.23:8000/api/get_booth_users_by_town_user/${userId}/`, setTotalUsers, setFinalTotalUsers);
+            fetchData(`http://192.168.1.31:8000/api/get_voter_list_by_town_user/${userId}`, setTotalVoters, setFinalTotalVoters);
+            fetchData(`http://192.168.1.31:8000/api/get_booth_names_by_town_user/${userId}`, setTotalBoothsCount, setFinalTotalBoothsCount);
+            fetchData(`http://192.168.1.31:8000/api/town_user_id/${userId}/confirmation/1/`, setTotalVoted, setFinalTotalVoted);
+            fetchData(`http://192.168.1.31:8000/api/town_user_id/${userId}/confirmation/2/`, setTotalNonVoted, setFinalTotalNonVoted);
+            fetchData(`http://192.168.1.31:8000/api/get_booth_users_by_town_user/${userId}/`, setTotalUsers, setFinalTotalUsers);
         }
     };
 
@@ -115,7 +114,7 @@ const Towndash = () => {
                 <View style={styles.headerContainer}>
                     <Text style={styles.title}>Washim Constituency</Text>
                     <View style={styles.gradientContainer}>
-                        <Pressable onPress={() => handlePress('Town Voters List')}>
+                        <Pressable onPress={() => handlePress('Voters List')}>
                             <LinearGradient
                                 colors={['#3C4CAC', '#F04393']}
                                 locations={[0.3, 1]}
@@ -130,7 +129,7 @@ const Towndash = () => {
 
                 <View style={styles.statsContainer}>
                     <View style={styles.statsRow}>
-                        <Pressable onPress={() => handlePress('Town Booths')} style={[styles.statsBox, styles.statsBoxBlue]}>
+                        <Pressable onPress={() => handlePress('Total Booths')} style={[styles.statsBox, styles.statsBoxBlue]}>
                             <Text style={styles.statsLabel}>Total Booths</Text>
                             <Text style={styles.statsValue}>{totalBoothsCount}</Text>
                         </Pressable>
@@ -164,7 +163,7 @@ const Towndash = () => {
     );
 };
 
-export default Towndash;
+export default TownDashboard;
 
 
 const styles = StyleSheet.create({
@@ -172,7 +171,7 @@ const styles = StyleSheet.create({
         height: height * 0.93,
         backgroundColor: 'white',
         paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
     },
     headerContainer: {
         width: "100%",

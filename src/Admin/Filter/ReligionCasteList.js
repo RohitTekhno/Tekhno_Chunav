@@ -32,52 +32,48 @@ export default function ReligionCasteList() {
 
   const fetchTowns = async () => {
     try {
-      const response = await axios.get('http://192.168.200.23:8000/api/towns/');
+      const response = await axios.get('http://192.168.1.31:8000/api/towns/');
       const townsData = response.data.map(town => ({
         label: `${town.town_id} - ${town.town_name}`,
         value: town.town_id,
       }));
       setTownItems(townsData);
     } catch (error) {
-      console.error('Error fetching towns:', error);
       Alert.alert('Error', 'Failed to load towns');
     }
   };
 
   const fetchBoothsByTown = async (townId) => {
     try {
-      const response = await axios.get(`http://192.168.200.23:8000/api/booths_by_town/${townId}`);
+      const response = await axios.get(`http://192.168.1.31:8000/api/booths_by_town/${townId}`);
       const boothsData = response.data.map(booth => ({
         label: `${booth.booth_id} - ${booth.booth_name}`,
         value: booth.booth_id,
       }));
       setBoothItems(boothsData);
     } catch (error) {
-      console.error('Error fetching booths:', error);
       Alert.alert('Error', 'Failed to load booths');
     }
   };
 
   const fetchCasteData = async (religionId) => {
     try {
-      const response = await axios.get(`http://192.168.200.23:8000/api/cast_by_religion/${religionId}`);
+      const response = await axios.get(`http://192.168.1.31:8000/api/cast_by_religion/${religionId}`);
       const casteData = response.data.map(cast => ({
         label: `${cast.cast_id} - ${cast.cast_name}`,
         value: cast.cast_id,
       }));
       setCasteItems(casteData);
     } catch (error) {
-      console.error('Error fetching caste data:', error);
       Alert.alert('Error', 'Failed to load caste data');
     }
   };
 
   const fetchVotersByBoothAndCaste = async (boothId, castId) => {
     try {
-      const response = await axios.get(`http://192.168.200.23:8000/api/booth/${boothId}/cast/${castId}/`);
+      const response = await axios.get(`http://192.168.1.31:8000/api/booth/${boothId}/cast/${castId}/`);
       setVoters(response.data);
     } catch (error) {
-      console.error('Error fetching voters:', error);
       Alert.alert('Error', 'Failed to load voters');
     }
   };
@@ -90,7 +86,7 @@ export default function ReligionCasteList() {
 
     setPdfLoading(true);
     try {
-      const response = await axios.get(`http://192.168.200.23:8000/api/booth_pdf/${boothValue}/cast/${casteValue}/`, {
+      const response = await axios.get(`http://192.168.1.31:8000/api/booth_pdf/${boothValue}/cast/${casteValue}/`, {
         responseType: 'arraybuffer',
       });
 
@@ -103,7 +99,7 @@ export default function ReligionCasteList() {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      Alert.alert('Success', 'PDF has been saved to your device!');
+      //Alert.alert('Success', 'PDF has been saved to your device!');
 
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(fileUri);
@@ -111,7 +107,6 @@ export default function ReligionCasteList() {
         Alert.alert('Error', 'Sharing not available on this device.');
       }
     } catch (error) {
-      console.error('Error downloading PDF:', error);
       Alert.alert('Error', 'Failed to download the PDF.');
     } finally {
       setPdfLoading(false);
@@ -234,11 +229,15 @@ export default function ReligionCasteList() {
 
         {casteValue && boothValue && (
           <>
-            <Text style={{ color: 'blue', fontSize: 20, fontWeight: '500', textAlign: 'center' }}>Filtered Voters</Text>
+            <Text style={{ color: '#0033cc', fontSize: 20, fontWeight: '500', textAlign: 'center' }}>Cast Wise Voters</Text>
             <FlatList
               data={voters}
               keyExtractor={(item) => item.voter_id.toString()}
               renderItem={renderVoterItem}
+              ListEmptyComponent={() => <Text style={{
+                textAlign: 'center', color: 'gray', alignSelf: 'center', fontSize: 18,
+                justifyContent: 'center', alignItems: 'center', marginTop: 50
+              }}>Voters Not Found</Text>}
             />
           </>
         )}

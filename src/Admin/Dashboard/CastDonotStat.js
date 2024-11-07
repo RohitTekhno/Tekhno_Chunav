@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
 import PieChart from 'react-native-pie-chart';
 
 const { height, width } = Dimensions.get('screen');
@@ -13,14 +13,14 @@ const CastDonutStat = () => {
 
     const getReligionwiseData = async () => {
         try {
-            const result = await axios.get('http://192.168.200.23:8000/api/religion_count/');
+            const result = await axios.get('http://192.168.1.31:8000/api/religion_count/');
             setSeries([
                 result.data.Hindu || 0,
                 result.data.Muslim || 0,
                 result.data['Not Defined'] || 1
             ]);
         } catch (error) {
-            console.error('Error fetching religion-wise data:', error);
+            Alert.alert('Error fetching religion-wise data:', error);
         }
     };
 

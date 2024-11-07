@@ -13,7 +13,7 @@ const HeaderFooterLayout = ({
     showFooter = true,
     leftIcon = true,
     rightIcon = true,
-    leftIconName = 'chevron-left',
+    leftIconName = 'keyboard-backspace',
     rightIconName = '',
     onLeftIconPress,
     onRightIconPress,
@@ -46,7 +46,7 @@ const HeaderFooterLayout = ({
 
                     {leftIcon && (
                         <Pressable onPress={handleGoBack}>
-                            <Octicons name={leftIconName} size={30} color="black" />
+                            <MaterialCommunityIcons name={leftIconName} size={30} color="black" />
                         </Pressable>
                     )}
                     <Text style={styles.text}>{headerText}</Text>
@@ -100,9 +100,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         marginTop: 30,
-        height: height * 0.04,
+        // height: height * 0.04,
     },
     text: {
+        flex: 1,
         color: 'black',
         fontSize: 20,
         textAlign: 'center',
