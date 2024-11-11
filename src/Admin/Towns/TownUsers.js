@@ -1,12 +1,12 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -24,7 +24,7 @@ const TownUsers = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/town_user_info/');
+            const response = await axios.get('http://192.168.1.8:8000/api/town_user_info/');
             const formattedTowns = response.data;
             if (Array.isArray(formattedTowns)) {
                 setTownUsers(formattedTowns);
@@ -32,7 +32,8 @@ const TownUsers = () => {
                 Alert.alert('Expected an array of townUsers');
             }
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
         } finally {
             setLoading(false);
         }
@@ -52,7 +53,7 @@ const TownUsers = () => {
     const handlePDFClick = async () => {
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/generate_town_user_pdf/', {
+            const response = await axios.get('http://192.168.1.8:8000/api/generate_town_user_pdf/', {
                 responseType: 'arraybuffer',
             });
 
@@ -81,7 +82,7 @@ const TownUsers = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            await axios.delete(`http://192.168.1.31:8000/api/delete_town_user/${userId}/`);
+            await axios.delete(`http://192.168.1.8:8000/api/delete_town_user/${userId}/`);
             // If the API deletion is successful, update the state
             const updatedUsers = townUsers.filter(user => user.town_user_id !== userId);
             setTownUsers(updatedUsers); // Now update the state

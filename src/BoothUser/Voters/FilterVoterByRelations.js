@@ -1,15 +1,15 @@
-import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator, Checkbox } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import { BoothUserContext } from '../../ContextApi/BuserContext';
 
-const { width, height } = Dimensions.get('screen');
 
-const TownVoters = ({ route }) => {
-    const { townId } = route.params;
+const FilterVoterByRelations = () => {
+    const { buserId } = useContext(BoothUserContext);
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,6 +19,7 @@ const TownVoters = ({ route }) => {
 
     const [selectedVoter, setSelectedVoter] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+
     const [selectedVoters, setSelectedVoters] = useState([]);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
@@ -41,28 +42,36 @@ const TownVoters = ({ route }) => {
         }
     };
 
-
-    const toTitleCase = (str) => {
-        return str
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ');
+    const toggleVoterSelection = (voter_id) => {
+        if (selectedVoters.includes(voter_id)) {
+            setSelectedVoters(selectedVoters.filter(id => id !== voter_id));
+        } else {
+            setSelectedVoters([...selectedVoters, voter_id]);
+        }
     };
 
+    const handleLongPress = (voter_id) => {
+        setIsSelectionMode(true);
+        toggleVoterSelection(voter_id);
+    };
 
-    const serchedVoter = voters.filter(voter =>
+    const exitSelectionMode = () => {
+        setIsSelectionMode(false);
+        setSelectedVoters([]);
+    };
+
+    const searchedVoters = voters.filter(voter =>
         (voter.voter_name && voter.voter_name.toLowerCase().includes(searchedValue.toLowerCase())) ||
         (voter.voter_id && voter.voter_id.toString().includes(searchedValue))
     );
 
     useEffect(() => {
-        setFilteredVoters(serchedVoter);
+        setFilteredVoters(searchedVoters);
     }, [searchedValue, voters]);
-
 
     const sortVotersAlphabetically = () => {
         if (sortState === 0) {
-            // Sort A-Z
+
             const sortedVoters = [...filteredVoters].sort((a, b) => {
                 const nameA = a.voter_name ? a.voter_name.toLowerCase() : '';
                 const nameB = b.voter_name ? b.voter_name.toLowerCase() : '';
@@ -86,27 +95,24 @@ const TownVoters = ({ route }) => {
         }
     };
 
-
     useEffect(() => {
-        axios.get(`http://192.168.1.8:8000/api/town_wise_voter_list/${townId}/`)
+        axios.get(`http://192.168.1.8:8000/api/get_voter_info/${buserId}/<int:voter_favour_id>/`)
             .then(response => {
-                if (response.data && Array.isArray(response.data)) {
-                    setVoters(response.data);
-                    setFilteredVoters(response.data);
-                    setInitialVoters(response.data);
+                if (response.data.voters && Array.isArray(response.data.voters)) {
+                    setVoters(response.data.voters);
+                    setFilteredVoters(response.data.voters);
+                    setInitialVoters(response.data.voters);
                 } else {
                     setError('Unexpected API response format.');
                 }
                 setLoading(false);
             })
             .catch(error => {
-                Alert.alert('Error fetching voter data', error.toString ? error.toString() : 'Unknown error');
-
+                Alert.alert('Error fetching voter data:', error.toString ? error.toString() : 'Unknown error');
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });
-    }, [townId]);
-
+    }, [buserId]);
 
     const getIconName = () => {
         if (sortState === 0) {
@@ -117,7 +123,6 @@ const TownVoters = ({ route }) => {
             return "sort-alpha-up-alt";
         }
     };
-
 
     const send_WhatsApp_Message = async () => {
         try {
@@ -149,27 +154,20 @@ const TownVoters = ({ route }) => {
         }
     };
 
-    const toggleVoterSelection = (voter_id) => {
-        if (selectedVoters.includes(voter_id)) {
-            setSelectedVoters(selectedVoters.filter(id => id !== voter_id));
-        } else {
-            setSelectedVoters([...selectedVoters, voter_id]);
-        }
+    const selectAllVoters = () => {
+        setSelectedVoters(filteredVoters.map(item => item.voter_id));
     };
 
-    const handleLongPress = (voter_id) => {
-        setIsSelectionMode(true);
-        toggleVoterSelection(voter_id);
-    };
-
-    const exitSelectionMode = () => {
-        setIsSelectionMode(false);
-        setSelectedVoters([]);
+    const toTitleCase = (str) => {
+        return str
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
     };
 
     return (
         <HeaderFooterLayout
-            headerText={`${route.params.townName} Voters`}
+            headerText={`Voters in Booth : ${route.params.buserId}  `}
             showHeader={true}
             showFooter={false}
             leftIcon={true}
@@ -178,7 +176,6 @@ const TownVoters = ({ route }) => {
             rightIconName={getIconName()}
             onRightIconPress={sortVotersAlphabetically}
         >
-
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color="grey" />
@@ -198,13 +195,13 @@ const TownVoters = ({ route }) => {
                     </View>
                 )}
 
-                {(loading) ?
-                    < View style={styles.loadingContainer}>
+                {(loading) ? (
+                    <View style={styles.loadingContainer}>
                         <ActivityIndicator size={'large'} color={'black'} />
                         <Text>Loading...</Text>
                     </View>
-                    :
-                    <View style={styles.listContainer}>
+                ) : (
+                    < View style={styles.listContainer}>
                         <FlatList
                             data={filteredVoters}
                             keyExtractor={item => item.voter_id.toString()}
@@ -218,7 +215,7 @@ const TownVoters = ({ route }) => {
                                     <View style={styles.voterDetails}>
                                         <View style={{
                                             borderRightWidth: 1, borderColor: '#D9D9D9',
-                                            width: 60, alignItems: 'center', justifyContent: 'center'
+                                            width: 60, alignItems: 'center',
                                         }}>
                                             <Text>{item.voter_id}</Text>
                                         </View>
@@ -233,28 +230,27 @@ const TownVoters = ({ route }) => {
                                 </Pressable>
                             )}
                             ListEmptyComponent={() => (
-                                <Text style={styles.noDataText}>No data found</Text>
+                                <Text style={styles.noDataText}>No results found</Text>
                             )}
                         />
-                    </View>
+
+                        <VoterDetailsPopUp
+                            isModalVisible={isModalVisible}
+                            selectedVoter={selectedVoter}
+                            setIsModalVisible={setIsModalVisible}
+                        />
+                    </View>)
                 }
-
-                <VoterDetailsPopUp
-                    isModalVisible={isModalVisible}
-                    selectedVoter={selectedVoter}
-                    setIsModalVisible={setIsModalVisible}
-                />
-            </View >
+            </View>
         </HeaderFooterLayout >
-    )
-}
+    );
+};
 
-export default TownVoters
 
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
-        height: height * 0.92
+        height: '100%',
     },
     searchContainer: {
         borderColor: '#9095A1',
@@ -271,10 +267,19 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 10,
     },
+    selectionToolbar: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginVertical: 10,
+    },
+    actionIcon: {
+        paddingHorizontal: 15,
+    },
     listContainer: {
         flex: 1,
     },
     voterItem: {
+        flex: 1,
         borderRadius: 2,
         paddingVertical: 12,
         paddingHorizontal: 10,
@@ -284,32 +289,24 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         borderWidth: 0.2,
     },
+    selectedVoterItem: {
+        backgroundColor: '#e0f7fa',
+    },
     voterDetails: {
         flexDirection: 'row',
-        gap: 10
+        alignItems: 'center',
+        columnGap: 10,
     },
     noDataText: {
         textAlign: 'center',
-        marginVertical: 20,
-        fontSize: 16,
-        color: 'gray',
+        marginTop: 20,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white'
-
-    },
-    selectionToolbar: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginVertical: 10,
-    },
-    actionIcon: {
-        paddingHorizontal: 15,
-    },
-    selectedVoterItem: {
-        backgroundColor: '#e0f7fa',
     },
 });
+
+
+export default FilterVoterByRelations

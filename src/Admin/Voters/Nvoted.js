@@ -18,7 +18,7 @@ export default function Nvoted({ route }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
@@ -51,7 +51,7 @@ export default function Nvoted({ route }) {
 
 
     useEffect(() => {
-        axios.get(`http://192.168.1.31:8000/api/get_non_voted_voters/`)
+        axios.get(`http://192.168.1.8:8000/api/get_non_voted_voters/`)
             .then(response => {
                 if (response.data && Array.isArray(response.data)) {
                     setVoters(response.data);
@@ -61,7 +61,8 @@ export default function Nvoted({ route }) {
                 setLoading(false);
             })
             .catch(error => {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data', error.toString ? error.toString() : 'Unknown error');
+
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });

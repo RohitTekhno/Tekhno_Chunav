@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import ResponsivePoll from './ResponsivePoll';
 import ProgressCircleWithMargin from './ProgressCircleWithMargin';
 import axios from 'axios';
-import HeaderFooterLayout from '../HeaderFooterLayout';
-import { BoothUserContext } from '../ContextApi/BuserContext';
+import { BoothUserContext } from '../../ContextApi/BuserContext';
 
 
 const { height, width } = Dimensions.get('window');
@@ -22,7 +21,7 @@ export default function ExitPoll() {
 
     const getVotersByUserwise = async () => {
         try {
-            const result = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_user_wise/${buserId}/`);
+            const result = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_user_wise/${buserId}/`);
             const totalVoterDetails = result.data.voters;
 
             const totalVoterCount = totalVoterDetails.length;
@@ -37,7 +36,7 @@ export default function ExitPoll() {
                 Doubted: Doubted,
             });
         } catch (error) {
-            Alert.alert("Failed to fetch data ", error);
+            Alert.alert("Failed to fetch data ", error.toString ? error.toString() : 'Unknown error');
         }
     };
 
@@ -48,39 +47,38 @@ export default function ExitPoll() {
     }, [buserId]);
 
     return (
-        <HeaderFooterLayout headerText="Exit Poll">
-            <View style={styles.container}>
-                <View style={styles.graphContainer}>
-                    <ResponsivePoll
-                        TotalVoters={votersCounter.TotalVoters}
-                        Favorable={votersCounter.Favorable}
-                        Non_Favorable={votersCounter.Non_Favorable}
-                        Doubted={votersCounter.Doubted}
-                    />
-                </View>
-                <View style={styles.statisticsContainer}>
-                    <Text style={styles.statisticsTitle}>Statistics</Text>
-                    <View style={styles.progressContainer}>
-                        <View style={styles.progressItem}>
-                            <ProgressCircleWithMargin
-                                progressValue={60}
-                                circleProgessColor={'#00BDD6'}
-                                unfilledColor={'#A6F5FF'}
-                            />
-                            <Text style={styles.progressLabel}>Support Margin</Text>
-                        </View>
-                        <View style={styles.progressItem}>
-                            <ProgressCircleWithMargin
-                                progressValue={45}
-                                circleProgessColor={'#8353E2'}
-                                unfilledColor={'#D9CBF6'}
-                            />
-                            <Text style={styles.progressLabell}>Against Margin</Text>
-                        </View>
+        <View style={styles.container}>
+            <View style={styles.graphContainer}>
+                <ResponsivePoll
+                    TotalVoters={votersCounter.TotalVoters}
+                    Favorable={votersCounter.Favorable}
+                    Non_Favorable={votersCounter.Non_Favorable}
+                    Doubted={votersCounter.Doubted}
+                />
+            </View>
+
+            <View style={styles.statisticsContainer}>
+                <Text style={styles.statisticsTitle}>Statistics</Text>
+                <View style={styles.progressContainer}>
+                    <View style={styles.progressItem}>
+                        <ProgressCircleWithMargin
+                            progressValue={60}
+                            circleProgessColor={'#00BDD6'}
+                            unfilledColor={'#A6F5FF'}
+                        />
+                        <Text style={styles.progressLabel}>Support Margin</Text>
+                    </View>
+                    <View style={styles.progressItem}>
+                        <ProgressCircleWithMargin
+                            progressValue={45}
+                            circleProgessColor={'#8353E2'}
+                            unfilledColor={'#D9CBF6'}
+                        />
+                        <Text style={styles.progressLabell}>Against Margin</Text>
                     </View>
                 </View>
             </View>
-        </HeaderFooterLayout>
+        </View>
     );
 };
 
@@ -89,17 +87,18 @@ export default function ExitPoll() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
-        justifyContent: 'flex-start',
+        // padding: 10,
+        // justifyContent: 'flex-start',
+        backgroundColor: 'white'
     },
     graphContainer: {
-        flex: 1,
+        flex: 0.55,
         marginBottom: 30,
         // backgroundColor: 'red'
 
     },
     statisticsContainer: {
-        flex: 1,
+        flex: 0.45,
         // backgroundColor: 'red'
     },
     statisticsTitle: {

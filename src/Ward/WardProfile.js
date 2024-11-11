@@ -34,7 +34,7 @@ const WardProfile = () => {
       }
 
       try {
-        const response = await axios.get(`http://192.168.1.31:8000/api/prabhag_users_info/${wardUserId}`);
+        const response = await axios.get(`http://192.168.1.8:8000/api/prabhag_users_info/${wardUserId}`);
         console.log(response.data);  // Log the response data to check if it contains what you expect
         if (Array.isArray(response.data) && response.data.length > 0) {
           setUserInfo(response.data[0]);  // Use the first object in the array

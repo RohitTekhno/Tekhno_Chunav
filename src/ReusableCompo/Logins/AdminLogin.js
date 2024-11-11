@@ -52,7 +52,7 @@ const AdminLogin = () => {
                 Vibration.vibrate(100);
                 setLoading(true);
 
-                const response = await axios.post('http://192.168.1.31:8000/api/politician_login/', {
+                const response = await axios.post('http://192.168.1.8:8000/api/politician_login/', {
                     politician_name: username,
                     politician_password: password,
                 });

@@ -11,15 +11,13 @@ import {
 } from 'react-native';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
-
-const { width, height } = Dimensions.get('screen');
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const Booths = () => {
     const { language, toggleLanguage } = useContext(LanguageContext);
@@ -40,7 +38,7 @@ const Booths = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/booths/');
+            const response = await axios.get('http://192.168.1.8:8000/api/booths/');
             const formattedTowns = response.data;
 
             if (Array.isArray(formattedTowns)) {
@@ -50,7 +48,8 @@ const Booths = () => {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
             setLoading(false);
         }
     };
@@ -80,7 +79,7 @@ const Booths = () => {
 
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/generate_pdf/', {
+            const response = await axios.get('http://192.168.1.8:8000/api/generate_pdf/', {
                 responseType: 'arraybuffer',
             });
 
@@ -93,15 +92,15 @@ const Booths = () => {
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            //Alert.Alert.Alert.Alert.Alert.Alert.Alert.alert('Success', 'PDF has been saved to your device!');
+            Alert.alert('Success', 'PDF has been saved to your device!');
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
             } else {
-                Alert.Alert.Alert.Alert.Alert.Alert.Alert.alert('Error', 'Sharing not available on this device.');
+                Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            Alert.Alert.Alert.Alert.Alert.Alert.Alert.alert('Error', 'Failed to download the PDF.');
+            Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);
         }

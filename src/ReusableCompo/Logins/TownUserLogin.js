@@ -53,7 +53,7 @@ const TownUserLogin = () => {
             setLoading(true);
             try {
                 Vibration.vibrate(100);
-                const response = await axios.post('http://192.168.1.31:8000/api/town_user_login/', {
+                const response = await axios.post('http://192.168.1.8:8000/api/town_user_login/', {
                     town_user_contact_number: username,
                     town_user_password: password,
                 });

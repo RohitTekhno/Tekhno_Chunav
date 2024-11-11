@@ -4,7 +4,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 export default function ReligionCasteList() {
   const [townOpen, setTownOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function ReligionCasteList() {
 
   const fetchTowns = async () => {
     try {
-      const response = await axios.get('http://192.168.1.31:8000/api/towns/');
+      const response = await axios.get('http://192.168.1.8:8000/api/towns/');
       const townsData = response.data.map(town => ({
         label: `${town.town_id} - ${town.town_name}`,
         value: town.town_id,
@@ -45,7 +45,7 @@ export default function ReligionCasteList() {
 
   const fetchBoothsByTown = async (townId) => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/booths_by_town/${townId}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/booths_by_town/${townId}`);
       const boothsData = response.data.map(booth => ({
         label: `${booth.booth_id} - ${booth.booth_name}`,
         value: booth.booth_id,
@@ -58,7 +58,7 @@ export default function ReligionCasteList() {
 
   const fetchCasteData = async (religionId) => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/cast_by_religion/${religionId}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/cast_by_religion/${religionId}`);
       const casteData = response.data.map(cast => ({
         label: `${cast.cast_id} - ${cast.cast_name}`,
         value: cast.cast_id,
@@ -71,7 +71,7 @@ export default function ReligionCasteList() {
 
   const fetchVotersByBoothAndCaste = async (boothId, castId) => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/booth/${boothId}/cast/${castId}/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/booth/${boothId}/cast/${castId}/`);
       setVoters(response.data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load voters');
@@ -86,7 +86,7 @@ export default function ReligionCasteList() {
 
     setPdfLoading(true);
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/booth_pdf/${boothValue}/cast/${casteValue}/`, {
+      const response = await axios.get(`http://192.168.1.8:8000/api/booth_pdf/${boothValue}/cast/${casteValue}/`, {
         responseType: 'arraybuffer',
       });
 

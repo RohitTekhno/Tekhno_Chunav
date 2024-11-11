@@ -1,7 +1,7 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -26,7 +26,7 @@ const PrabhagUsers = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/prabhag_users_info/');
+            const response = await axios.get('http://192.168.1.8:8000/api/prabhag_users_info/');
             const formattedTowns = response.data;
             if (Array.isArray(formattedTowns)) {
                 setTownUsers(formattedTowns);
@@ -34,7 +34,10 @@ const PrabhagUsers = () => {
                 Alert.alert('Expected an array of townUsers');
             }
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
         } finally {
             setLoading(false);
         }
@@ -55,7 +58,7 @@ const PrabhagUsers = () => {
     const handlePDFClick = async () => {
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/generate_town_user_pdf/', {
+            const response = await axios.get('http://192.168.1.8:8000/api/generate_town_user_pdf/', {
                 responseType: 'arraybuffer',
             });
 
@@ -84,7 +87,7 @@ const PrabhagUsers = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            await axios.delete(`http://192.168.1.31:8000/api/delete_prabhag_user/${userId}/`);
+            await axios.delete(`http://192.168.1.8:8000/api/delete_prabhag_user/${userId}/`);
             // If the API deletion is successful, update the state
             const updatedUsers = townUsers.filter(user => user.prabhag_user_id !== userId);
             setTownUsers(updatedUsers); // Now update the state

@@ -31,18 +31,18 @@ const TownDashboard = () => {
             setter(count);
             finalSetter(count);
         } catch (error) {
-            Alert.alert(`Error fetching data from :`, error);
+            Alert.alert(`Error fetching data from :`, error.toString ? error.toString() : 'Unknown error');
             setError(error.response ? error.response.data.message : 'Error fetching data');
         }
     };
 
     const loadData = () => {
         if (userId) {
-            fetchData(`http://192.168.1.31:8000/api/get_voter_list_by_town_user/${userId}`, setTotalVoters, setFinalTotalVoters);
-            fetchData(`http://192.168.1.31:8000/api/get_booth_names_by_town_user/${userId}`, setTotalBoothsCount, setFinalTotalBoothsCount);
-            fetchData(`http://192.168.1.31:8000/api/town_user_id/${userId}/confirmation/1/`, setTotalVoted, setFinalTotalVoted);
-            fetchData(`http://192.168.1.31:8000/api/town_user_id/${userId}/confirmation/2/`, setTotalNonVoted, setFinalTotalNonVoted);
-            fetchData(`http://192.168.1.31:8000/api/get_booth_users_by_town_user/${userId}/`, setTotalUsers, setFinalTotalUsers);
+            fetchData(`http://192.168.1.8:8000/api/get_voter_list_by_town_user/${userId}`, setTotalVoters, setFinalTotalVoters);
+            fetchData(`http://192.168.1.8:8000/api/get_booth_names_by_town_user/${userId}`, setTotalBoothsCount, setFinalTotalBoothsCount);
+            fetchData(`http://192.168.1.8:8000/api/town_user_id/${userId}/confirmation/1/`, setTotalVoted, setFinalTotalVoted);
+            fetchData(`http://192.168.1.8:8000/api/town_user_id/${userId}/confirmation/2/`, setTotalNonVoted, setFinalTotalNonVoted);
+            fetchData(`http://192.168.1.8:8000/api/get_booth_users_by_town_user/${userId}/`, setTotalUsers, setFinalTotalUsers);
         }
     };
 

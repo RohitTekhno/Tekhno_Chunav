@@ -1,10 +1,10 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator, Checkbox } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 
 const BoothVoters = ({ route }) => {
@@ -23,7 +23,7 @@ const BoothVoters = ({ route }) => {
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
@@ -95,7 +95,7 @@ const BoothVoters = ({ route }) => {
     };
 
     useEffect(() => {
-        axios.get(`http://192.168.1.31:8000/api/get_voters_by_booth/${boothId}/`)
+        axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}/`)
             .then(response => {
                 if (response.data.voters && Array.isArray(response.data.voters)) {
                     setVoters(response.data.voters);
@@ -107,7 +107,8 @@ const BoothVoters = ({ route }) => {
                 setLoading(false);
             })
             .catch(error => {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data', error.toString ? error.toString() : 'Unknown error');
+
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });
@@ -125,7 +126,7 @@ const BoothVoters = ({ route }) => {
 
     const send_WhatsApp_Message = async () => {
         try {
-            const response = await axios.post(`http://192.168.1.31:8000/api/send_whatsapp_message/`, {
+            const response = await axios.post(`http://192.168.1.8:8000/api/send_whatsapp_message/`, {
                 "voter_ids": selectedVoters
             });
 
@@ -134,13 +135,13 @@ const BoothVoters = ({ route }) => {
                 exitSelectionMode();
             }
         } catch (error) {
-            Alert.alert("Error sending WhatsApp message:", error);
+            Alert.alert("Error sending WhatsApp message:", error.toString ? error.toString() : 'Unknown error');
         }
     };
 
     const send_Text_Message = async () => {
         try {
-            const response = await axios.post(`http://192.168.1.31:8000/api/send_text_message/`, {
+            const response = await axios.post(`http://192.168.1.8:8000/api/send_text_message/`, {
                 "voter_ids": selectedVoters
             });
 
@@ -149,7 +150,7 @@ const BoothVoters = ({ route }) => {
                 exitSelectionMode();
             }
         } catch (error) {
-            Alert.alert("Error sending text message:", error);
+            Alert.alert("Error sending text message:", error.toString ? error.toString() : 'Unknown error');
         }
     };
 

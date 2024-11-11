@@ -1,10 +1,10 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -19,7 +19,7 @@ export default function Voted({ route }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
 
                 setSelectedVoter(response.data);
@@ -53,7 +53,7 @@ export default function Voted({ route }) {
 
 
     useEffect(() => {
-        axios.get(`http://192.168.1.31:8000/api/vote_confirmation/1/`)
+        axios.get(`http://192.168.1.8:8000/api/vote_confirmation/1/`)
             .then(response => {
 
                 if (response.data && Array.isArray(response.data)) {
@@ -64,7 +64,8 @@ export default function Voted({ route }) {
                 setLoading(false);
             })
             .catch(error => {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data', error.toString ? error.toString() : 'Unknown error');
+
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });

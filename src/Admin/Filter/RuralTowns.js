@@ -18,7 +18,7 @@ const RuralTowns = () => {
     const getRuralTownList = async () => {
         setLoading(true)
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/rural_town_info/');
+            const response = await axios.get('http://192.168.1.8:8000/api/rural_town_info/');
             if (response.status === 200) {
                 setRuralTowns(response.data);
                 setFilteredData(response.data);

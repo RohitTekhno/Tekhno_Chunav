@@ -31,22 +31,23 @@ function WardDash({ toggleSidebar }) {
   const fetchData = async () => {
     setRefreshing(true);
     try {
-      const voterResponse = await axios.get(`http://192.168.1.31:8000/api/get_voterlist_by_prabhag_user/${wardUserId}/`);
+      const voterResponse = await axios.get(`http://192.168.1.8:8000/api/get_voterlist_by_prabhag_user/${wardUserId}/`);
       setTotalVoters(voterResponse.data.length.toString());
 
-      const boothResponse = await axios.get(`http://192.168.1.31:8000/api/booth_details_by_prabhag_user/${wardUserId}/`);
+      const boothResponse = await axios.get(`http://192.168.1.8:8000/api/booth_details_by_prabhag_user/${wardUserId}/`);
       setTotalBoothsCount(boothResponse.data.length.toString());
 
-      const userResponse = await axios.get(`http://192.168.1.31:8000/api/user_booth_details_by_prabhag_user/${wardUserId}/`);
+      const userResponse = await axios.get(`http://192.168.1.8:8000/api/user_booth_details_by_prabhag_user/${wardUserId}/`);
       setTotalUsers(userResponse.data.length.toString());
 
-      const votedResponse = await axios.get(`http://192.168.1.31:8000/api/voter_details_by_confirmation/${wardUserId}/1/`);
+      const votedResponse = await axios.get(`http://192.168.1.8:8000/api/voter_details_by_confirmation/${wardUserId}/1/`);
       setTotalVoted(votedResponse.data.length.toString());
 
-      const nonVotedResponse = await axios.get(`http://192.168.1.31:8000/api/voter_details_by_confirmation/${wardUserId}/2/`);
+      const nonVotedResponse = await axios.get(`http://192.168.1.8:8000/api/voter_details_by_confirmation/${wardUserId}/2/`);
       setTotalNonVoted(nonVotedResponse.data.length.toString());
     } catch (error) {
-      Alert.alert('Error fetching data:', error);
+      Alert.alert('Error', `Error fetching data: ${error}`);
+
     }
     setRefreshing(false);
   };

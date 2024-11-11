@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import ColorLegendModal from '../ReusableCompo/ColorLegendModal';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import ColorLegendModal from './ColorLegendModal';
 
 const { height, width } = Dimensions.get('screen');
 
-const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
+const BoothEditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
     const [name, setName] = useState('');
     const [parentName, setParentName] = useState('');
     const [contact, setContact] = useState(null);
@@ -33,6 +33,10 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
     const [color, setColor] = useState('black');
     const [modalVisible, setModalVisible] = useState(false);
 
+    const [selectedButtonId, setSelectedButtonId] = useState(null);
+
+    const [location, setLocation] = useState('');
+
     const statusOptions = [{ label: 'Alive', value: 1 }, { label: 'Dead', value: 2 }];
     const maritalOptions = [{ label: 'Single', value: 1 }, { label: 'Married', value: 2 }];
     const genderOptions = [
@@ -43,18 +47,9 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
 
 
     const handleSelectedVoterType = (item) => {
-        console.log(item);
-
         setVoterFavourType(item.id);
         setTypeColor(item.id)
 
-        const editedVoter = {
-            "voter_id": selectedVoter.voter_id,
-            "voter_name": name,
-            "voter_favour_id": Number(item.id),
-        }
-
-        onEditVoter(editedVoter)
 
         const voterId = selectedVoter.voter_id;
         if (voterId && item.id) {
@@ -103,6 +98,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                 throw new Error('Failed to update checkbox state.');
             }
         } catch (error) {
+            console.error('Error updating checkbox state:', error.message);
             alert('Failed to update checkbox state. Please try again.');
         }
     };
@@ -116,6 +112,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             }));
             setCasteOptions(casteData);
         } catch (error) {
+            console.error('Error fetching caste data:', error.toString ? error.toString() : 'Unknown error');
             Alert.alert('Error', 'Failed to load caste data');
         }
     };
@@ -132,6 +129,8 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             setGender(selectedVoter.voter_gender || null);
             setAge(selectedVoter.voter_age ? Number(selectedVoter.voter_age) : null);
             setVoterFavourType(selectedVoter.voter_favour_id || null);
+            setSelectedButtonId(selectedVoter.voter_in_city_id || null);
+            setLocation(selectedVoter.voter_current_location || null)
             setTownName(selectedVoter.town_name || null)
             setBoothName(selectedVoter.booth_name || null)
             setVoterFavourType(selectedVoter.voter_favour_id)
@@ -146,6 +145,8 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             setGender(null);
             setAge(null);
             setVoterFavourType(null);
+            setSelectedButtonId(null);
+            setLocation(null)
         }
 
         fetchCasteData();
@@ -158,7 +159,6 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
 
 
     const handleCloseEditForm = () => {
-        resetFields()
         onClose()
     }
 
@@ -166,23 +166,23 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
         try {
             const response = await axios.get(`http://192.168.1.8:8000/api/generate_voter_pdf/${voterId}`, {
                 params: { voter_id: voterId },
-                responseType: 'arraybuffer', // Request the response as an array buffer
+                responseType: 'arraybuffer',
             });
 
-            // Convert array buffer to base64 string
+
             const base64 = btoa(
                 new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
             );
 
-            // Get the file URI to save the PDF
+
             const fileUri = FileSystem.documentDirectory + `voter_${voterId}.pdf`;
 
-            // Write the PDF to the file system
+
             await FileSystem.writeAsStringAsync(fileUri, base64, {
                 encoding: FileSystem.EncodingType.Base64,
             });
 
-            //Alert.alert('Success', 'PDF has been saved to your device!');
+            Alert.alert('Success', 'PDF has been saved to your device!');
 
             // Share or open the PDF file
             if (await Sharing.isAvailableAsync()) {
@@ -192,69 +192,148 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
             }
 
         } catch (error) {
+            console.error('Error downloading PDF:', error.toString ? error.toString() : 'Unknown error');
             Alert.alert('Error', 'Failed to download the PDF.');
         }
     };
 
+
+    // const handleSubmit = async () => {
+    //     setLoading(true);
+
+
+    //     let updatedFields = {};
+
+    //     if (name !== '') updatedFields.voter_name = name;
+    //     if (parentName !== '') updatedFields.voter_parent_name = parentName;
+    //     if (contact !== '') updatedFields.voter_contact_number = contact;
+    //     if (caste !== '') updatedFields.voter_cast_id = caste;
+    //     if (age !== '') updatedFields.voter_age = age;
+    //     if (gender !== '') updatedFields.voter_gender = gender;
+    //     if (currentStatus !== '') updatedFields.voter_live_status_id = currentStatus;
+    //     if (maritalStatus !== '') updatedFields.voter_marital_status_id = maritalStatus;
+    //     if (voterFavourType !== '') updatedFields.voter_favour_id = voterFavourType;
+    //     if (selectedButtonId !== '') updatedFields.voter_in_city_id = selectedButtonId;
+    //     if (location !== '') updatedFields.voter_current_location = location;
+
+
+
+    //     if (name === '') updatedFields.voter_name = null;
+    //     if (parentName === '') updatedFields.voter_parent_name = null;
+    //     if (contact === '') updatedFields.voter_contact_number = null;
+    //     if (caste === '') updatedFields.voter_cast_id = null;
+    //     if (age === '') updatedFields.voter_age = null;
+    //     if (gender === '') updatedFields.voter_gender = null;
+    //     if (currentStatus === '') updatedFields.voter_live_status_id = null;
+    //     if (maritalStatus === '') updatedFields.voter_marital_status_id = null;
+    //     if (voterFavourType === '') updatedFields.voter_favour_id = null;
+
+    //     try {
+    //         const apiUrl = `http://192.168.1.8:8000/api/voters/${selectedVoter.voter_id}/`;
+    //         const response = await axios.patch(apiUrl, updatedFields);
+
+    //         if (response.status === 200) {
+    //             Alert.alert("Success", "Voter details updated successfully.");
+
+    //             handleCloseEditForm(); 
+    //         } else {
+    //             throw new Error('Failed to update voter details');
+    //         }
+    //     } catch (error) {
+    //         Alert.alert("Error", "Failed to update voter details. Please try again.");
+    //         console.error('Error updating voter details:', error.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+
     const handleSubmit = async () => {
         setLoading(true);
-        const editedVoter = {
-            "voter_id": selectedVoter.voter_id,
-            "voter_name": name,
-            "voter_favour_id": voterFavourType,
-        }
 
-        // Dynamically updating only the fields that are changed
-        let updatedFields = {};
+        const apiUrl = `http://192.168.1.8:8000/api/compare_voter_data/`;
 
-        if (name !== '') updatedFields.voter_name = name;
-        if (parentName !== '') updatedFields.voter_parent_name = parentName;
-        if (contact !== '') updatedFields.voter_contact_number = contact;
-        if (caste !== '') updatedFields.voter_cast_id = caste;
-        if (age !== '') updatedFields.voter_age = age;
-        if (gender !== '') updatedFields.voter_gender = gender;
-        if (currentStatus !== '') updatedFields.voter_live_status_id = currentStatus;
-        if (maritalStatus !== '') updatedFields.voter_marital_status_id = maritalStatus;
-        if (voterFavourType !== '') updatedFields.voter_favour_id = voterFavourType;
-
-        // If a field is empty, set it to null
-        if (name === '') updatedFields.voter_name = null;
-        if (parentName === '') updatedFields.voter_parent_name = null;
-        if (contact === '') updatedFields.voter_contact_number = null;
-        if (caste === '') updatedFields.voter_cast_id = null;
-        if (age === '') updatedFields.voter_age = null;
-        if (gender === '') updatedFields.voter_gender = null;
-        if (currentStatus === '') updatedFields.voter_live_status_id = null;
-        if (maritalStatus === '') updatedFields.voter_marital_status_id = null;
-        if (voterFavourType === '') updatedFields.voter_favour_id = null;
-
+        // Prepare updated fields with null values for empty fields
+        const updatedFields = {
+            voter_id: selectedVoter.voter_id,
+            voter_name: name !== '' ? name : null,
+            voter_parent_name: parentName !== '' ? parentName : null,
+            voter_contact_number: contact !== '' ? contact : null,
+            voter_cast_id: caste !== '' ? caste : null,
+            voter_age: age !== '' ? age : null,
+            voter_gender: gender !== '' ? gender : null,
+            voter_live_status_id: currentStatus !== '' ? currentStatus : null,
+            voter_marital_status_id: maritalStatus !== '' ? maritalStatus : null,
+            voter_favour_id: voterFavourType !== '' ? voterFavourType : null,
+            voter_in_city_id: selectedButtonId !== '' ? selectedButtonId : null,
+            voter_current_location: location !== '' ? location : null,
+        };
 
         try {
-            const apiUrl = `http://192.168.1.8:8000/api/voters/${selectedVoter.voter_id}/`;
-            const response = await axios.patch(apiUrl, updatedFields);
+            const response = await axios.post(apiUrl, updatedFields, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status !== 200 && response.status !== 201) {
+                throw new Error('Failed to update voter information.');
+            }
+
+            // Update the voters and filteredData state with the new information
+            // setVoters(prevVoters =>
+            //     prevVoters.map(item =>
+            //         item.voter_id === selectedVoter.voter_id
+            //             ? {
+            //                   ...item,
+            //                   voter_name: name,
+            //                   voter_parent_name: parentName,
+            //                   voter_contact_number: contact,
+            //                   caste: caste,
+            //                   age: age,
+            //                   gender: gender,
+            //                   status: currentStatus,
+            //                   engaged: maritalStatus,
+            //                   button_id: selectedButtonId,
+            //                   location: location,
+            //               }
+            //             : item
+            //     )
+            // );
+
+            // setFilteredData(prevFiltered =>
+            //     prevFiltered.map(item =>
+            //         item.voter_id === selectedVoter.voter_id
+            //             ? {
+            //                   ...item,
+            //                   voter_name: name,
+            //                   voter_parent_name: parentName,
+            //                   voter_contact_number: contact,
+            //                   caste: caste,
+            //                   age: age,
+            //                   gender: gender,
+            //                   status: currentStatus,
+            //                   engaged: maritalStatus,
+            //                   button_id: selectedButtonId,
+            //                   location: location,
+            //               }
+            //             : item
+            //     )
+            // );
 
             Alert.alert("Success", "Voter details updated successfully.");
+            handleCloseEditForm();
         } catch (error) {
-            Alert.alert("Error", "Failed to update voter details.");
+            console.error('Error updating voter information:', error.message);
+            Alert.alert("Error", "Failed to update voter information. Please try again.");
         } finally {
             setLoading(false);
-            onEditVoter(editedVoter)
-            handleCloseEditForm()
         }
     };
 
-    const resetFields = () => {
-        setName('');
-        setParentName('');
-        setContact('');
-        setCaste(null);
-        setCurrentStatus(null);
-        setMaritalStatus(null);
-        setGender(null);
-        setVoterFavourType(null);
-        setAge(null);
-        setColor('black')
-        // setUpdate(false)
+
+    const handleHexButtonClick = (id) => {
+        setSelectedButtonId(id);
     };
 
 
@@ -355,18 +434,39 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                         </View>
                     </View>
 
-
-                    <View>
-                        <View style={styles.detailRow}>
-                            <Text style={styles.label}>Town Name :</Text>
-                            <Text style={styles.value}>{townName}</Text>
-                        </View>
-
-                        <View style={styles.detailRow}>
-                            <Text style={styles.label}>Booth Name:</Text>
-                            <Text style={styles.value}>{boothName}</Text>
-                        </View>
+                    <View style={styles.hexButtonContainer}>
+                        {[
+                            { label: 'In', id: 1 },
+                            { label: 'Near', id: 2 },
+                            { label: 'Out', id: 3 },
+                        ].map(({ label, id }) => (
+                            <TouchableOpacity
+                                key={id}
+                                style={[
+                                    styles.hexButton,
+                                    selectedButtonId === id && styles.selectedHexButton,
+                                ]}
+                                onPress={() => handleHexButtonClick(id)}
+                            >
+                                <Text style={styles.hexButtonText}>{label}</Text>
+                            </TouchableOpacity>
+                        ))}
                     </View>
+
+
+                    <TextInput
+                        style={[
+                            styles.locationInput,
+                            selectedButtonId === 2 || selectedButtonId === 3
+                                ? styles.activeInput
+                                : styles.inactiveInput
+                        ]}
+                        placeholder="Enter current location"
+                        value={location}
+                        onChangeText={setLocation}
+                        editable={selectedButtonId === 2 || selectedButtonId === 3}
+                    />
+
 
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
                         <Pressable onPress={handleCloseEditForm} style={styles.cancelButton}>
@@ -374,7 +474,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
                         </Pressable>
                         <Pressable onPress={handleSubmit} style={styles.submitButton}>
                             <Text style={{ color: 'white', textAlign: 'center', paddingVertical: 10, fontSize: 17, fontWeight: '600' }}>
-                                {loading ? 'Submitting...' : 'Submit'}
+                                Submit
                             </Text>
                         </Pressable>
                     </View>
@@ -390,7 +490,7 @@ const EditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) => {
     );
 };
 
-export default EditVoterForm;
+export default BoothEditVoterForm;
 
 const styles = StyleSheet.create({
     modalBackground: {
@@ -459,5 +559,48 @@ const styles = StyleSheet.create({
         flex: 0.6,
         fontSize: 16,
         textAlign: 'left',
+    },
+
+    hexButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 15,
+    },
+    hexButton: {
+        width: 50,
+        height: 50,
+        backgroundColor: '#ff69b4',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transform: [{ rotate: '45deg' }],
+        borderRadius: 5,
+    },
+    selectedHexButton: {
+        backgroundColor: '#007AFF',
+    },
+    hexButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        transform: [{ rotate: '-45deg' }],
+    },
+    locationInput: {
+        backgroundColor: '#fff',
+        borderColor: '#E2E2E2',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        fontSize: 18,
+        color: '#000',
+        width: '100%',
+        marginBottom: 10,
+    },
+    activeInput: {
+        borderWidth: 1.5,
+        borderColor: 'black',
+    },
+    inactiveInput: {
+        borderColor: '#ddd',
+        backgroundColor: '#f5f5f5',
     },
 });

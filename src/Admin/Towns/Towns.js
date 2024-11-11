@@ -1,16 +1,16 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert, Animated } from 'react-native';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('screen');
-const API_BASE_URL = 'http://192.168.1.31:8000/api/';
+const API_BASE_URL = 'http://192.168.1.8:8000/api/';
 
 const Towns = () => {
     const { language, toggleLanguage } = useContext(LanguageContext);

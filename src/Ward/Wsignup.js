@@ -28,7 +28,7 @@ export default function Wsignup({ navigation }) {
 
     useEffect(() => {
         // Fetch booth data from API
-        axios.get(`http://192.168.1.31:8000/api/booth_details_by_prabhag_user/${wardUserId}/`)
+        axios.get(`http://192.168.1.8:8000/api/booth_details_by_prabhag_user/${wardUserId}/`)
             .then(response => {
                 const boothsData = response.data.map(booth => ({
                     label: `${booth.booth_id} - ${booth.booth_name}`,
@@ -37,7 +37,7 @@ export default function Wsignup({ navigation }) {
                 setItems(boothsData);
             })
             .catch(error => {
-                Alert.alert('Error fetching booths:', error);
+                Alert.alert('Error fetching booths:', error.toString ? error.toString() : 'Unknown error');
             });
     }, []);
 
@@ -91,7 +91,7 @@ export default function Wsignup({ navigation }) {
             setLoading(true);
             try {
 
-                const response = await axios.post('http://192.168.1.31:8000/api/register_booth_user_by_prabhag/', {
+                const response = await axios.post('http://192.168.1.8:8000/api/register_booth_user_by_prabhag/', {
                     user_name: name,
                     user_phone: contact,
                     user_password: password,

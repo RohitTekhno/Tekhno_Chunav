@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -45,7 +45,7 @@ const TownBooths = ({ route }) => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_booth_details_by_town_id/${town_id}`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_booth_details_by_town_id/${town_id}`);
             const formattedTowns = response.data.data;
             console.log(formattedTowns);
 
@@ -56,7 +56,8 @@ const TownBooths = ({ route }) => {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
             setLoading(false);
         }
     };
@@ -86,7 +87,7 @@ const TownBooths = ({ route }) => {
 
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/generate_pdf/', {
+            const response = await axios.get('http://192.168.1.8:8000/api/generate_pdf/', {
                 responseType: 'arraybuffer',
             });
 

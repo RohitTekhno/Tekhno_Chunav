@@ -23,7 +23,7 @@ export default function TownBoothVoters({ route, navigation }) {
     const fetchVoters = async () => {
       try {
 
-        const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_booth/${boothId}`);
+        const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}`);
         if (response.data && response.data.voters && Array.isArray(response.data.voters)) {
 
           const voterData = response.data.voters.map(voter => ({

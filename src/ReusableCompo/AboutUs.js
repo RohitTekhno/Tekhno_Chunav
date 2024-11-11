@@ -1,12 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Linking } from 'react-native';
-import { Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
 import { LanguageContext } from '../ContextApi/LanguageContext';
-import TopNavCompo from '../Admin/ReusableCompo/TopNavCompo';
 
 const { height } = Dimensions.get('screen');
 const topMargin = height * 0.1;

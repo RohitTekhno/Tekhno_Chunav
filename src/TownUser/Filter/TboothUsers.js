@@ -31,7 +31,7 @@ const TboothUsers = () => {
     const fetchData = async () => {
         setRefreshing(true); // Start loading indicator
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_booth_users_by_town_user/${userId}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_booth_users_by_town_user/${userId}/`);
             const formattedTowns = response.data;
 
             if (Array.isArray(formattedTowns)) {
@@ -61,7 +61,7 @@ const TboothUsers = () => {
 
 
     const fetchUserDetails = (id) => {
-        axios.get(`http://192.168.1.31:8000/api/booth_user_info/${id}`)
+        axios.get(`http://192.168.1.8:8000/api/booth_user_info/${id}`)
             .then(response => {
                 setBuser(response.data);
                 setIsModalVisible(true);

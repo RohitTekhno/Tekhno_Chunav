@@ -1,28 +1,26 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import Octicons from 'react-native-vector-icons/Octicons';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { Octicons, MaterialIcons, FontAwesome6 } from 'react-native-vector-icons/';
+
+
 
 const TopNavCompo = ({ navigation, ScreenName, colorName }) => {
     const handleGoBack = () => {
         navigation.goBack();
     };
 
-    const handleNotificationBtn = () => {
-        Alert.alert("Notification Pressed...")
-    }
 
 
     return (
         <View style={styles.nav}>
             <Pressable onPress={handleGoBack}>
-                <Octicons name="chevron-left" size={26} color={colorName} />
+                <MaterialIcons name="keyboard-backspace" size={30} color="white" />
             </Pressable>
 
             <Text style={[styles.text, { color: colorName ? colorName : 'black' }]}>{ScreenName}</Text>
 
-            <Pressable onPress={handleNotificationBtn}>
-                <AntDesign name="bells" size={24} color={colorName ? colorName : 'black'} />
+            <Pressable onPress={() => navigation.navigate('ContactUs')}>
+                <FontAwesome6 name="phone" size={20} color={colorName ? colorName : 'black'} />
             </Pressable>
         </View>
     )

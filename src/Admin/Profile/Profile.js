@@ -3,8 +3,8 @@ import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import TopNavCompo from '../ReusableCompo/TopNavCompo';
 import CustomeTextInput from './CustomeTextInput';
+import TopNavCompo from '../../ReusableCompo/TopNavCompo';
 
 
 const { width, height } = Dimensions.get('screen')

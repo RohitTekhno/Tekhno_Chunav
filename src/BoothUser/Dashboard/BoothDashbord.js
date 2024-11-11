@@ -25,7 +25,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
   const fetchVoterData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_user_wise/${buserId}/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_user_wise/${buserId}/`);
       const voters = response.data.voters || [];
       const totalVoters = voters.length;
       const ours = voters.filter(voter => voter.voter_favour_id === 1 || voter.voter_favour_id === 4 || voter.voter_favour_id === 5).length;
@@ -42,7 +42,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
       });
 
       const voteCountResponse = await axios.get(
-        `http://192.168.1.31:8000/api/get_voted_and_non_voted_count_by_booth_user/${buserId}/`
+        `http://192.168.1.8:8000/api/get_voted_and_non_voted_count_by_booth_user/${buserId}/`
       );
 
       setTotalVoted(voteCountResponse.data.voted_count.toString());

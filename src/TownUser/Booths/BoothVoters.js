@@ -20,7 +20,7 @@ const BoothVoters = ({ route }) => {
 
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
@@ -53,7 +53,7 @@ const BoothVoters = ({ route }) => {
 
     const getBoothVoters = async () => {
         setRefreshing(true)
-        axios.get(`http://192.168.1.31:8000/api/get_voters_by_booth/${boothId}/`)
+        axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}/`)
             .then(response => {
                 if (response.data.voters && Array.isArray(response.data.voters)) {
                     setVoters(response.data.voters);
@@ -63,7 +63,7 @@ const BoothVoters = ({ route }) => {
                 setRefreshing(false);
             })
             .catch(error => {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error.toString ? error.toString() : 'Unknown error');
                 setError('Error fetching data. Please try again later.');
                 BottomBoothsStack(false);
             });

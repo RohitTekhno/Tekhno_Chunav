@@ -33,7 +33,7 @@ const TotalVoted = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/town_user_id/${userId}/confirmation/1/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/town_user_id/${userId}/confirmation/1/`);
       if (Array.isArray(response.data)) {
         setVoters(response.data);
       } else {
@@ -49,7 +49,7 @@ const TotalVoted = () => {
 
   const fetchVoterDetails = async (voter_id) => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`);
       setSelectedVoter(response.data);
       setIsModalVisible(true);
     } catch (error) {

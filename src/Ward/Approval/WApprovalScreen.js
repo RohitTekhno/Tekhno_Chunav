@@ -43,7 +43,7 @@ const WApprovalScreen = ({ route }) => {
   const fetchUpdatedVotersToApprove = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/get_temp_voter_data_prabhag_user/${userId}/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_temp_voter_data_prabhag_user/${userId}/`);
       setVoters(response.data);
       setFilteredVoters(response.data);
     } catch (error) {
@@ -57,7 +57,7 @@ const WApprovalScreen = ({ route }) => {
       } else if (error.request) {
         Alert.alert('Network Error', 'Failed to fetch voters. Please check your internet connection.');
       } else {
-        Alert.alert('Error', 'An unexpected error occurred. Please try again.' + error);
+        Alert.alert('Error', 'An unexpected error occurred. Please try again.' + error.toString ? error.toString() : 'Unknown error');
       }
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ const WApprovalScreen = ({ route }) => {
   const fetchUpdatedVoterDetails = async (voter_id) => {
     setFormVisible(true);
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/get_temp_voter_data_user_prabhag_user/${voter_id}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_temp_voter_data_user_prabhag_user/${voter_id}`);
       setSelectedVoter(response.data);
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
@@ -87,7 +87,7 @@ const WApprovalScreen = ({ route }) => {
 
   const approveSelectedVoters = async () => {
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/multiple_voter_data_update_by_prabha_user/`,
+      const response = await axios.put(`http://192.168.1.8:8000/api/multiple_voter_data_update_by_prabha_user/`,
         {
           "temp_voter_data_voter_ids": selectedVoterIds
         }
@@ -118,7 +118,7 @@ const WApprovalScreen = ({ route }) => {
 
   const rejectSelectedVoters = async () => {
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/reject_multiple_temp_voter_data_by_prabhag_user/`,
+      const response = await axios.put(`http://192.168.1.8:8000/api/reject_multiple_temp_voter_data_by_prabhag_user/`,
         {
           "temp_voter_data_voter_ids": selectedVoterIds
         }
@@ -148,7 +148,7 @@ const WApprovalScreen = ({ route }) => {
 
   const fetchCasteData = async () => {
     try {
-      const response = await axios.get('http://192.168.1.31:8000/api/cast/');
+      const response = await axios.get('http://192.168.1.8:8000/api/cast/');
       const casteData = response.data.map(cast => ({
         label: `${cast.cast_id} - ${cast.cast_name}`,
         value: cast.cast_id,
@@ -180,7 +180,7 @@ const WApprovalScreen = ({ route }) => {
     console.log(id);
 
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/update_reject_status_prabhag_user/${id}/`)
+      const response = await axios.put(`http://192.168.1.8:8000/api/update_reject_status_prabhag_user/${id}/`)
       console.log(response);
 
       if (response.status === 200) {

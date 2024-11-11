@@ -22,7 +22,7 @@ export default function TBVotersPdf() {
   useEffect(() => {
     const fetchFamilyGroups = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.31:8000/api/get_family_groups_for_admin/`);
+        const response = await axios.get(`http://192.168.1.8:8000/api/get_family_groups_for_admin/`);
         if (response.status === 200) {
           setData(response.data);
           initializeArrowAnimations(response.data);
@@ -30,7 +30,7 @@ export default function TBVotersPdf() {
           setError('Data not found');
         }
       } catch (error) {
-        Alert.alert('Error fetching family group data:', error);
+        Alert.alert('Error fetching family group data:', error.toString ? error.toString() : 'Unknown error');
         setError('Error fetching data');
       } finally {
         setLoading(false);
@@ -69,7 +69,7 @@ export default function TBVotersPdf() {
       setModalLoading(true);
       setModalVisible(true);
       try {
-        const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_group_id/${id}/`);
+        const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_group_id/${id}/`);
         if (response.status === 200) {
           setMembers(response.data.voters);
         } else {
@@ -107,7 +107,7 @@ export default function TBVotersPdf() {
 
       console.log('Removing voter with ID:', selectedVoter.voter_id);
 
-      const response = await axios.patch(`http://192.168.1.31:8000/api/remove_voter_from_family_group/${selectedVoter.voter_id}/`, {
+      const response = await axios.patch(`http://192.168.1.8:8000/api/remove_voter_from_family_group/${selectedVoter.voter_id}/`, {
         voter_id: selectedVoter.voter_id,
       });
 

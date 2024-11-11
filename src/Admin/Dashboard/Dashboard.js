@@ -28,7 +28,7 @@ const Dashboard = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result1 = await axios.get(`http://192.168.1.31:8000/api/voter_favour_counts/`);
+            const result1 = await axios.get(`http://192.168.1.8:8000/api/voter_favour_counts/`);
             setVoterCounter({
                 TotalVoters: result1.data.Total_Voters,
                 Favorable: result1.data.Favourable,
@@ -37,44 +37,44 @@ const Dashboard = () => {
                 Non_Voted: result1.data.Pending
             });
         } catch (error) {
-            Alert.alert("Failed to fetch data ", error);
+            Alert.alert("Failed to fetch data ", error.toString ? error.toString() : 'Unknown error');
         }
     };
 
     // NEW API call for voted and non-voted count
     const getVotedAndNonVotedCount = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/get_voted_and_non_voted_count/');
+            const response = await axios.get('http://192.168.1.8:8000/api/get_voted_and_non_voted_count/');
             setTotalVoted(response.data.voted_count.toString());
             setNTotalVoted(response.data.non_voted_count.toString());
         } catch (error) {
-            Alert.alert('Error fetching voted and non-voted count:', error);
+            Alert.alert('Error fetching voted and non-voted count:', error.toString ? error.toString() : 'Unknown error');
         }
     };
 
     const getAllCounts = () => {
-        axios.get('http://192.168.1.31:8000/api/voter_count/')
+        axios.get('http://192.168.1.8:8000/api/voter_count/')
             .then(response => {
                 setTotalVoters(response.data.count.toString());
             })
             .catch(error => {
-                Alert.alert('Error fetching total voters count:', error);
+                Alert.alert('Error fetching total voters count:', error.toString ? error.toString() : 'Unknown error');
             });
 
-        axios.get('http://192.168.1.31:8000/api/towns/')
+        axios.get('http://192.168.1.8:8000/api/towns/')
             .then(response => {
                 setTotalTowns(response.data.length.toString());
             })
             .catch(error => {
-                Alert.alert('Error fetching total towns:', error);
+                Alert.alert('Error fetching total towns:', error.toString ? error.toString() : 'Unknown error');
             });
 
-        axios.get('http://192.168.1.31:8000/api/booths/')
+        axios.get('http://192.168.1.8:8000/api/booths/')
             .then(response => {
                 setTotalBooths(response.data.length.toString());
             })
             .catch(error => {
-                Alert.alert('Error fetching total booths count:', error);
+                Alert.alert('Error fetching total booths count:', error.toString ? error.toString() : 'Unknown error');
             });
 
     }

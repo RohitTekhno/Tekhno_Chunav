@@ -28,12 +28,12 @@ export const WardUserProvider = ({ children }) => {
                         setError('Token expired. Please log in again.');
                     }
                 } catch (error) {
-                    Alert.alert('Error decoding token on load:', error);
+                    Alert.alert('Error decoding token on load:', error.toString ? error.toString() : 'Unknown error');
                     setError('Failed to decode token. Please log in again.');
                 }
             }
         } catch (error) {
-            Alert.alert('Error loading user data from AsyncStorage:', error);
+            Alert.alert('Error loading user data from AsyncStorage:', error.toString ? error.toString() : 'Unknown error');
             setError('Failed to load user data. Please try again later.');
         }
     };
@@ -51,7 +51,7 @@ export const WardUserProvider = ({ children }) => {
             setWarduserAuthenticated(true);
             await AsyncStorage.setItem('WardUserToken', userData);
         } catch (error) {
-            Alert.alert('Error during login:', error);
+            Alert.alert('Error during login:', error.toString ? error.toString() : 'Unknown error');
             setError('Failed to log in. Invalid token or network error.');
         }
     };
@@ -63,7 +63,7 @@ export const WardUserProvider = ({ children }) => {
             setToken(null);
             await AsyncStorage.removeItem('WardUserToken');
         } catch (error) {
-            Alert.alert('Error during logout:', error);
+            Alert.alert('Error during logout:', error.toString ? error.toString() : 'Unknown error');
             setError('Failed to log out. Please try again.');
         }
     };

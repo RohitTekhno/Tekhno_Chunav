@@ -13,14 +13,14 @@ const CastDonutStat = () => {
 
     const getReligionwiseData = async () => {
         try {
-            const result = await axios.get('http://192.168.1.31:8000/api/religion_count/');
+            const result = await axios.get('http://192.168.1.8:8000/api/religion_count/');
             setSeries([
                 result.data.Hindu || 0,
                 result.data.Muslim || 0,
                 result.data['Not Defined'] || 1
             ]);
         } catch (error) {
-            Alert.alert('Error fetching religion-wise data:', error);
+            Alert.alert('Error fetching religion-wise data:', error.toString ? error.toString() : 'Unknown error');
         }
     };
 

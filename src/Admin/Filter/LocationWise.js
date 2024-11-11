@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, View, TextInput, FlatList, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -32,7 +32,7 @@ export default function LocationWise() {
 
     const fetchBoothData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/booths/');
+            const response = await axios.get('http://192.168.1.8:8000/api/booths/');
             const boothOptions = response.data.map((item) => ({
                 label: `${item.booth_id} - ${item.booth_name}`,
                 value: item.booth_id,
@@ -40,7 +40,7 @@ export default function LocationWise() {
             setBoothItems(boothOptions);
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching booth data:', error);
+            Alert.alert('Error fetching booth data:', error.toString ? error.toString() : 'Unknown error');
             setLoading(false);
         }
     };
@@ -50,12 +50,13 @@ export default function LocationWise() {
             setLoading(true);
             try {
                 const response = await axios.get(
-                    `http://192.168.1.31:8000/api/get_voter_current_location_details_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`
+                    `http://192.168.1.8:8000/api/get_voter_current_location_details_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`
                 );
                 setVoterData(response.data);
                 setLoading(false);
             } catch (error) {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data', error.toString ? error.toString() : 'Unknown error');
+
                 setLoading(false);
             }
         }
@@ -74,7 +75,7 @@ export default function LocationWise() {
         setPdfLoading(true);
         try {
             const response = await axios.get(
-                `http://192.168.1.31:8000/api/generate_voter_pdf_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`,
+                `http://192.168.1.8:8000/api/generate_voter_pdf_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`,
                 { responseType: 'arraybuffer' }
             );
             const base64 = btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));

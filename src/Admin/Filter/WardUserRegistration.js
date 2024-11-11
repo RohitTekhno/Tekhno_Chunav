@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,7 +25,7 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        axios.get('http://192.168.1.31:8000/api/get_prabhags')
+        axios.get('http://192.168.1.8:8000/api/get_prabhags')
             .then(response => {
                 const wardData = response.data.map(ward => ({
                     label: `${ward.prabhag_id} - ${ward.prabhag_name}`,
@@ -34,7 +34,7 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
                 setItems(wardData);
             })
             .catch(error => {
-                Alert.alert("Failed to fetch ward ", error);
+                Alert.alert("Failed to fetch ward ", error.toString ? error.toString() : 'Unknown error');
             });
     }, []);
 
@@ -87,7 +87,7 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
         if (validate()) {
             setLoading(true);
             try {
-                const response = await axios.post('http://192.168.1.31:8000/api/prabhag_users_create/', {
+                const response = await axios.post('http://192.168.1.8:8000/api/prabhag_users_create/', {
                     prabhag_user_name: name,
                     prabhag_user_contact_number: contact,
                     prabhag_user_password: password,

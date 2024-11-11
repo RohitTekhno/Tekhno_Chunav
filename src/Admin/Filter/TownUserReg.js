@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,7 +25,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        axios.get('http://192.168.1.31:8000/api/towns/')
+        axios.get('http://192.168.1.8:8000/api/towns/')
             .then(response => {
                 const townsData = response.data.map(town => ({
                     label: `${town.town_id} - ${town.town_name}`,
@@ -34,7 +34,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
                 setItems(townsData);
             })
             .catch(error => {
-                Alert.alert("Failed to load towns ", error);
+                Alert.alert("Failed to load towns ", error.toString ? error.toString() : 'Unknown error');
             });
     }, []);
 
@@ -87,7 +87,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
         if (validate()) {
             setLoading(true);
             try {
-                const response = await axios.post('http://192.168.1.31:8000/api/town_user_register/', {
+                const response = await axios.post('http://192.168.1.8:8000/api/town_user_register/', {
                     town_user_name: name,
                     town_user_contact_number: contact,
                     town_user_password: password,

@@ -18,7 +18,7 @@ export default function Wardlogout() {
         try {
 
             const response = await axios.post(
-                `http://192.168.1.31:8000/api/prabhag_user_logout/${userId}/`,
+                `http://192.168.1.8:8000/api/prabhag_user_logout/${userId}/`,
                 {}, // You can send any required payload here, if necessary
                 {
                     headers: {

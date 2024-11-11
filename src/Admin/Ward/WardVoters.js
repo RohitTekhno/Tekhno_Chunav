@@ -4,7 +4,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 import { useNavigation } from '@react-navigation/native';
 
@@ -28,7 +28,7 @@ const WardVoters = ({ route }) => {
     useEffect(() => {
         const fetchVoters = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_prabhagh/${wardId}/`);
+                const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_prabhagh/${wardId}/`);
                 if (Array.isArray(response.data)) {
                     setVoters(response.data);
                     setFilteredVoters(response.data);
@@ -67,7 +67,7 @@ const WardVoters = ({ route }) => {
 
     const fetchVoterDetails = async (voter_id) => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`);
             setSelectedVoter(response.data);
             setIsModalVisible(true);
         } catch (error) {

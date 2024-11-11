@@ -18,7 +18,7 @@ export default function GenderWise() {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
@@ -60,7 +60,7 @@ export default function GenderWise() {
     const fetchVoters = async (genderValue) => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_male_female_voters_by_all/gender/${genderValue}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_male_female_voters_by_all/gender/${genderValue}/`);
             setFilteredVoters(response.data);
             setLoading(false);
         } catch (error) {

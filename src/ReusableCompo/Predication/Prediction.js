@@ -24,7 +24,7 @@ const Prediction = () => {
 
     const getVotersByUserwise = async () => {
         try {
-            const result = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_user_wise/${userId}/`);
+            const result = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_user_wise/${userId}/`);
             const totalVoterDetails = result.data.voters;
 
             const totalVoterCount = totalVoterDetails.length;
@@ -41,7 +41,7 @@ const Prediction = () => {
                 Non_Voted: pendingCount
             });
         } catch (error) {
-            Alert.alert("Failed to fetch data", error);
+            Alert.alert("Failed to fetch data", error.toString ? error.toString() : 'Unknown error');
         }
     };
 

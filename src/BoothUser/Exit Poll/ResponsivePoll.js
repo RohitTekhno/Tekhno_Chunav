@@ -1,12 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState, useContext } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import axios from 'axios';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import { BoothUserContext } from '../../ContextApi/BuserContext';
 
-export default function ResponsivePoll({ TotalVoters, Favorable, Non_Favorable, Doubted }) {
-    const perPercent = TotalVoters ? TotalVoters / 100 : 1; // Prevent division by zero
-    const TotalVoterPer = Math.round(TotalVoters / perPercent);
-    const FavorableVoterPer = Math.round(Favorable / perPercent);
-    const Non_FavorableVoterPer = Math.round(Non_Favorable / perPercent);
-    const DoubtedPer = Math.round(Doubted / perPercent);
+
+const { height } = Dimensions.get('screen');
+export default function ResponsivePoll() {
+    const { buserId } = useContext(BoothUserContext);
+    const { language } = useContext(LanguageContext);
+    const [voterCounts, setVoterCounts] = useState({ Total: 0, Favorable: 0, Non_Favorable: 0, Doubted: 0 });
 
     const totalVoterHeight = useRef(new Animated.Value(0)).current;
     const favorableHeight = useRef(new Animated.Value(0)).current;
@@ -14,105 +17,84 @@ export default function ResponsivePoll({ TotalVoters, Favorable, Non_Favorable, 
     const doubtedHeight = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        if (!isNaN(TotalVoterPer)) {
-            Animated.timing(totalVoterHeight, {
-                toValue: TotalVoterPer * 2,
-                duration: 1000,
-                useNativeDriver: false,
-            }).start();
+        fetchVoterData();
+    }, [buserId]);
+
+    const fetchVoterData = async () => {
+        try {
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_user_wise/${buserId}/`);
+            const voters = response.data.voters;
+
+            const counts = {
+                Total: voters.length,
+                Favorable: voters.filter(voter => voter.voter_favour_id === 1 || voter.voter_favour_id === 4).length,
+                Non_Favorable: voters.filter(voter => voter.voter_favour_id === 2).length,
+                Doubted: voters.filter(voter => voter.voter_favour_id === 3).length,
+            };
+
+            setVoterCounts(counts);
+
+            const perPercent = counts.Total ? counts.Total / 100 : 1;
+            animateBar(totalVoterHeight, counts.Total / perPercent);
+            animateBar(favorableHeight, counts.Favorable / perPercent);
+            animateBar(nonFavorableHeight, counts.Non_Favorable / perPercent);
+            animateBar(doubtedHeight, counts.Doubted / perPercent);
+        } catch (error) {
+            console.error("Error fetching voter data:", error.toString ? error.toString() : 'Unknown error');
         }
+    };
 
-        if (!isNaN(FavorableVoterPer)) {
-            Animated.timing(favorableHeight, {
-                toValue: FavorableVoterPer * 2,
-                duration: 1000,
-                useNativeDriver: false,
-            }).start();
-        }
-
-        if (!isNaN(Non_FavorableVoterPer)) {
-            Animated.timing(nonFavorableHeight, {
-                toValue: Non_FavorableVoterPer * 2,
-                duration: 1000,
-                useNativeDriver: false,
-            }).start();
-        }
-
-        if (!isNaN(DoubtedPer)) {
-            Animated.timing(doubtedHeight, {
-                toValue: DoubtedPer * 2,
-                duration: 1000,
-                useNativeDriver: false,
-            }).start();
-        }
-    }, [TotalVoterPer, FavorableVoterPer, Non_FavorableVoterPer, DoubtedPer]);
-
-    // Calculate the maximum height for the bars
-    const maxHeight = Math.max(TotalVoterPer, FavorableVoterPer, Non_FavorableVoterPer, DoubtedPer) * 2;
-
-    // Determine the number of lines and their spacing
-    const numLines = 5;
-    const lineSpacing = maxHeight / numLines;
-
-    const lines = [];
-    for (let i = 1; i <= numLines; i++) {
-        lines.push(
-            <View
-                key={i}
-                style={[styles.line, { top: maxHeight - i * lineSpacing }]}
-            >
-                <Text style={styles.lineLabel}>{i}</Text>
-            </View>
-        );
-    }
+    const animateBar = (barRef, value) => {
+        Animated.timing(barRef, {
+            toValue: value * 2,
+            duration: 1000,
+            useNativeDriver: false,
+        }).start();
+    };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.graphTitle}>Votes</Text>
+            <Text style={styles.graphTitle}>
+                {language === 'en' ? 'Votes Distribution' : 'मते विश्लेषण'}
+            </Text>
             <View style={styles.barChart}>
-                {lines}
                 <View style={styles.barItem}>
                     <Animated.View style={[styles.bar, { height: totalVoterHeight }]} />
-                    <Text style={styles.barLabel}>{TotalVoterPer ? `${TotalVoterPer}%` : '0%'}</Text>
+                    <Text style={styles.barLabel}>{`${Math.round((voterCounts.Total / voterCounts.Total) * 100)}%`}</Text>
                 </View>
                 <View style={styles.barItem}>
                     <Animated.View style={[styles.bar, { height: favorableHeight }]} />
-                    <Text style={styles.barLabel}>{FavorableVoterPer ? `${FavorableVoterPer}%` : '0%'}</Text>
+                    <Text style={styles.barLabel}>{`${Math.round((voterCounts.Favorable / voterCounts.Total) * 100)}%` || 0}</Text>
                 </View>
                 <View style={styles.barItem}>
                     <Animated.View style={[styles.bar, { height: nonFavorableHeight }]} />
-                    <Text style={styles.barLabel}>{Non_FavorableVoterPer ? `${Non_FavorableVoterPer}%` : '0%'}</Text>
+                    <Text style={styles.barLabel}>{`${Math.round((voterCounts.Non_Favorable / voterCounts.Total) * 100)}%` || 0}</Text>
                 </View>
                 <View style={styles.barItem}>
                     <Animated.View style={[styles.bar, { height: doubtedHeight }]} />
-                    <Text style={styles.barLabel}>{DoubtedPer ? `${DoubtedPer}%` : '0%'}</Text>
+                    <Text style={styles.barLabel}>{`${Math.round((voterCounts.Doubted / voterCounts.Total) * 100)}%` || 0}</Text>
                 </View>
             </View>
             <View style={styles.barLabels}>
-                <Text style={styles.barLabelText}>Total Voters</Text>
-                <Text style={styles.barLabelText}>Favorable</Text>
-                <Text style={styles.barLabelText}>Non-Favorable</Text>
-                <Text style={styles.barLabelText}>Doubted</Text>
+                <Text style={styles.barLabelText}>{language === 'en' ? 'Total Voters' : 'एकूण मतदार'}</Text>
+                <Text style={styles.barLabelText}>{language === 'en' ? 'Favorable' : 'समर्थक'}</Text>
+                <Text style={styles.barLabelText}>{language === 'en' ? 'Against' : 'विरुद्ध'}</Text>
+                <Text style={styles.barLabelText}>{language === 'en' ? 'Doubted' : 'संशयित'}</Text>
             </View>
         </View>
     );
-};
-
-
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        // marginVertical: '5%',
-        // marginHorizontal:'5%',
-        marginRight: '8%',
-        // backgroundColor: 'green',
+        // marginRight: '8%',
     },
     graphTitle: {
-        fontSize: 20,
+        fontSize: height * 0.03,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 20,
     },
     barChart: {
         width: '100%',
@@ -122,7 +104,7 @@ const styles = StyleSheet.create({
         height: 200,
         marginVertical: 20,
         position: 'relative',
-        marginTop: 50
+        marginTop: 25,
     },
     barItem: {
         alignItems: 'center',
@@ -142,23 +124,8 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     barLabelText: {
-        // width: ,
         textAlign: 'center',
         color: '#6E7787',
         fontSize: 14,
-    },
-    line: {
-        position: 'absolute',
-        width: '100%',
-        borderBottomWidth: 1,
-        borderBottomColor: '#D3D3D3', // Light gray color for faint lines
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingRight: 5,
-    },
-    lineLabel: {
-        color: '#6E7787',
-        fontSize: 12,
     },
 });

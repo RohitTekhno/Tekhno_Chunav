@@ -29,14 +29,15 @@ export default function TownAscending() {
 
   const fetchTownData = () => {
     setLoading(true);
-    axios.get('http://192.168.1.31:8000/api/town_voting_percentage/')
+    axios.get('http://192.168.1.8:8000/api/town_voting_percentage/')
       .then(response => {
         const sortedData = response.data.sort((a, b) => a.voted_percentage - b.voted_percentage);
         setData(sortedData);
         setLoading(false);
       })
       .catch(error => {
-        Alert.alert('Error fetching data:', error);
+        Alert.alert('Error', `Error fetching data: ${error}`);
+
         setLoading(false);
       });
   };

@@ -24,11 +24,11 @@ export default function WboothUsers() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/user_booth_details_by_prabhag_user/${wardUserId}/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/user_booth_details_by_prabhag_user/${wardUserId}/`);
       setUsers(response.data);
       setLoading(false);
     } catch (error) {
-      Alert.alert('Error fetching booth users:', error);
+      Alert.alert('Error fetching booth users:', error.toString ? error.toString() : 'Unknown error');
       setLoading(false);
     }
   };
@@ -46,7 +46,7 @@ export default function WboothUsers() {
 
   const deleteUser = async (wardUserId) => {
     try {
-      const response = await axios.post('http://192.168.1.31:8000/api/delete_user/', {
+      const response = await axios.post('http://192.168.1.8:8000/api/delete_user/', {
         user_id: wardUserId,
       }, {
         headers: {

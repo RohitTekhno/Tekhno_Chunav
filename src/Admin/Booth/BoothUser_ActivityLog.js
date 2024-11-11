@@ -20,7 +20,7 @@ const BoothUser_ActivityLog = (routes) => {
 
     const fetchData = async () => {
         try {
-            const statesResponse = await axios.get(`http://192.168.1.31:8000/api/edited_voters/${userId}/`);
+            const statesResponse = await axios.get(`http://192.168.1.8:8000/api/edited_voters/${userId}/`);
             const formattedTowns = statesResponse.data;
             if (Array.isArray(formattedTowns)) {
                 setBoothUsers(formattedTowns);
@@ -29,7 +29,7 @@ const BoothUser_ActivityLog = (routes) => {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
             setLoading(false);
         }
     };

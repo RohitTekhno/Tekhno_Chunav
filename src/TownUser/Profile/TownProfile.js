@@ -34,7 +34,7 @@ const TownProfile = () => {
 
   const getTownUserInfo = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/town_user_info/${userId}/`)
+      const response = await axios.get(`http://192.168.1.8:8000/api/town_user_info/${userId}/`)
 
       setTownUser({
         "UserId": response.data[0].town_user_id,
@@ -44,7 +44,7 @@ const TownProfile = () => {
       })
 
     } catch (error) {
-      Alert.alert("Error for gettig town user info..", error);
+      Alert.alert("Error for gettig town user info..", error.toString ? error.toString() : 'Unknown error');
     }
   }
 

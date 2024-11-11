@@ -33,7 +33,7 @@ export default function WLocationWise({ navigation }) {
 
     const fetchBoothData = async () => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/booth_details_by_prabhag_user/${wardUserId}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/booth_details_by_prabhag_user/${wardUserId}/`);
             const boothOptions = response.data.map((item) => ({
                 label: `${item.booth_id} - ${item.booth_name}`,
                 value: item.booth_id,
@@ -41,7 +41,7 @@ export default function WLocationWise({ navigation }) {
             setBoothItems(boothOptions);
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching booth data:', error);
+            Alert.alert('Error fetching booth data:', error.toString ? error.toString() : 'Unknown error');
             setLoading(false);
         }
     };
@@ -51,12 +51,12 @@ export default function WLocationWise({ navigation }) {
             setLoading(true);
             try {
                 const response = await axios.get(
-                    `http://192.168.1.31:8000/api/get_voter_current_location_details_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`
+                    `http://192.168.1.8:8000/api/get_voter_current_location_details_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`
                 );
                 setVoterData(response.data);
                 setLoading(false);
             } catch (error) {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error.toString ? error.toString() : 'Unknown error');
                 setLoading(false);
             }
         }
@@ -75,7 +75,7 @@ export default function WLocationWise({ navigation }) {
         setPdfLoading(true);
         try {
             const response = await axios.get(
-                `http://192.168.1.31:8000/api/generate_voter_pdf_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`,
+                `http://192.168.1.8:8000/api/generate_voter_pdf_by_booth/booth_id/${boothValue}/city_id/${locationValue}/`,
                 { responseType: 'arraybuffer' }
             );
             const base64 = btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -89,7 +89,7 @@ export default function WLocationWise({ navigation }) {
                 Alert.alert('Error', 'Sharing not available on this device.');
             }
         } catch (error) {
-            Alert.alert('Error downloading PDF:', error);
+            Alert.alert('Error downloading PDF:', error.toString ? error.toString() : 'Unknown error');
             Alert.alert('Error', 'Failed to download the PDF.');
         } finally {
             setPdfLoading(false);

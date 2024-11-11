@@ -31,7 +31,7 @@ const TotalNonVoted = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/town_user_id/${userId}/confirmation/2/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/town_user_id/${userId}/confirmation/2/`);
             setVoters(response.data);
         } catch (error) {
             const message = error.response ? error.response.data.message : 'Error fetching data';
@@ -43,7 +43,7 @@ const TotalNonVoted = () => {
 
     const fetchVoterDetails = async (voter_id) => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`);
             setSelectedVoter(response.data);
             setIsModalVisible(true);
         } catch (error) {

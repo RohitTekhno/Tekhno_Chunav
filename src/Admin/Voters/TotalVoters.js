@@ -22,7 +22,7 @@ const Totalvoters = () => {
 
     const fetchVoterDetails = async (voter_id) => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`);
             setSelectedVoter(response.data);
         } catch (error) {
             Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
@@ -79,13 +79,13 @@ const Totalvoters = () => {
     const fetchVoterData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/total_voters/');
+            const response = await axios.get('http://192.168.1.8:8000/api/total_voters/');
             const votersData = response.data;
             setVoters(votersData);
             setFilteredVoters(votersData);
             setInitialVoters(votersData);
         } catch (error) {
-            Alert.alert('Error fetching voters data:', error);
+            Alert.alert('Error fetching voters data:', error.toString ? error.toString() : 'Unknown error');
         } finally {
             setLoading(false);
         }
@@ -93,12 +93,12 @@ const Totalvoters = () => {
 
     const fetchVoterCounts = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/voter_updated_counts/');
+            const response = await axios.get('http://192.168.1.8:8000/api/voter_updated_counts/');
             const { updated_count, remaining_count } = response.data;
             setUpdatedVoters(updated_count);
             setRemainingVoters(remaining_count);
         } catch (error) {
-            Alert.alert('Error fetching voter counts:', error);
+            Alert.alert('Error fetching voter counts:', error.toString ? error.toString() : 'Unknown error');
         }
     };
 

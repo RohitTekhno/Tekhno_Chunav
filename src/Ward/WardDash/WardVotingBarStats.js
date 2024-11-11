@@ -44,7 +44,7 @@ const WardVotingBarStats = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_voterlist_by_prabhag_user/${wardUserId}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_voterlist_by_prabhag_user/${wardUserId}/`);
             const voterList = response.data;
 
             let favorableCount = 0;
@@ -80,7 +80,7 @@ const WardVotingBarStats = () => {
             setDoubted(doubtedCount);
             setNonVoted(nonVotedCount);
         } catch (error) {
-            Alert.alert('Error fetching voter data:', error);
+            Alert.alert('Error fetching voter data:', error.toString ? error.toString() : 'Unknown error');
         }
     };
 

@@ -27,14 +27,14 @@ export default BuserRegistration = ({ navigation }) => {
     useEffect(() => {
         const fetchBooths = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.31:8000/api/get_booth_names_by_town_user/${userId}/`);
+                const response = await axios.get(`http://192.168.1.8:8000/api/get_booth_names_by_town_user/${userId}/`);
                 const boothsData = response.data.map(booth => ({
                     label: `${booth.booth_id} - ${booth.booth_name}`,
                     value: booth.booth_id
                 }));
                 setItems(boothsData);
             } catch (error) {
-                Alert.alert('Error fetching booths:', error);
+                Alert.alert('Error fetching booths:', error.toString ? error.toString() : 'Unknown error');
             }
         };
         fetchBooths();
@@ -90,7 +90,7 @@ export default BuserRegistration = ({ navigation }) => {
             setLoading(true);
 
             try {
-                const response = await axios.post('http://192.168.1.31:8000/api/register_user/', {
+                const response = await axios.post('http://192.168.1.8:8000/api/register_user/', {
                     user_name: name,
                     user_phone: contact,
                     user_password: password,

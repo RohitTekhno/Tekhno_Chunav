@@ -30,7 +30,7 @@ const BuserProfile = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/booth_user_info/?user_id=${buserId}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/booth_user_info/?user_id=${buserId}`);
       setUserInfo(response.data[0]);
       setLoading(false);
     } catch (error) {

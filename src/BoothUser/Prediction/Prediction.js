@@ -31,7 +31,7 @@ export default function Prediction() {
     const fetchVoterData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_user_wise/${buserId}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_user_wise/${buserId}/`);
 
             const voters = response.data.voters || [];
             const totalVoters = voters.length;
@@ -143,7 +143,7 @@ export default function Prediction() {
                 </View>
             )}
 
-            <TouchableOpacity onPress={() => navigation.navigate('ExitPoll')}
+            <TouchableOpacity onPress={() => navigation.navigate('Exit Poll')}
                 style={{
                     paddingHorizontal: 20, marginTop: height * 0.035
                 }}

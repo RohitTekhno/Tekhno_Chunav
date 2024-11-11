@@ -5,10 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import TownBooths from '../TownUser/Booths/TownBooths';
-import TownVoters from '../TownUser/Voters/TownVoters';
 import Octicons from '@expo/vector-icons/Octicons';
 import LogOut from '../ReusableCompo/LogOut';
 import BuserProfile from '../BoothUser/Profile/BuserProfile';
@@ -17,9 +13,9 @@ import CasteList from '../BoothUser/Cast/CasteList';
 import BoothDashbord from '../BoothUser/Dashboard/BoothDashbord';
 import BoothNVoted from '../BoothUser/Dashboard/BoothNVoted';
 import BoothVotedList from '../BoothUser/Dashboard/BoothVotedList';
-import BoothVoters from '../TownUser/Booths/BoothVoters';
-import Voterlist from '../BoothUser/Dashboard/Voterlist';
 import { VoterProvider } from '../ContextApi/VoterContext';
+import BoothVoters from '../BoothUser/Voters/BoothVoters';
+import ExitPoll from '../BoothUser/Exit Poll/ExitPoll';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -93,7 +89,7 @@ const VotersStack = () => {
     return (
         <VoterProvider>
             <Stack.Navigator initialRouteName='Voters List'>
-                <Stack.Screen name='Voters List' component={Voterlist}
+                <Stack.Screen name='Voters List' component={BoothVoters}
                     options={{
                         headerShown: true, headerTitleAlign: 'center',
                         headerTitleStyle: {
@@ -143,6 +139,22 @@ const PredictionStack = () => {
     return (
         <Stack.Navigator initialRouteName='Prediction'>
             <Stack.Screen name='Prediction' component={Prediction}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22,
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <Octicons name="arrow-left" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Exit Poll' component={ExitPoll}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
                     headerTitleStyle: {

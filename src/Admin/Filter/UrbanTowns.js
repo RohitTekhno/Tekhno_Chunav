@@ -17,7 +17,7 @@ const UrbanTowns = () => {
 
     const getUrbanTownList = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/town_voter_count/');
+            const response = await axios.get('http://192.168.1.8:8000/api/town_voter_count/');
             if (response.status === 200) {
                 const filteredData = response.data.filter(town => town.town_type === 1);
                 setUrbanTowns(filteredData);
@@ -45,7 +45,7 @@ const UrbanTowns = () => {
                 }
             } else {
                 // Handle unexpected errors that are not Axios related
-                console.warn('Unexpected error:', error);
+                console.warn('Unexpected error:', error.toString ? error.toString() : 'Unknown error');
                 Alert.alert("Error", "An unexpected error occurred. Please try again later.");
             }
         }

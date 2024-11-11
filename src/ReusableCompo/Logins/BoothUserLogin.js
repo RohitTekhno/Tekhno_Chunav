@@ -6,15 +6,14 @@ import Feather from '@expo/vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BoothUserContext, BoothUserProvider } from '../../ContextApi/BuserContext';
+import { BoothUserContext } from '../../ContextApi/BuserContext';
 
 const { height, width } = Dimensions.get('screen')
 const BoothUserLogin = () => {
     const navigation = useNavigation()
     const { loginBuser } = useContext(BoothUserContext)
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
+    const [username, setUsername] = useState("1234567101")
+    const [password, setPassword] = useState("boothuser123")
     const [isTextSecure, setTextSecure] = useState(true)
     const [isLoading, setLoading] = useState(false)
     const [nameError, setNameError] = useState('');
@@ -56,7 +55,7 @@ const BoothUserLogin = () => {
 
         if (validate()) {
             try {
-                const response = await axios.post(`http://192.168.1.31:8000/api/user_login/`, {
+                const response = await axios.post(`http://192.168.1.8:8000/api/user_login/`, {
                     "user_phone": username,
                     "user_password": password
                 })

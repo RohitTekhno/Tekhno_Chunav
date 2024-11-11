@@ -2,7 +2,6 @@ import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Ale
 import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
@@ -28,7 +27,7 @@ const BoothUsers = () => {
 
     const fetchData = async () => {
         try {
-            const statesResponse = await axios.get('http://192.168.1.31:8000/api/booth_user_info/');
+            const statesResponse = await axios.get('http://192.168.1.8:8000/api/booth_user_info/');
             const formattedTowns = statesResponse.data;
             if (Array.isArray(formattedTowns)) {
                 setBoothUsers(formattedTowns);
@@ -37,7 +36,8 @@ const BoothUsers = () => {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
             setLoading(false);
         }
     };
@@ -52,7 +52,7 @@ const BoothUsers = () => {
 
     const deleteUser = async (userId) => {
         try {
-            const response = await axios.post('http://192.168.1.31:8000/api/delete_user/', {
+            const response = await axios.post('http://192.168.1.8:8000/api/delete_user/', {
                 user_id: userId,
             }, {
                 headers: {
@@ -67,7 +67,7 @@ const BoothUsers = () => {
                 Alert.alert('Error', 'Failed to delete the user.');
             }
         } catch (error) {
-            Alert.alert('Error deleting user:', error);
+            Alert.alert('Error deleting user:', error.toString ? error.toString() : 'Unknown error');
             if (error.response) {
                 Alert.alert('Error', `Failed to delete the user: ${error.response.data.message || 'Unexpected error'}`);
             } else if (error.request) {
@@ -97,7 +97,7 @@ const BoothUsers = () => {
     const handlePDFClick = async () => {
         setPdfLoading(true);
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/generate_booth_user_pdf/', {
+            const response = await axios.get('http://192.168.1.8:8000/api/generate_booth_user_pdf/', {
                 responseType: 'arraybuffer',
             });
 

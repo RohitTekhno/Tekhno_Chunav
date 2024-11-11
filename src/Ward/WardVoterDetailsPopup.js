@@ -12,7 +12,7 @@ export default function WardVoterDetailsPopup({ isModalVisible, setIsModalVisibl
     // Function to handle PDF download and save
     const handlePdfIconClick = async (voterId) => {
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/generate_voter_pdf/${voterId}`, {
+            const response = await axios.get(`http://192.168.1.8:8000/api/generate_voter_pdf/${voterId}`, {
                 params: { voter_id: voterId },
                 responseType: 'arraybuffer', // Request the response as an array buffer
             });

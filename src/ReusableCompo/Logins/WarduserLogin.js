@@ -8,7 +8,7 @@ import { LanguageContext } from '../../ContextApi/LanguageContext';
 import { WardUserContext } from '../../ContextApi/WardUserContext';
 
 const { width, height } = Dimensions.get('window');
-const API_URL = Constants.manifest?.extra?.apiUrl || 'http://192.168.1.31:8000';
+const API_URL = Constants.manifest?.extra?.apiUrl || 'http://192.168.1.8:8000';
 
 export default function WarduserLogin({ navigation }) {
   const { language } = useContext(LanguageContext);

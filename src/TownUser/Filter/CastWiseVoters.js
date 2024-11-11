@@ -20,7 +20,7 @@ const CastWiseVoters = () => {
 
     const fetchCasteData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.31:8000/api/cast/');
+            const response = await axios.get('http://192.168.1.8:8000/api/cast/');
             const casteData = response.data.map(cast => ({
                 label: `${cast.cast_id} - ${cast.cast_name}`,
                 value: cast.cast_id,
@@ -34,17 +34,17 @@ const CastWiseVoters = () => {
     const fetVotersByCastwise = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_town_user_and_cast/${userId}/${selectedCast}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_town_user_and_cast/${userId}/${selectedCast}/`);
             setVoters(response.data);
         } catch (error) {
-            Alert.alert('Error fetching voters:', error);
+            Alert.alert('Error fetching voters:', error.toString ? error.toString() : 'Unknown error');
         } finally {
             setLoading(false);
         }
     };
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);

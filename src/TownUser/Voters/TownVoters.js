@@ -18,12 +18,12 @@ const TownVoters = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchVoterDetails = (voter_id) => {
-    axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+    axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
       .then(response => {
         setSelectedVoter(response.data);
       })
       .catch(error => {
-        Alert.alert('Error fetching voter details:', error);
+        Alert.alert('Error fetching voter details:', error.toString ? error.toString() : 'Unknown error');
         Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
       });
   };
@@ -73,7 +73,7 @@ const TownVoters = () => {
 
   const fetchUpdatedVoters = async () => {
     setRefreshing(true);
-    axios.get('http://192.168.1.31:8000/api/total_voters/')
+    axios.get('http://192.168.1.8:8000/api/total_voters/')
       .then(response => {
         const votersData = response.data;
         setVoters(votersData);
@@ -81,7 +81,7 @@ const TownVoters = () => {
         setRefreshing(false);
       })
       .catch(error => {
-        Alert.alert('Error fetching voters data:', error);
+        Alert.alert('Error fetching voters data:', error.toString ? error.toString() : 'Unknown error');
         setRefreshing(false);
       });
   }

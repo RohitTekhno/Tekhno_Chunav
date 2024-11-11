@@ -40,7 +40,7 @@ const ApprovalScreen = ({ route }) => {
   const fetchUpdatedVotersToApprove = async () => {
     setRefreshing(true);
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/get_temp_voter_data_town/${Buser_id}/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_temp_voter_data_town/${Buser_id}/`);
       setVoters(response.data);
       setFilteredVoters(response.data);
     } catch (error) {
@@ -64,7 +64,7 @@ const ApprovalScreen = ({ route }) => {
   const fetchUpdatedVoterDetails = async (voter_id) => {
     setFormVisible(true);
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/get_temp_voter_data/${voter_id}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_temp_voter_data/${voter_id}`);
       setSelectedVoter(response.data);
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch voter details. Please try later.');
@@ -84,7 +84,7 @@ const ApprovalScreen = ({ route }) => {
 
   const approveSelectedVoters = async () => {
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/multiple_voter_data_approve/`,
+      const response = await axios.put(`http://192.168.1.8:8000/api/multiple_voter_data_approve/`,
         {
           "temp_voter_data_voter_ids": selectedVoterIds
         }
@@ -115,7 +115,7 @@ const ApprovalScreen = ({ route }) => {
 
   const rejectSelectedVoters = async () => {
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/reject_multiple_temp_voter_data/`,
+      const response = await axios.put(`http://192.168.1.8:8000/api/reject_multiple_temp_voter_data/`,
         {
           "temp_voter_data_voter_ids": selectedVoterIds
         }
@@ -145,7 +145,7 @@ const ApprovalScreen = ({ route }) => {
 
   const fetchCasteData = async () => {
     try {
-      const response = await axios.get('http://192.168.1.31:8000/api/cast/');
+      const response = await axios.get('http://192.168.1.8:8000/api/cast/');
       const casteData = response.data.map(cast => ({
         label: `${cast.cast_id} - ${cast.cast_name}`,
         value: cast.cast_id,
@@ -175,7 +175,7 @@ const ApprovalScreen = ({ route }) => {
 
   const handleRejectVoter = async (id) => {
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/update_reject_status/${id}/`)
+      const response = await axios.put(`http://192.168.1.8:8000/api/update_reject_status/${id}/`)
       console.log(response);
 
       if (response.status === 200) {
@@ -250,9 +250,9 @@ const ApprovalScreen = ({ route }) => {
             <TouchableOpacity onPress={() => handleRejectVoter(item.temp_voter_data_voter_id)}>
               <Ionicons name="close-sharp" size={28} color="red" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => fetchUpdatedVoterDetails(item.temp_voter_data_voter_id)}>
+            {/* <TouchableOpacity onPress={() => fetchUpdatedVoterDetails(item.temp_voter_data_voter_id)}>
               <Feather name="edit" size={24} color="black" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         )}
       </TouchableOpacity>

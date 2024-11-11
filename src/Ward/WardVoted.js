@@ -23,7 +23,7 @@ export default function WardVoted({ route, navigation }) {
   // Function to fetch voter data
   const fetchVoters = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/voter_details_by_confirmation/${wardUserId}/1/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/voter_details_by_confirmation/${wardUserId}/1/`);
       if (response.data && Array.isArray(response.data)) {
         setVoters(response.data);
         setFilteredVoters(response.data);
@@ -60,7 +60,7 @@ export default function WardVoted({ route, navigation }) {
 
   // Function to fetch voter details
   const fetchVoterDetails = (voter_id) => {
-    axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+    axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
       .then(response => {
         setSelectedVoter(response.data); // Set selected voter details
         setIsModalVisible(true); // Show the modal

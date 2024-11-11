@@ -6,7 +6,7 @@ import {
 import React, { useState, useContext, useEffect, useMemo } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import HeaderFooterLayout from '../ReusableCompo/HeaderFooterLayout';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
@@ -30,7 +30,7 @@ export default function Ward() {
     const getWards = async () => {
         try {
             setWardLoading(true);
-            const response = await axios.get('http://192.168.1.31:8000/api/get_prabhags');
+            const response = await axios.get('http://192.168.1.8:8000/api/get_prabhags');
             if (Array.isArray(response.data)) {
                 setWards(response.data);
             } else {
@@ -64,13 +64,13 @@ export default function Ward() {
         setModalVisible(true);
         setLoading(true);
         setBooths([]); // Clear booths on new fetch
-        const url = `http://192.168.1.31:8000/api/get_booth_info_by_prabhag_id/${wardId}/`;
+        const url = `http://192.168.1.8:8000/api/get_booth_info_by_prabhag_id/${wardId}/`;
 
         try {
             const response = await axios.get(url);
             setBooths(response.data);
         } catch (error) {
-            handleFetchError(error);
+            handleFetchError(error.toString ? error.toString() : 'Unknown error');
         } finally {
             setLoading(false);
         }

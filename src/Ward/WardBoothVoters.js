@@ -22,7 +22,7 @@ export default function WardBoothVoters({ route, navigation }) {
   useEffect(() => {
     const fetchVoters = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_booth/${boothId}`);
+        const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}`);
         if (response.data && response.data && Array.isArray(response.data)) {
 
           const voterData = response.data.map(voter => ({

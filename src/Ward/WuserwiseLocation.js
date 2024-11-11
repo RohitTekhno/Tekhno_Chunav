@@ -31,11 +31,11 @@ export default function WuserwiseLocation({ navigation }) {
             setLoading(true);
             try {
                 const response = await axios.get(
-                    `http://192.168.1.31:8000/api/get_voter_current_location_details_by_prabhag_user/prabhag_user_id/${wardUserId}/city_id/${locationValue}/`
+                    `http://192.168.1.8:8000/api/get_voter_current_location_details_by_prabhag_user/prabhag_user_id/${wardUserId}/city_id/${locationValue}/`
                 );
                 setVoterData(response.data);
             } catch (error) {
-                Alert.alert('Error fetching voter data:', error);
+                Alert.alert('Error fetching voter data:', error.toString ? error.toString() : 'Unknown error');
             } finally {
                 setLoading(false);
             }
@@ -58,7 +58,7 @@ export default function WuserwiseLocation({ navigation }) {
         setPdfLoading(true);
         try {
             const response = await axios.get(
-                `http://192.168.1.31:8000/api/generate_voter_pdf_by_prabhag_user/prabhag_user_id/${wardUserId}/city_id/${locationValue}/`,
+                `http://192.168.1.8:8000/api/generate_voter_pdf_by_prabhag_user/prabhag_user_id/${wardUserId}/city_id/${locationValue}/`,
                 { responseType: 'arraybuffer' }
             );
             const base64 = btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));

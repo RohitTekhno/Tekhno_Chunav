@@ -23,7 +23,7 @@ export default function BoothNVoted({ route, navigation }) {
   useEffect(() => {
     const fetchVoters = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.31:8000/api/voted_voters_list_By_booth_user/${buserId}/2/`);
+        const response = await axios.get(`http://192.168.1.8:8000/api/voted_voters_list_By_booth_user/${buserId}/2/`);
         if (response.data.voters && Array.isArray(response.data.voters)) {
           setVoters(response.data.voters);
           setFilteredVoters(response.data);
@@ -83,7 +83,7 @@ export default function BoothNVoted({ route, navigation }) {
   };
 
   const fetchVoterDetails = (voter_id) => {
-    axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+    axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
       .then(response => {
         setSelectedVoter(response.data);
         setIsModalVisible(true);

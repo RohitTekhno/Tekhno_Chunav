@@ -29,7 +29,7 @@ const TownBooths = ({ route }) => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://192.168.1.31:8000/api/get_booth_names_by_town_user/${userId}`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/get_booth_names_by_town_user/${userId}`);
             const formattedTowns = response.data;
             console.log(formattedTowns);
 
@@ -40,7 +40,8 @@ const TownBooths = ({ route }) => {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
             setLoading(false);
         }
     };

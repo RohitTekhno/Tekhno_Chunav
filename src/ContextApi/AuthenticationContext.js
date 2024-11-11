@@ -27,7 +27,7 @@ export const AuthenticationProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      Alert.alert('Error loading user token from storage', error);
+      Alert.alert('Error loading user token from storage', error.toString ? error.toString() : 'Unknown error');
     }
   };
 
@@ -48,7 +48,7 @@ export const AuthenticationProvider = ({ children }) => {
       setIsAuthenticated(true);
       await AsyncStorage.setItem('userToken', JSON.stringify(userData));
     } catch (error) {
-      Alert.alert('Error during login', error);
+      Alert.alert('Error during login', error.toString ? error.toString() : 'Unknown error');
     }
   };
 
@@ -59,7 +59,7 @@ export const AuthenticationProvider = ({ children }) => {
       setToken(null);
       await AsyncStorage.removeItem('userToken');
     } catch (error) {
-      Alert.alert('Error during logout', error);
+      Alert.alert('Error during logout', error.toString ? error.toString() : 'Unknown error');
     }
   };
 

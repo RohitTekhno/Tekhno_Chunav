@@ -18,7 +18,7 @@ const AgewiseVoters = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchVoterDetails = (voter_id) => {
-        axios.get(`http://192.168.1.31:8000/api/voters/${voter_id}`)
+        axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
                 setIsModalVisible(true);
@@ -62,7 +62,7 @@ const AgewiseVoters = () => {
         try {
             setLoading(true);
             const [minAge, maxAge] = ageValue.split(',').map(Number);
-            const response = await axios.get(`http://192.168.1.31:8000/api/age_wise_voter/${minAge}/${maxAge}/`);
+            const response = await axios.get(`http://192.168.1.8:8000/api/age_wise_voter/${minAge}/${maxAge}/`);
             setFilteredVoters(response.data);
             setLoading(false);
         } catch (error) {

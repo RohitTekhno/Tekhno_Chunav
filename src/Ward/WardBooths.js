@@ -32,7 +32,7 @@ export default function WardBooths() {
 
     const fetchData = async () => {
         try {
-            const statesResponse = await axios.get(`http://192.168.1.31:8000/api/booth_details_by_prabhag_user/${wardUserId}`);
+            const statesResponse = await axios.get(`http://192.168.1.8:8000/api/booth_details_by_prabhag_user/${wardUserId}`);
             const formattedTowns = statesResponse.data;
 
             if (Array.isArray(formattedTowns)) {
@@ -42,7 +42,8 @@ export default function WardBooths() {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error fetching data:', error);
+            Alert.alert('Error', `Error fetching data: ${error}`);
+
             setLoading(false);
         }
     };

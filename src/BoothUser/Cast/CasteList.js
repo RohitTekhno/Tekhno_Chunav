@@ -26,7 +26,7 @@ export default function CasteList({ navigation }) {
   useEffect(() => {
     const fetchCasteData = async () => {
       try {
-        const response = await axios.get('http://192.168.1.31:8000/api/cast/');
+        const response = await axios.get('http://192.168.1.8:8000/api/cast/');
         const casteData = response.data.map(cast => ({
           label: `${cast.cast_id} - ${cast.cast_name}`,
           value: cast.cast_id,
@@ -42,7 +42,7 @@ export default function CasteList({ navigation }) {
 
   const fetchVotersByCaste = async (castId) => {
     try {
-      const response = await axios.get(`http://192.168.1.31:8000/api/get_voters_by_booth_user_and_cast/${buserId}/${castId}/`, {
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth_user_and_cast/${buserId}/${castId}/`, {
         params: { buserId, castId }
       });
       if (response.status === 200) {
@@ -114,7 +114,7 @@ export default function CasteList({ navigation }) {
     }
 
     try {
-      const response = await axios.put(`http://192.168.1.31:8000/api/favour/${selectedVoterId}/`, {
+      const response = await axios.put(`http://192.168.1.8:8000/api/favour/${selectedVoterId}/`, {
         voter_id: selectedVoterId,
         voter_favour_id: voterFavourId,
       });

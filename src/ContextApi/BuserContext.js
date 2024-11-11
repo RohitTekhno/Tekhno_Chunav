@@ -32,7 +32,7 @@ export const BoothUserProvider = ({ children }) => {
                 }
             }
         } catch (error) {
-            Alert.alert('Error loading user token from storage', error);
+            Alert.alert('Error loading user token from storage', error.toString ? error.toString() : 'Unknown error');
         }
     };
 
@@ -51,7 +51,7 @@ export const BoothUserProvider = ({ children }) => {
             setBuserAuthenticated(true);
             await AsyncStorage.setItem('BUserToken', JSON.stringify(userData));
         } catch (error) {
-            Alert.alert('Error during login', error);
+            Alert.alert('Error during login', error.toString ? error.toString() : 'Unknown error');
         }
     };
 
@@ -62,7 +62,7 @@ export const BoothUserProvider = ({ children }) => {
             setBuserAuthenticated(false);
             await AsyncStorage.removeItem('BUserToken');
         } catch (error) {
-            Alert.alert('Error during logout', error);
+            Alert.alert('Error during logout', error.toString ? error.toString() : 'Unknown error');
         }
     };
 
