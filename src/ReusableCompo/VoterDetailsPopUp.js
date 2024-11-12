@@ -66,10 +66,7 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
                     <View style={styles.modalContent}>
                         {selectedVoter && (
                             <>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-                                    <TouchableOpacity onPress={() => setIsModalVisible(false)} >
-                                        <MaterialIcons name="cancel" size={25} color="black" />
-                                    </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}>
                                     <Text style={styles.modalTitle}>Voter Details</Text>
                                     <Pressable onPress={() => { handlePdfIconClick(selectedVoter.voter_id) }}>
                                         <FontAwesome5 name="file-pdf" size={25} color="red" />
@@ -85,6 +82,10 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
                                     <DetailRow label="Caste" value={selectedVoter.voter_cast_name} />
                                     <DetailRow label="Live Status" value={selectedVoter.live_status_type} />
                                 </View>
+                                <TouchableOpacity onPress={() => setIsModalVisible(false)}
+                                    style={{ width: '100%', borderRadius: 8, backgroundColor: 'black', height: 45, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ color: 'white', fontSize: 18, fontWeight: '600' }}>Close</Text>
+                                </TouchableOpacity>
                             </>
                         )}
                     </View>
@@ -110,7 +111,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        padding: 20,
     },
     modalContent: {
         width: '90%',
@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
         maxHeight: 500,
         backgroundColor: 'white',
         borderRadius: 10,
-        padding: 20,
         alignItems: 'stretch',
         justifyContent: 'space-between',
+        padding: 10,
     },
     modalTitle: {
         fontSize: 22,
@@ -129,12 +129,15 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     detailsContainer: {
-        marginBottom: 30,
+        // marginBottom: 30,
+
     },
     detailRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 10,
+        paddingHorizontal: 20,
+
     },
     modalText: {
         fontSize: 16,

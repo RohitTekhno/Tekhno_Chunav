@@ -43,17 +43,17 @@ const BoothUserMainStack = () => {
                 }}
             />
 
-            <Stack.Screen name="Voterlist" component={Voterlist} />
+            {/* <Stack.Screen name="Voterlist" component={Voterlist} />
             <Stack.Screen name="Favour" component={Favour} />
             <Stack.Screen name="Nonfavour" component={Against} />
-            <Stack.Screen name="Yellow" component={Yellow} />
+            <Stack.Screen name="Yellow" component={Yellow} /> */}
             {/* <Stack.Screen name="CasteList" component={CasteList} /> */}
-            <Stack.Screen name="Polls" component={Polls} />
+            {/* <Stack.Screen name="Polls" component={Polls} /> */}
             <Stack.Screen name="ExitPoll" component={ExitPoll} />
-            <Stack.Screen name="Family" component={Family} />
+            {/* <Stack.Screen name="Family" component={Family} />
             <Stack.Screen name="Familylist" component={Familylist} />
             <Stack.Screen name="BoothVotedList" component={BoothVotedList} />
-            <Stack.Screen name="BoothNVoted" component={BoothNVoted} />
+            <Stack.Screen name="BoothNVoted" component={BoothNVoted} /> */}
             <Stack.Screen name="Personal" component={Personal} />
             <Stack.Screen name='LogOut' component={LogOut} />
 

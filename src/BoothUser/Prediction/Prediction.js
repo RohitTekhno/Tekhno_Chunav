@@ -38,7 +38,7 @@ export default function Prediction() {
             const ours = voters.filter(voter => voter.voter_favour_id === 1).length;
             const against = voters.filter(voter => voter.voter_favour_id === 2).length;
             const doubted = voters.filter(voter => voter.voter_favour_id === 3).length;
-            const pro = voters.filter(voter => voter.voter_favour_id === 4 || voter.voter_favour_id === 5).length;
+            const pro = voters.filter(voter => voter.voter_favour_id === 4).length;
             const pending = totalVoters - (ours + against + doubted + pro);
 
             setVoterCounts({
@@ -66,14 +66,19 @@ export default function Prediction() {
         navigation.goBack();
     };
 
-    const handleNotificationBtn = () => {
-        Alert.alert("Notification Pressed...");
-    };
+    const handleNavigation = (relationId, ScreenName) => {
+        navigation.navigate('Relational Voters', {
+            relationId: relationId,
+            ScreenName: ScreenName
+        })
+    }
 
 
 
-    const VoterBox = ({ boxColor, voterType, voterCount, icon }) => (
-        <View style={styles.voterBox}>
+
+    const VoterBox = ({ boxColor, voterType, voterCount, icon, relationId, ScreenName }) => (
+        <TouchableOpacity style={styles.voterBox}
+            onPress={() => handleNavigation(relationId, ScreenName)}>
             <View style={[styles.iconContainer, { backgroundColor: boxColor }]}>
                 {icon}
             </View>
@@ -81,7 +86,7 @@ export default function Prediction() {
                 <Text style={styles.voterType}>{voterType}</Text>
                 <Text style={styles.voterCount}>{voterCount}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     if (loading) {
@@ -104,40 +109,55 @@ export default function Prediction() {
                 <Text style={styles.errorText}>{error}</Text>
             ) : (
                 <View style={styles.voterComponentsContainer}>
-                    <VoterBox
-                        boxColor={'#DEDEDE'}
-                        voterType={language === 'en' ? 'Total Voters' : 'एकूण मतदार'}
-                        voterCount={voterCounts.total.toString()}
-                        icon={<AntDesign name="team" size={height * 0.035} color="grey" />}
-                    />
+                    <TouchableOpacity style={styles.voterBox}
+                        onPress={() => navigation.navigate('Total Voters')}>
+                        <View style={[styles.iconContainer, { backgroundColor: '#DEDEDE' }]}>
+                            {<AntDesign name="team" size={height * 0.035} color="grey" />}
+                        </View>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.voterType}>{language === 'en' ? 'Total Voters' : 'एकूण मतदार'}</Text>
+                            <Text style={styles.voterCount}>{voterCounts.total.toString()}</Text>
+                        </View>
+                    </TouchableOpacity>
+
                     <VoterBox
                         boxColor={'#D9F4E9'}
                         voterType={language === 'en' ? 'Favourable Voters' : 'समर्थक मतदार'}
                         voterCount={voterCounts.ours.toString()}
+                        relationId={'1'}
+                        ScreenName={language === 'en' ? 'Favours Voters' : 'समर्थक मतदार'}
                         icon={<AntDesign name="heart" size={height * 0.035} color="green" />}
                     />
                     <VoterBox
                         boxColor={'#FDDDDD'}
                         voterType={language === 'en' ? 'Opposition Voters' : 'विरोधी मतदार'}
                         voterCount={voterCounts.against.toString()}
+                        relationId={'2'}
+                        ScreenName={language === 'en' ? 'Opposition Voters' : 'विरोधी मतदार'}
                         icon={<Entypo name="cross" size={height * 0.035} color="red" />}
                     />
                     <VoterBox
                         boxColor={'#fcf5cf'}
                         voterType={language === 'en' ? 'Doubted Voters' : 'संशयित मतदार'}
                         voterCount={voterCounts.doubted.toString()}
+                        relationId={'3'}
+                        ScreenName={language === 'en' ? 'Doubted Voters' : 'संशयित मतदार'}
                         icon={<AntDesign name="exclamationcircle" size={height * 0.035} color="orange" />}
                     />
                     <VoterBox
                         boxColor={'#e0e1ff'}
-                        voterType={language === 'en' ? 'Pro Voters' : 'प्रो मतदार'}
+                        voterType={language === 'en' ? 'Pro+ Voters' : 'प्रो+ मतदार'}
                         voterCount={voterCounts.pro.toString()}
+                        relationId={'4'}
+                        ScreenName={language === 'en' ? 'Pro+ Voters' : 'प्रो+ मतदार'}
                         icon={<FontAwesome6 name="sack-dollar" size={height * 0.035} color="blue" />}
                     />
                     <VoterBox
                         boxColor={'#ECEEF7'}
-                        voterType={language === 'en' ? 'Pending' : 'बाकी'}
+                        voterType={language === 'en' ? 'Pending Voters' : 'बाकी मतदार'}
                         voterCount={voterCounts.pending.toString()}
+                        relationId={'0'}
+                        ScreenName={language === 'en' ? 'Pending Voters' : 'बाकी मतदार'}
                         icon={<MaterialIcons name="pending-actions" size={height * 0.035} color="#c26dbc" />}
                     />
                 </View>

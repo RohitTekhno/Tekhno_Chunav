@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Octicons from '@expo/vector-icons/Octicons';
 import LogOut from '../ReusableCompo/LogOut';
 import BuserProfile from '../BoothUser/Profile/BuserProfile';
 import Prediction from '../BoothUser/Prediction/Prediction';
@@ -16,6 +15,14 @@ import BoothVotedList from '../BoothUser/Dashboard/BoothVotedList';
 import { VoterProvider } from '../ContextApi/VoterContext';
 import BoothVoters from '../BoothUser/Voters/BoothVoters';
 import ExitPoll from '../BoothUser/Exit Poll/ExitPoll';
+import FilterVoterByRelations from '../BoothUser/Voters/FilterVotersByRelations';
+import BoothRightMenu from '../BoothUser/Dashboard/BoothRightMenu';
+import Family from '../BoothUser/Dashboard/Family';
+import Familylist from '../BoothUser/Dashboard/Familylist';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { useContext } from 'react';
+import AddVoter from '../BoothUser/Dashboard/Addvoter';
+import BLocationWise from '../BoothUser/Dashboard/BLocationWise';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -29,6 +36,7 @@ const TabBarIcon = ({ focused, name, IconComponent }) => (
 
 const DashboardStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
     return (
         <Stack.Navigator initialRouteName=''>
             <Stack.Screen name='Dashboard' component={BoothDashbord}
@@ -43,6 +51,9 @@ const DashboardStack = () => {
                             style={{ marginLeft: 5 }}
                             onPress={() => navigation.toggleDrawer()} />
                     ),
+                    headerRight: () => (
+                        <BoothRightMenu />
+                    )
                 }}
             />
 
@@ -56,7 +67,7 @@ const DashboardStack = () => {
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="arrow-left" size={30} color="black" />
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
                         </Pressable>
                     ),
                 }}
@@ -71,7 +82,87 @@ const DashboardStack = () => {
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="arrow-left" size={30} color="black" />
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name="Relational Voters" component={FilterVoterByRelations}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name="Family" component={Family}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center',
+                    headerTitle: language === 'en' ? 'Create Family' : 'कुटुंब तयार करा',
+                    headerTitleStyle: { fontSize: 22 },
+
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name="Familylist" component={Familylist}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name="Add Voters" component={AddVoter}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name="Locationwise Voters" component={BLocationWise}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
                         </Pressable>
                     ),
                 }}
@@ -87,25 +178,23 @@ const VotersStack = () => {
     const navigation = useNavigation();
 
     return (
-        <VoterProvider>
-            <Stack.Navigator initialRouteName='Voters List'>
-                <Stack.Screen name='Voters List' component={BoothVoters}
-                    options={{
-                        headerShown: true, headerTitleAlign: 'center',
-                        headerTitleStyle: {
-                            fontSize: 22
-                        },
-                        headerShadowVisible: false,
-                        headerLeft: () => (
-                            <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                                onPress={() => navigation.goBack()}  >
-                                <Octicons name="arrow-left" size={30} color="black" />
-                            </Pressable>
-                        ),
-                    }}
-                />
-            </Stack.Navigator>
-        </VoterProvider>
+        <Stack.Navigator initialRouteName='Voters List'>
+            <Stack.Screen name='Voters List' component={BoothVoters}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+        </Stack.Navigator>
     )
 }
 
@@ -124,7 +213,7 @@ const CastStack = () => {
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="arrow-left" size={30} color="black" />
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
                         </Pressable>
                     ),
                 }}
@@ -148,7 +237,7 @@ const PredictionStack = () => {
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
-                            <Octicons name="arrow-left" size={30} color="black" />
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
                         </Pressable>
                     ),
                 }}
@@ -163,8 +252,40 @@ const PredictionStack = () => {
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
-                            onPress={() => navigation.goBack()}  >
-                            <Octicons name="arrow-left" size={30} color="black" />
+                            onPress={() => navigation.navigate('Prediction')}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name='Total Voters' component={BoothVoters}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.navigate('Prediction')}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
+            <Stack.Screen name="Relational Voters" component={FilterVoterByRelations}
+                options={{
+                    headerShown: false, headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.navigate('Prediction')}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
                         </Pressable>
                     ),
                 }}

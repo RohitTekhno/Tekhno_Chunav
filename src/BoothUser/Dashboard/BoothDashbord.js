@@ -28,7 +28,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
       const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_user_wise/${buserId}/`);
       const voters = response.data.voters || [];
       const totalVoters = voters.length;
-      const ours = voters.filter(voter => voter.voter_favour_id === 1 || voter.voter_favour_id === 4 || voter.voter_favour_id === 5).length;
+      const ours = voters.filter(voter => voter.voter_favour_id === 1).length;
       const against = voters.filter(voter => voter.voter_favour_id === 2).length;
       const doubted = voters.filter(voter => voter.voter_favour_id === 3).length;
       const pending = totalVoters - (ours + against + doubted);
@@ -154,7 +154,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
       </View>
 
       <View style={styles.statsRow}>
-        <Pressable style={[styles.statsBox, styles.statsBoxYellow]}
+        <TouchableOpacity style={[styles.statsBox, styles.statsBoxYellow]}
           onPress={() => {
             navigation.navigate('Voted', { buserId })
           }}>
@@ -162,15 +162,15 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
             {language === 'en' ? 'Total Voted' : 'एकूण मतदान'}
           </Text>
           <Text style={styles.statsValue}>{totalVoted}</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable style={[styles.statsBox, styles.statsBoxCyan]}
+        <TouchableOpacity style={[styles.statsBox, styles.statsBoxCyan]}
           onPress={() => navigation.navigate('Non Voted', { buserId })}>
           <Text style={styles.statsLabel}>
             {language === 'en' ? 'Total Non-Voted' : 'मतदान न झालेले'}
           </Text>
           <Text style={styles.statsValue}>{totalNVoted}</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.overviewText}>
@@ -179,7 +179,11 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
 
       <View style={styles.graphsContainer}>
         <View style={styles.row}>
-          <View style={styles.graphWrappergreen}>
+          <TouchableOpacity style={styles.graphWrappergreen}
+            onPress={() => navigation.navigate('Relational Voters', {
+              relationId: 1,
+              ScreenName: language === 'en' ? 'Favours Voters' : 'समर्थक मतदार'
+            })}>
             <Progress.Circle
               size={width * 0.22}
               progress={voterCounts.ours / voterCounts.total}
@@ -194,27 +198,13 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
             <Text style={styles.graphText}>
               {language === 'en' ? 'Favours' : 'समर्थक'}
             </Text>
-          </View>
-          <View style={styles.graphWrapperyellow}>
-            <Progress.Circle
-              size={width * 0.22}
-              progress={voterCounts.doubted / voterCounts.total}
-              thickness={15}
-              showsText
-              color="#f7ba11"
-              unfilledColor="#fff0b3"
-              borderWidth={0}
-              strokeCap="round"
-              formatText={() => `${voterCounts.doubted}`}
-            />
-            <Text style={styles.graphText}>
-              {language === 'en' ? 'Doubted' : 'संशयित'}
-            </Text>
-          </View>
-        </View>
+          </TouchableOpacity>
 
-        <View style={styles.row}>
-          <View style={styles.graphWrapperred}>
+
+          <TouchableOpacity style={styles.graphWrapperred} onPress={() => navigation.navigate('Relational Voters', {
+            relationId: 2,
+            ScreenName: language === 'en' ? 'Against Voters' : 'विरुद्ध मतदार'
+          })}>
             <Progress.Circle
               size={width * 0.22}
               progress={voterCounts.against / voterCounts.total}
@@ -229,8 +219,35 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
             <Text style={styles.graphText}>
               {language === 'en' ? 'Against' : 'विरुद्ध'}
             </Text>
-          </View>
-          <View style={styles.graphWrapperblack}>
+          </TouchableOpacity>
+        </View>
+
+
+
+        <View style={styles.row}>
+
+          <TouchableOpacity style={styles.graphWrapperyellow}
+            onPress={() => navigation.navigate('Relational Voters', { relationId: 3, ScreenName: language === 'en' ? 'Doubted Voters' : 'संशयित मतदार' })}>
+            <Progress.Circle
+              size={width * 0.22}
+              progress={voterCounts.doubted / voterCounts.total}
+              thickness={15}
+              showsText
+              color="#f7ba11"
+              unfilledColor="#fff0b3"
+              borderWidth={0}
+              strokeCap="round"
+              formatText={() => `${voterCounts.doubted}`}
+            />
+            <Text style={styles.graphText}>
+              {language === 'en' ? 'Doubted' : 'संशयित'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.graphWrapperblack} onPress={() => navigation.navigate('Relational Voters', {
+            relationId: 0,
+            ScreenName: language === 'en' ? 'Pending Voters' : 'बाकी मतदार'
+          })}>
             <Progress.Circle
               size={width * 0.22}
               progress={voterCounts.pending / voterCounts.total}
@@ -245,7 +262,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
             <Text style={styles.graphText}>
               {language === 'en' ? 'Pending' : 'बाकी'}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
@@ -268,14 +285,13 @@ const styles = StyleSheet.create({
     fontSize: scaleFontSize(24),
     fontWeight: 'bold',
     color: '#3C4CAC',
-    marginBottom: height * 0.01,
   },
   userIdText: {
     fontSize: scaleFontSize(20),
     color: '#000000',
   },
   totalVotersContainer: {
-    height: height * 0.13,
+    height: height * 0.15,
     borderRadius: 10,
     width: '100%',
     padding: 20,
@@ -299,7 +315,7 @@ const styles = StyleSheet.create({
     color: 'black',
     marginLeft: width * 0.05,
     marginBottom: height * 0.02,
-    marginTop: height * 0.03,
+    marginTop: height * 0.015,
   },
   graphsContainer: {
     flex: 1,
@@ -379,12 +395,13 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: height * 0.08,
+    height: height * 0.1,
     marginVertical: "1.8%",
     marginHorizontal: '5%',
-    columnGap: 15
+    columnGap: 15,
   },
   statsBox: {
+    // height: height * 0.1,
     flex: 1,
     borderRadius: 8,
     alignItems: 'center',
