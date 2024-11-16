@@ -198,57 +198,57 @@ const BoothEditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) 
     };
 
 
-    // const handleSubmit = async () => {
-    //     setLoading(true);
-
-
-    //     let updatedFields = {};
-
-    //     if (name !== '') updatedFields.voter_name = name;
-    //     if (parentName !== '') updatedFields.voter_parent_name = parentName;
-    //     if (contact !== '') updatedFields.voter_contact_number = contact;
-    //     if (caste !== '') updatedFields.voter_cast_id = caste;
-    //     if (age !== '') updatedFields.voter_age = age;
-    //     if (gender !== '') updatedFields.voter_gender = gender;
-    //     if (currentStatus !== '') updatedFields.voter_live_status_id = currentStatus;
-    //     if (maritalStatus !== '') updatedFields.voter_marital_status_id = maritalStatus;
-    //     if (voterFavourType !== '') updatedFields.voter_favour_id = voterFavourType;
-    //     if (selectedButtonId !== '') updatedFields.voter_in_city_id = selectedButtonId;
-    //     if (location !== '') updatedFields.voter_current_location = location;
-
-
-
-    //     if (name === '') updatedFields.voter_name = null;
-    //     if (parentName === '') updatedFields.voter_parent_name = null;
-    //     if (contact === '') updatedFields.voter_contact_number = null;
-    //     if (caste === '') updatedFields.voter_cast_id = null;
-    //     if (age === '') updatedFields.voter_age = null;
-    //     if (gender === '') updatedFields.voter_gender = null;
-    //     if (currentStatus === '') updatedFields.voter_live_status_id = null;
-    //     if (maritalStatus === '') updatedFields.voter_marital_status_id = null;
-    //     if (voterFavourType === '') updatedFields.voter_favour_id = null;
-
-    //     try {
-    //         const apiUrl = `http://192.168.1.8:8000/api/voters/${selectedVoter.voter_id}/`;
-    //         const response = await axios.patch(apiUrl, updatedFields);
-
-    //         if (response.status === 200) {
-    //             Alert.alert("Success", "Voter details updated successfully.");
-
-    //             handleCloseEditForm(); 
-    //         } else {
-    //             throw new Error('Failed to update voter details');
-    //         }
-    //     } catch (error) {
-    //         Alert.alert("Error", "Failed to update voter details. Please try again.");
-    //         console.error('Error updating voter details:', error.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
     const handleSubmit = async () => {
+        setLoading(true);
+
+
+        let updatedFields = {};
+
+        if (name !== '') updatedFields.voter_name = name;
+        if (parentName !== '') updatedFields.voter_parent_name = parentName;
+        if (contact !== '') updatedFields.voter_contact_number = contact;
+        if (caste !== '') updatedFields.voter_cast_id = caste;
+        if (age !== '') updatedFields.voter_age = age;
+        if (gender !== '') updatedFields.voter_gender = gender;
+        if (currentStatus !== '') updatedFields.voter_live_status_id = currentStatus;
+        if (maritalStatus !== '') updatedFields.voter_marital_status_id = maritalStatus;
+        if (voterFavourType !== '') updatedFields.voter_favour_id = voterFavourType;
+        if (selectedButtonId !== '') updatedFields.voter_in_city_id = selectedButtonId;
+        if (location !== '') updatedFields.voter_current_location = location;
+
+
+
+        if (name === '') updatedFields.voter_name = null;
+        if (parentName === '') updatedFields.voter_parent_name = null;
+        if (contact === '') updatedFields.voter_contact_number = null;
+        if (caste === '') updatedFields.voter_cast_id = null;
+        if (age === '') updatedFields.voter_age = null;
+        if (gender === '') updatedFields.voter_gender = null;
+        if (currentStatus === '') updatedFields.voter_live_status_id = null;
+        if (maritalStatus === '') updatedFields.voter_marital_status_id = null;
+        if (voterFavourType === '') updatedFields.voter_favour_id = null;
+
+        try {
+            const apiUrl = `http://192.168.1.8:8000/api/voters/${selectedVoter.voter_id}/`;
+            const response = await axios.patch(apiUrl, updatedFields);
+
+            if (response.status === 200) {
+                Alert.alert("Success", "Voter details updated successfully.");
+
+                handleCloseEditForm();
+            } else {
+                throw new Error('Failed to update voter details');
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to update voter details. Please try again.");
+            console.error('Error updating voter details:', error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const handleCompareSubmit = async () => {
         setLoading(true);
 
         const apiUrl = `http://192.168.1.8:8000/api/compare_voter_data/`;
@@ -340,8 +340,8 @@ const BoothEditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) 
 
     return (
         <Modal visible={isVisible} transparent={true} animationType="slide">
-            <Pressable style={styles.modalBackground} onPress={onClose}>
-                <Pressable style={styles.modalContainer} onPress={Keyboard.dismiss}>
+            <TouchableOpacity style={styles.modalBackground} onPress={onClose}>
+                <TouchableOpacity style={styles.modalContainer} onPress={Keyboard.dismiss}>
                     <View style={styles.header}>
                         <Text style={{ fontSize: 22, color: 'black', fontWeight: 'bold' }}>Edit Voter Details</Text>
                         <View style={{
@@ -469,17 +469,17 @@ const BoothEditVoterForm = ({ isVisible, onClose, selectedVoter, onEditVoter }) 
 
 
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
-                        <Pressable onPress={handleCloseEditForm} style={styles.cancelButton}>
+                        <TouchableOpacity onPress={handleCloseEditForm} style={styles.cancelButton}>
                             <Text style={{ color: '#E54394', textAlign: 'center', paddingVertical: 10, fontSize: 17, fontWeight: '600' }}>Cancel</Text>
-                        </Pressable>
-                        <Pressable onPress={handleSubmit} style={styles.submitButton}>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
                             <Text style={{ color: 'white', textAlign: 'center', paddingVertical: 10, fontSize: 17, fontWeight: '600' }}>
                                 Submit
                             </Text>
-                        </Pressable>
+                        </TouchableOpacity>
                     </View>
-                </Pressable>
-            </Pressable>
+                </TouchableOpacity>
+            </TouchableOpacity>
 
             <ColorLegendModal
                 isVisible={modalVisible}
@@ -569,14 +569,14 @@ const styles = StyleSheet.create({
     hexButton: {
         width: 50,
         height: 50,
-        backgroundColor: '#ff69b4',
+        backgroundColor: '#9c9a9a',
         alignItems: 'center',
         justifyContent: 'center',
         transform: [{ rotate: '45deg' }],
         borderRadius: 5,
     },
     selectedHexButton: {
-        backgroundColor: '#007AFF',
+        backgroundColor: '#080707',
     },
     hexButtonText: {
         color: '#fff',

@@ -14,6 +14,8 @@ import WardBooths from '../Ward/WardBooths';
 import WardBoothVoters from '../Ward/WardBoothVoters';
 import WLocationWise from '../Ward/WLocationWise';
 import Wardvoterlist from '../Ward/Wardvoterlist';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { useContext } from 'react';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -27,7 +29,7 @@ const TabBarIcon = ({ focused, name, IconComponent }) => (
 
 const VotersStack = () => {
     const navigation = useNavigation();
-
+    const { language, toggleLanguage } = useContext(LanguageContext);
     return (
         <Stack.Navigator initialRouteName=''>
             <Stack.Screen name='Ward Voters' component={Wardvoterlist}
@@ -36,6 +38,7 @@ const VotersStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Voter List" : 'मतदार यादी',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -52,6 +55,7 @@ const VotersStack = () => {
 
 const BoothsStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Booths'>
@@ -61,6 +65,7 @@ const BoothsStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? "Booths" : 'बूथ यादी',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -80,7 +85,7 @@ const BoothsStack = () => {
             <Stack.Screen name='Booth Voters' component={WardBoothVoters}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
-                    // headerTitle: {`Voters in Booth : ${route.params.boothId} `},
+                    headerTitle: language === 'en' ? "Booth Voter" : 'बूथ मतदार यादी',
                     headerTitleStyle: { fontSize: 22 },
                     headerShadowVisible: false,
                     headerLeft: () => (
@@ -119,6 +124,8 @@ const BoothsStack = () => {
 }
 
 const ProfileStack = () => {
+    const { language, toggleLanguage } = useContext(LanguageContext);
+
     return (
         <Stack.Navigator initialRouteName='Profile'>
             <Stack.Screen name='Profile' component={WardProfile} options={{ headerShown: false }} />

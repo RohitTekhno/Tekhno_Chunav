@@ -4,6 +4,10 @@ import axios from 'axios';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
+import { toTitleCase } from '../../ReusableCompo/Functions/toTitleCaseConvertor';
+import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
+import LoadingModal from '../../ReusableCompo/LoadingModal';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 const { height, width } = Dimensions.get('window');
 
@@ -19,6 +23,7 @@ export default function BoothNVoted({ route, navigation }) {
   const [animatedValue] = useState(new Animated.Value(1));
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedVoter, setSelectedVoter] = useState(null);
+  const [LoadingModalDetails, setLoadingModalDetails] = useState(false);
 
   useEffect(() => {
     const fetchVoters = async () => {
@@ -43,21 +48,12 @@ export default function BoothNVoted({ route, navigation }) {
   useEffect(() => {
     const filtered = voters.filter(voter =>
       voter.voter_id.toString().includes(search) ||
-      voter.voter_name.toLowerCase().includes(search.toLowerCase())
+      voter.voter_name.toLowerCase().includes(search.toLowerCase()) ||
+      voter.voter_name_mar.toLowerCase().includes(search.toLowerCase())
+
     );
     setFilteredVoters(filtered);
   }, [search, voters]);
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size={'large'} color={'black'} />
-        <Text>
-          {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-        </Text>
-      </View>
-    );
-  }
 
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
@@ -83,6 +79,7 @@ export default function BoothNVoted({ route, navigation }) {
   };
 
   const fetchVoterDetails = (voter_id) => {
+    setLoadingModalDetails(true);
     axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
       .then(response => {
         setSelectedVoter(response.data);
@@ -90,37 +87,49 @@ export default function BoothNVoted({ route, navigation }) {
       })
       .catch(error => {
         Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
-      });
+      })
+      .finally(() => {
+        setLoadingModalDetails(false);
+      })
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index }) => {
     const isClicked = item.voter_id === clickedVoter;
 
+    let color = 'transparent';
+
+    if (item.voter_favour_id === 1) {
+      color = '#d3f5d3';
+    } else if (item.voter_favour_id === 2) {
+      color = '#fededd';
+    } else if (item.voter_favour_id === 3) {
+      color = '#f8ff96';
+    } else if (item.voter_favour_id === 4) {
+      color = '#6c96f0';
+    } else if (item.voter_favour_id === 5) {
+      color = '#c5d7fc';
+    } else if (item.voter_favour_id === 6) {
+      color = '#fcaef2';
+    } else if (item.voter_favour_id === 7) {
+      color = '#c86dfc';
+    }
+
     return (
-      <Pressable onPress={() => handleVoterPress(item)}>
-        <Animated.View
+      <Pressable onPress={() => handleVoterPress(item)} >
+        <View
           style={[
-            styles.voterItem,
-            isClicked && {
-              transform: [{ scale: animatedValue }], // Apply the animation
-              shadowColor: 'black',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.8,
-              shadowRadius: 9,
-              elevation: 10, // Add shadow for Android
-            }
-          ]}
+            styles.voterItem, { backgroundColor: color }]}
         >
-          <View style={styles.voterDetails}>
+          <View style={[styles.voterDetails]}>
             <View style={{
               borderRightWidth: 1, borderColor: '#D9D9D9',
               width: 60, alignItems: 'center',
             }}>
-              <Text>{item.voter_id}</Text>
+              <Text>{index + 1}</Text>
             </View>
-            <Text>{item.voter_name}</Text>
+            <Text>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
           </View>
-        </Animated.View>
+        </View>
       </Pressable>
     );
   };
@@ -132,7 +141,7 @@ export default function BoothNVoted({ route, navigation }) {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder='Search by voter’s name or ID'
+          placeholder={language === 'en' ? 'Search by ID or Name' : 'आयडी किंवा नावाने शोधा'}
           style={styles.searchInput}
         />
       </View>
@@ -143,15 +152,19 @@ export default function BoothNVoted({ route, navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={renderItem}
-        ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <Text style={styles.noDataText}>No results found</Text>}
       />
 
-      {/* Modal to show selected voter details */}
-      {/* <TownVoterDetailsPopup
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible}
-        selectedVoter={selectedVoter}
-      /> */}
+      {LoadingModalDetails ?
+        <LoadingModal />
+        :
+        <VoterDetailsPopUp
+          isModalVisible={isModalVisible}
+          setIsModalVisible={setIsModalVisible}
+          selectedVoter={selectedVoter}
+        />
+      }
     </View >
   );
 }
@@ -187,6 +200,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     paddingVertical: 10,
+    paddingHorizontal: 10
   },
   listContent: {
     paddingBottom: 10,
@@ -200,7 +214,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 0.8,
     borderColor: '#919090',
-    backgroundColor: '#fff',
+    // backgroundColor: 'red',
   },
   voterDetails: {
     flexDirection: 'row',
@@ -216,5 +230,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  errorText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+    color: 'red',
   },
 });

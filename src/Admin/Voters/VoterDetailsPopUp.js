@@ -1,14 +1,15 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View, Dimensions, Alert } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('window');
 
 const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter }) => {
-
+    const { language } = useContext(LanguageContext);
     // Function to handle PDF download and save
     const handlePdfIconClick = async (voterId) => {
         try {
@@ -56,54 +57,54 @@ const VoterDetailsPopUp = ({ isModalVisible, setIsModalVisible, selectedVoter })
                     {selectedVoter && (
                         <>
                             <View style={styles.headerContainer}>
-                                <Text style={styles.modalTitle}>Voter Details</Text>
+                                <Text style={styles.modalTitle}>{language === 'en' ? 'Voter Details' : 'मतदार माहिती'}</Text>
                                 <TouchableOpacity onPress={() => handlePdfIconClick(selectedVoter.voter_id)}>
                                     <FontAwesome name="file-pdf-o" size={24} color="#db2b1f" style={styles.pdfIcon} />
                                 </TouchableOpacity>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Name:</Text>
-                                <Text style={styles.value}>{selectedVoter.voter_name}</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Name :' : 'नाव :'}</Text>
+                                <Text style={styles.value}>{language === 'en' ? selectedVoter.voter_name : selectedVoter.voter_name_mar}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Age:</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Age :' : 'वर्ष :'}</Text>
                                 <Text style={styles.value}>{selectedVoter.voter_age || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Gender:</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Gender :' : 'लिंग :'}</Text>
                                 <Text style={styles.value}>{selectedVoter.voter_gender || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Town:</Text>
-                                <Text style={styles.value}>{selectedVoter.town_name || 'N/A'}</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Town :' : 'गाव/शहर :'}</Text>
+                                <Text style={styles.value}>{language === 'en' ? selectedVoter.town_name : selectedVoter.town_name_mar || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Booth:</Text>
-                                <Text style={styles.value}>{selectedVoter.booth_name || 'N/A'}</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Booth :' : 'बूथ :'}</Text>
+                                <Text style={styles.value}>{language === 'en' ? selectedVoter.booth_name : selectedVoter.booth_name_mar || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Contact:</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Contact Number:' : 'संपर्क नंबर:'}</Text>
                                 <Text style={styles.value}>{selectedVoter.voter_contact_number || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Caste:</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Cast:' : 'जात:'}</Text>
                                 <Text style={styles.value}>{selectedVoter.voter_cast_name || 'N/A'}</Text>
                             </View>
 
                             <View style={styles.detailRow}>
-                                <Text style={styles.label}>Live Status:</Text>
+                                <Text style={styles.label}>{language === 'en' ? 'Live Status:' : 'लाइव स्थिति:'}</Text>
                                 <Text style={styles.value}>{selectedVoter.live_status_type || 'N/A'}</Text>
                             </View>
 
                             <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.closeButton}>
-                                <Text style={styles.closeButtonText}>Close</Text>
+                                <Text style={styles.closeButtonText}>{language === 'en' ? 'Close' : 'बंद करा'}</Text>
                             </TouchableOpacity>
                         </>
                     )}
@@ -139,6 +140,8 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     modalTitle: {
+        flex: 1,
+        textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
     },

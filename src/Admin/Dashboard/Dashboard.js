@@ -5,12 +5,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import VotingBarStats from './VotingBarStats';
 import CastDonotStat from './CastDonotStat';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 const { height, width } = Dimensions.get('screen');
 
 const Dashboard = () => {
     const navigation = useNavigation();
+    const { language } = useContext(LanguageContext);
     // const { userId } = useContext(AuthenticationContext);
     const [votersCounter, setVoterCounter] = useState({
         TotalVoters: null,
@@ -104,7 +106,7 @@ const Dashboard = () => {
             showsVerticalScrollIndicator={false}
         >
             <View style={styles.headerContainer}>
-                <Text style={styles.title}>Washim Constituency</Text>
+                <Text style={styles.title}>{language === 'en' ? 'Washim Constituency' : 'वाशिम विधानसभा'}</Text>
                 <Pressable onPress={() => { navigation.navigate('Total Voters') }} style={{
                     height: height * 0.1, borderRadius: 10,
                     paddingVertical: '2%',
@@ -115,7 +117,7 @@ const Dashboard = () => {
                         locations={[0.3, 1]}
                         style={styles.gradient}
                     >
-                        <Text style={styles.gradientText}>Total Voters Count</Text>
+                        <Text style={styles.gradientText}>{language === 'en' ? 'Total Voters' : 'एकूण मतदार'}</Text>
                         <Text style={styles.gradientText}>{totalVoters}</Text>
                     </LinearGradient>
                 </Pressable>
@@ -124,24 +126,24 @@ const Dashboard = () => {
             <View style={styles.statsContainer}>
                 <View style={styles.statsRow}>
                     <Pressable onPress={() => { navigation.navigate('Towns') }} style={[styles.statsBox, styles.statsBoxBlue]}>
-                        <Text style={styles.statsLabel}>Total Town Count</Text>
+                        <Text style={styles.statsLabel}>{language === 'en' ? 'Total Towns' : 'एकूण गांव किंवा शहरे'}</Text>
                         <Text style={styles.statsValue}>{totalTowns}</Text>
                     </Pressable>
 
                     <Pressable onPress={() => { navigation.navigate('Booths'); }} style={[styles.statsBox, styles.statsBoxGreen]}>
-                        <Text style={styles.statsLabel}>Total Booth Count</Text>
+                        <Text style={styles.statsLabel}>{language === 'en' ? 'Total Booths' : 'एकूण बूथ'}</Text>
                         <Text style={styles.statsValue}>{totalBooths}</Text>
                     </Pressable>
                 </View>
 
                 <View style={styles.statsRow}>
                     <Pressable style={[styles.statsBox, styles.statsBoxYellow]} onPress={() => { navigation.navigate('Voted') }}>
-                        <Text style={styles.statsLabel}>Total Voted Count</Text>
+                        <Text style={styles.statsLabel}>{language === 'en' ? 'Total Voted' : 'एकूण मतदान'}</Text>
                         <Text style={styles.statsValue}>{totalVoted}</Text>
                     </Pressable>
 
                     <Pressable style={[styles.statsBox, styles.statsBoxCyan]} onPress={() => { navigation.navigate('Nvoted') }}>
-                        <Text style={styles.statsLabel}>Total Non-Voted Count</Text>
+                        <Text style={styles.statsLabel}>{language === 'en' ? 'Total Non-Voted' : 'एकूण मतदान नाही'}</Text>
                         <Text style={styles.statsValue}>{totalNVoted}</Text>
                     </Pressable>
                 </View>
@@ -179,10 +181,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        fontSize: width * 0.04,
-        fontWeight: '500',
+        fontSize: 20,
+        fontWeight: '600',
         textAlign: 'center',
         marginVertical: 5,
+        color: '#3C4CAC'
     },
     gradient: {
         borderRadius: 8,
@@ -227,7 +230,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#B8F7FE',
     },
     statsLabel: {
-        fontSize: width * 0.03,
+        fontSize: 15,
         fontWeight: '500',
     },
     statsValue: {

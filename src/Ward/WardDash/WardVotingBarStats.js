@@ -93,7 +93,7 @@ const WardVotingBarStats = () => {
                 <View style={styles.barChart}>
                     {data.map((item, index) => {
                         const animatedStyle = useAnimatedStyle(() => ({
-                            height: animatedValues[index].value * 1.3,
+                            height: animatedValues[index].value * 1.8,
                             backgroundColor: colorData[index].value,
                         }));
                         return (

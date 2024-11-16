@@ -1,5 +1,5 @@
 import { Alert, Dimensions, StyleSheet, Text, TextInput, View, FlatList, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -9,14 +9,17 @@ import axios from 'axios';
 import WTempEditedVoterForm from './WTempEditedVoterForm';
 import { Checkbox } from 'react-native-paper';
 import WardHeaderFooter from '../WardHeaderFooter';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
 const { width, height } = Dimensions.get('screen');
 
 const WApprovalScreen = ({ route }) => {
-  const { userId } = route.params;
-  console.log(userId)
+  const { wardUserId } = route.params;
+  const { language } = useContext(LanguageContext);
   const [voters, setVoters] = useState([]);
   const [filteredVoters, setFilteredVoters] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -28,6 +31,7 @@ const WApprovalScreen = ({ route }) => {
   const [selectedVoterIds, setSelectedVoterIds] = useState([]);
   const [isAllChecked, setAllChecked] = useState(false)
   const [message, setMessage] = useState(null)
+
   const statusOptions = [{ label: 'Alive', value: 1 }, { label: 'Dead', value: 2 }];
   const maritalOptions = [{ label: 'Single', value: 1 }, { label: 'Married', value: 2 }];
 
@@ -43,7 +47,7 @@ const WApprovalScreen = ({ route }) => {
   const fetchUpdatedVotersToApprove = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.1.8:8000/api/get_temp_voter_data_prabhag_user/${userId}/`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/get_temp_voter_data_prabhag_user/${wardUserId}/`);
       setVoters(response.data);
       setFilteredVoters(response.data);
     } catch (error) {
@@ -269,37 +273,33 @@ const WApprovalScreen = ({ route }) => {
       <TextInput
         value={searchText}
         onChangeText={setSearchText}
-        placeholder='Search voter here...'
+        placeholder={language === 'en' ? 'Search voter here...' : 'मतदार इथे शोधा...'}
         style={styles.searchInput}
       />
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} color={'black'} />
-          <Text>Loading...</Text>
-        </View>
-      ) : (
-        <>
-          {message && <Text style={{ textAlign: 'center', padding: 10, color: 'grey' }}>{message}</Text>}
-          {isMultiSelectOn &&
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15, paddingVertical: 10 }}>
-              <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleCancleAll}>
-                <Entypo name="squared-cross" size={30} color="black" />
-              </TouchableOpacity>
-              <Checkbox
-                status={isAllChecked ? 'checked' : 'unchecked'}
-                color='green'
-                onPress={handleSelectAll}
-              />
-            </View>
-          }
 
-          <FlatList
-            data={filteredVoters}
-            renderItem={renderVoterItem}
-            keyExtractor={item => item.voter_id?.toString() || Math.random().toString()}
+      {message && <Text style={{ textAlign: 'center', padding: 10, color: 'grey' }}>{message}</Text>}
+      {isMultiSelectOn &&
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15, paddingVertical: 10 }}>
+          <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleCancleAll}>
+            <Entypo name="squared-cross" size={30} color="black" />
+          </TouchableOpacity>
+          <Checkbox
+            status={isAllChecked ? 'checked' : 'unchecked'}
+            color='green'
+            onPress={handleSelectAll}
           />
-        </>
-      )}
+        </View>
+      }
+
+      <FlatList
+        data={filteredVoters}
+        renderItem={renderVoterItem}
+        keyExtractor={item => item.voter_id?.toString() || Math.random().toString()}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={loading && <EmptyListComponent />}
+      />
+
+
 
 
       <WTempEditedVoterForm
@@ -314,11 +314,11 @@ const WApprovalScreen = ({ route }) => {
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.rejectButton} onPress={rejectSelectedVoters}>
             {/* <Ionicons name="close-sharp" size={30} color="red" /> */}
-            <Text style={styles.btn}>Reject</Text>
+            <Text style={styles.btn}>{language === 'en' ? 'Reject' : 'रद्द करा'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.approveButton} onPress={approveSelectedVoters}>
             {/* <Ionicons name="checkmark-done-sharp" size={30} color="green" /> */}
-            <Text style={styles.btn}>Approve</Text>
+            <Text style={styles.btn}>{language === 'en' ? 'Approve' : 'स्वीकारा'}</Text>
           </TouchableOpacity>
         </View>
       )}

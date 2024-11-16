@@ -1,13 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Dimensions, Modal, TouchableOpacity, StyleSheet, Text, View, TouchableWithoutFeedback, Animated } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Feather from '@expo/vector-icons/Feather';
 const { height, width } = Dimensions.get('screen');
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const RightMenuBtn = () => {
     const navigation = useNavigation();
+    const { language } = useContext(LanguageContext);
     const [isPressed, setPressed] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const slideAnim = useRef(new Animated.Value(-height * 0.2)).current;
@@ -72,7 +74,7 @@ const RightMenuBtn = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <AntDesign name="adduser" size={25} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Registration</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Registeration' : 'बूथ कार्यकर्ता नोंदणी'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -83,7 +85,7 @@ const RightMenuBtn = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <Feather name="user" size={24} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Booth User</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Booth Users List' : 'बूथ कार्यकर्ता यादी'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -94,12 +96,12 @@ const RightMenuBtn = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <MaterialCommunityIcons name="account-filter-outline" size={30} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Location Wise</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Location Wise' : 'स्थानानुसार मतदार'}</Text>
                             </TouchableOpacity>
                         </Animated.View>
                     </View>
                 </TouchableWithoutFeedback>
-            </Modal>
+            </Modal >
         </>
     );
 };

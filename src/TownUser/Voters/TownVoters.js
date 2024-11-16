@@ -1,15 +1,21 @@
 import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { ActivityIndicator } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import axios from 'axios'
 import { Alert } from 'react-native'
 import EditVoterForm from '../../ReusableCompo/EditVoterForm'
+import { TownUserContext } from '../../ContextApi/TownUserProvider'
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent'
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent'
+import { LanguageContext } from '../../ContextApi/LanguageContext'
 
 
 const { height, width } = Dimensions.get('screen');
 const TownVoters = () => {
+  const { userId } = useContext(TownUserContext);
+  const { language } = useContext(LanguageContext);
   const [voters, setVoters] = useState([]);
   const [filteredVoters, setFilteredVoters] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -34,6 +40,7 @@ const TownVoters = () => {
     setSearchText(text);
     const filtered = voters.filter(voter =>
       voter.voter_id.toString().includes(text) || voter.voter_name.toLowerCase().includes(text.toLowerCase())
+      || voter.voter_name_mar.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredVoters(filtered);
     setRefreshing(false);
@@ -73,7 +80,7 @@ const TownVoters = () => {
 
   const fetchUpdatedVoters = async () => {
     setRefreshing(true);
-    axios.get('http://192.168.1.8:8000/api/total_voters/')
+    axios.get(`http://192.168.1.8:8000/api/get_voter_list_by_town_user/${userId}/`)
       .then(response => {
         const votersData = response.data;
         setVoters(votersData);
@@ -123,7 +130,7 @@ const TownVoters = () => {
             <Text style={styles.itemText}>{item.voter_id}</Text>
           </View>
           <View style={styles.nameSection}>
-            <Text style={styles.itemText}>{toTitleCase(item.voter_name)}</Text>
+            <Text style={styles.itemText}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -136,41 +143,35 @@ const TownVoters = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by ID or Name"
+        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
         value={searchText}
         onChangeText={handleSearch}
       />
 
-      {(refreshing) ? (
-        < View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} color={'black'} />
-          <Text>wait a minute...</Text>
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={filteredVoters}
-            keyExtractor={item => item.voter_id.toString()}
-            renderItem={renderItem}
-            contentContainerStyle={styles.flatListContent}
-            extraData={filteredVoters}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
-            }
+      <FlatList
+        data={filteredVoters}
+        keyExtractor={item => item.voter_id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.flatListContent}
+        extraData={filteredVoters}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
           />
+        }
+        ListHeaderComponent={refreshing && <LoadingListComponent />}
+        ListEmptyComponent={!refreshing && <EmptyListComponent />}
+      />
 
-          <EditVoterForm
-            isVisible={isFormVisible}
-            onClose={handleCloseEditForm}
-            selectedVoter={selectedVoter}
-            onEditVoter={handleSelectedVoterDetails}
-          />
-        </>
-      )}
-    </View>
+      <EditVoterForm
+        isVisible={isFormVisible}
+        onClose={handleCloseEditForm}
+        selectedVoter={selectedVoter}
+        onEditVoter={handleSelectedVoterDetails}
+      />
+
+    </View >
   )
 }
 

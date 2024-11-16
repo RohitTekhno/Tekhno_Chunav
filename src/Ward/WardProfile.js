@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, Alert, Dimensions, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, Alert, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,8 @@ const { width, height } = Dimensions.get('window');
 const WardProfile = () => {
   const { language } = useContext(LanguageContext);
   const { wardUserId } = useContext(WardUserContext);
+  console.log(wardUserId);
+
   const navigation = useNavigation();
 
   const [userInfo, setUserInfo] = useState(null);
@@ -29,20 +31,22 @@ const WardProfile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!wardUserId) {
-        Alert.alert("User ID is not defined");
+        setLoading(false);
         return;
       }
 
       try {
         const response = await axios.get(`http://192.168.1.8:8000/api/prabhag_users_info/${wardUserId}`);
-        console.log(response.data);  // Log the response data to check if it contains what you expect
+        console.log(response.data); // Log the response data for debugging
+
         if (Array.isArray(response.data) && response.data.length > 0) {
-          setUserInfo(response.data[0]);  // Use the first object in the array
+          setUserInfo(response.data[0]); // Use the first object if it's an array
         } else {
           Alert.alert("No user data found");
         }
       } catch (error) {
         console.error("Error fetching user data:", error.response?.data || error.message);
+        Alert.alert("Error fetching user data");
       } finally {
         setLoading(false);
       }
@@ -69,7 +73,7 @@ const WardProfile = () => {
 
   return (
     <>
-      <StatusBar style='light' />
+      <StatusBar style="light" />
       <View style={{ height: height * 0.3 }}>
 
         <LinearGradient
@@ -103,28 +107,19 @@ const WardProfile = () => {
           </View>
 
           <View style={styles.detailsContainer}>
-            <TextInput
-              style={styles.profileTextInput}
-              value={language === 'en' ? `User Name: ${userInfo.prabhag_user_name || ''}` : `वापरकर्ता नाव: ${userInfo.town_user_name || ''}`}
-              editable={false}
-            />
-            <TextInput
-              style={styles.profileTextInput}
-              value={language === 'en' ? `User Id: ${userInfo.prabhag_user_id || ''}` : `वापरकर्ता आयडी: ${userInfo.town_user_id || ''}`}
-              editable={false}
-            />
-            <TextInput
-              style={styles.profileTextInput}
-              value={language === 'en' ? `Contact No.: ${userInfo.prabhag_user_contact_number || ''}` : `संपर्क क्रमांक: ${userInfo.town_user_contact_number || ''}`}
-              editable={false}
-            />
-            <TextInput
-              style={styles.profileTextInput}
-              value={language === 'en' ? `Ward: ${userInfo.prabhag_name || ''}` : `प्रभाग: ${userInfo.town_names || ''}`}
-              editable={false}
-            />
+            <Text style={styles.profileText}>
+              {language === 'en' ? `User Name : ` : `वापरकर्ता नाव: `}{userInfo.prabhag_user_name}
+            </Text>
+            <Text style={styles.profileText}>
+              {language === 'en' ? `User Id: ${userInfo.prabhag_user_id || ''}` : `वापरकर्ता आयडी: ${userInfo.prabhag_user_id || ''}`}
+            </Text>
+            <Text style={styles.profileText}>
+              {language === 'en' ? `Contact No.: ${userInfo.prabhag_user_contact_number || ''}` : `संपर्क क्रमांक: ${userInfo.prabhag_user_contact_number || ''}`}
+            </Text>
+            <Text style={styles.profileText}>
+              {language === 'en' ? `Ward: ${userInfo.prabhag_name}` : `प्रभाग: ${userInfo.prabhag_name}`}
+            </Text>
           </View>
-
         </View>
 
         <Pressable style={styles.logOutButton} onPress={() => { navigation.navigate('LogOut') }}>
@@ -191,14 +186,14 @@ const styles = StyleSheet.create({
     height: '100%',
     alignSelf: 'center',
   },
-  profileTextInput: {
+  profileText: {
     width: width * 0.8,
-    height: height * 0.06,
-    borderRadius: 8,
+    fontSize: 18,
     paddingStart: 20,
     marginVertical: height * 0.017,
     backgroundColor: 'rgba(236, 238, 247, 1)',
-    fontSize: 18,
+    borderRadius: 8,
+    paddingVertical: 10,
   },
   logOutButton: {
     width: width * 0.8,
@@ -209,13 +204,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 25,
     borderRadius: 7,
-    // padding: 10
   },
   logOutButtonTxt: {
     color: 'white',
     fontSize: 18,
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
 
 export default WardProfile;

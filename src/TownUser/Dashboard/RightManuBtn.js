@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Dimensions, Modal, TouchableOpacity, StyleSheet, Text, View, TouchableWithoutFeedback, Animated } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Feather from '@expo/vector-icons/Feather';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 const { height, width } = Dimensions.get('screen');
 
 const RightMenuBtn = () => {
@@ -11,7 +12,7 @@ const RightMenuBtn = () => {
     const [isPressed, setPressed] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const slideAnim = useRef(new Animated.Value(-height * 0.2)).current;
-
+    const { language } = useContext(LanguageContext);
 
     const handleToggleAppStore = () => {
         setPressed(!isPressed);
@@ -72,7 +73,7 @@ const RightMenuBtn = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <AntDesign name="adduser" size={25} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Registration</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Booth User Register' : 'बूथ कार्यकर्ता नोंदणी'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -83,7 +84,7 @@ const RightMenuBtn = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <MaterialCommunityIcons name="account-filter-outline" size={30} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Castwise</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Castwise Voters' : 'जातीनिहाय मतदार'}</Text>
                             </TouchableOpacity>
                         </Animated.View>
                     </View>

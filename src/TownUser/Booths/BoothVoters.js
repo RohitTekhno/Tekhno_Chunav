@@ -1,21 +1,27 @@
 import { Alert, Dimensions, FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EditVoterForm from '../../ReusableCompo/EditVoterForm';
+import { TouchableOpacity } from 'react-native';
 
 const { width, height } = Dimensions.get('screen');
 
 const BoothVoters = ({ route }) => {
     const { boothId } = route.params;
     const [voters, setVoters] = useState([]);
+    const { language } = useContext(LanguageContext);
 
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [searchedValue, setSearchValue] = useState('');
-
+    const [error, setError] = useState(null);
     const [selectedVoter, setSelectedVoter] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isFormVisible, setFormVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
 
@@ -23,7 +29,7 @@ const BoothVoters = ({ route }) => {
         axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
-                setIsModalVisible(true);
+                setFormVisible(true);
             })
             .catch(error => {
                 Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
@@ -37,6 +43,7 @@ const BoothVoters = ({ route }) => {
 
     const serchedVoter = voters.filter(voter =>
         (voter.voter_name && voter.voter_name.toLowerCase().includes(searchedValue.toLowerCase())) ||
+        (voter.voter_name_mar && voter.voter_name_mar.toLowerCase().includes(searchedValue.toLowerCase())) ||
         (voter.voter_id && voter.voter_id.toString().includes(searchedValue))
     );
 
@@ -55,8 +62,8 @@ const BoothVoters = ({ route }) => {
         setRefreshing(true)
         axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}/`)
             .then(response => {
-                if (response.data.voters && Array.isArray(response.data.voters)) {
-                    setVoters(response.data.voters);
+                if (response.data && Array.isArray(response.data)) {
+                    setVoters(response.data);
                 } else {
                     setError('Unexpected API response format.');
                 }
@@ -80,6 +87,66 @@ const BoothVoters = ({ route }) => {
     };
 
 
+    const handleVoterEditForm = (voter_id) => {
+        fetchVoterDetails(voter_id);
+        setFormVisible(true);
+    };
+
+    const handleCloseEditForm = () => {
+        setFormVisible(false);
+        setSelectedVoter(null);
+    };
+
+    const handleSelectedVoterDetails = (newDetails) => {
+        const updatedFilteredVoters = filteredVoters.map(voter =>
+            voter.voter_id.toString() === newDetails.voter_id.toString() ? { ...voter, ...newDetails } : voter
+        );
+        setFilteredVoters(updatedFilteredVoters);
+    };
+
+    const renderItem = ({ item }) => {
+        let backgroundColor = 'white';
+
+        switch (item.voter_favour_id) {
+            case 1:
+                backgroundColor = '#d3f5d3';
+                break;
+            case 2:
+                backgroundColor = '#f5d3d3';
+                break;
+            case 3:
+                backgroundColor = '#f5f2d3';
+                break;
+            case 4:
+                backgroundColor = '#c9daff';
+                break;
+            case 5:
+                backgroundColor = 'skyblue';
+                break;
+            case 6:
+                backgroundColor = '#fcacec';
+                break;
+            case 7:
+                backgroundColor = '#dcacfa';
+                break;
+
+            default:
+                backgroundColor = 'white';
+        }
+
+        return (
+            <TouchableOpacity style={[styles.voterItem, { backgroundColor }]} onPress={() => handleVoterEditForm(item.voter_id)}>
+                <View style={styles.idSection}>
+                    <Text style={styles.itemText}>{item.voter_id}</Text>
+                </View>
+                <View style={styles.nameSection}>
+                    <Text style={styles.itemText}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
+
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>
@@ -87,48 +154,28 @@ const BoothVoters = ({ route }) => {
                 <TextInput
                     value={searchedValue}
                     onChangeText={text => setSearchValue(text)}
-                    placeholder='search by voter’s name or ID'
+                    placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                     style={styles.searchInput}
                 />
             </View>
 
-            {refreshing ?
-                (<View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} color={'black'} />
-                    <Text>Loading...</Text>
-                </View>
-                ) : (
-                    < FlatList
-                        data={filteredVoters}
-                        keyExtractor={item => item.voter_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={refreshing}
-                                onRefresh={handleRefresh}
-                            />
-                        }
-                        ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-                        renderItem={({ item }) => (
-                            <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
-                                <View style={styles.voterDetails}>
-                                    <View style={{
-                                        borderRightWidth: 1, borderColor: '#D9D9D9',
-                                        width: 60, alignItems: 'center',
-                                    }}>
-                                        <Text style={{}}>{item.voter_id}</Text>
-                                    </View>
-                                    <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
-                                </View>
-                            </Pressable>
-                        )}
-                    />
-                )
-            }
-            <VoterDetailsPopUp
-                isModalVisible={isModalVisible}
+            < FlatList
+                data={filteredVoters}
+                keyExtractor={item => item.voter_id.toString()}
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                }
+                renderItem={renderItem}
+                ListHeaderComponent={refreshing && <LoadingListComponent />}
+                ListEmptyComponent={!refreshing && <EmptyListComponent />}
+            />
+
+
+            <EditVoterForm
+                isVisible={isFormVisible}
+                onClose={handleCloseEditForm}
                 selectedVoter={selectedVoter}
-                setIsModalVisible={setIsModalVisible}
+                onEditVoter={handleSelectedVoterDetails}
             />
         </View >
     )
@@ -185,5 +232,23 @@ const styles = StyleSheet.create({
     loadingContainer: {
         flex: 1,
         alignItems: 'center',
-    }
+    },
+    idSection: {
+        width: '20%',
+        borderRightWidth: 1,
+        borderRightColor: 'black',
+        paddingRight: 10,
+        alignItems: 'center',
+    },
+    nameSection: {
+        width: '80%',
+        paddingLeft: 10,
+    },
+    itemText: {
+        fontSize: height * 0.018,
+    },
+    flatListContent: {
+        flexGrow: 1,
+        paddingBottom: 20,
+    },
 });

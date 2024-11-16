@@ -15,11 +15,14 @@ import WardBoothVoters from '../Ward/WardBoothVoters';
 import WuserwiseLocation from '../Ward/WuserwiseLocation';
 import WLocationWise from '../Ward/WLocationWise';
 import Wsignup from '../Ward/Wsignup';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { useContext } from 'react';
 
 const Stack = createNativeStackNavigator();
 const WardUserMainStack = () => {
     const navigation = useNavigation();
-    // <MaterialIcons name="keyboard-backspace" size={24} color="black" />
+    const { language } = useContext(LanguageContext);
+
     return (
         <Stack.Navigator initialRouteName='Dashboard'>
             <Stack.Screen name='Dashboard' component={WardDash}
@@ -28,6 +31,7 @@ const WardUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Dashboard" : 'डॅशबोर्ड',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <MaterialIcons name="menu" size={30} color="black"
@@ -44,6 +48,7 @@ const WardUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Voter List" : 'मतदार यादी',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -60,6 +65,7 @@ const WardUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Booth List" : 'बूथ यादी',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -83,6 +89,7 @@ const WardUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? "Booth Users" : 'बूथ कार्यकर्ता यादी',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -99,6 +106,7 @@ const WardUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Approve Survey" : 'सर्वेक्षण मंजूर करा',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -176,6 +184,7 @@ const WardUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Booth Voters" : 'बूथ मतदार',
                     headerShadowVisible: false, headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >

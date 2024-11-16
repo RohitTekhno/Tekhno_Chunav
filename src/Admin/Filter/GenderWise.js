@@ -1,13 +1,18 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ActivityIndicator } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 const { width, height } = Dimensions.get('window');
 
 export default function GenderWise() {
+
+    const { language } = useContext(LanguageContext);
     const [openGender, setOpenGender] = useState(false);
     const [genderValue, setGenderValue] = useState(null);
     const [genderItems, setGenderItems] = useState([]);
@@ -51,8 +56,8 @@ export default function GenderWise() {
 
     const setupGenderOptions = () => {
         const genders = [
-            { label: 'Male', value: 'male' },
-            { label: 'Female', value: 'female' },
+            { label: language === 'en' ? 'Male' : 'पुरुष', value: 'male' },
+            { label: language === 'en' ? 'Female' : 'स्त्री', value: 'female' },
         ];
         setGenderItems(genders);
     };
@@ -79,9 +84,9 @@ export default function GenderWise() {
                     setOpen={setOpenGender}
                     setValue={setGenderValue}
                     setItems={setGenderItems}
-                    placeholder='Select Gender'
+                    placeholder={language === 'en' ? 'Select Gender' : 'लिंग निवडा'}
                     searchable={true}
-                    searchPlaceholder="Search gender..."
+                    searchPlaceholder={language === 'en' ? 'Search Gender' : 'लिंग शोधा'}
                     placeholderStyle={styles.placeholder}
                     style={styles.dropdown}
                     searchTextInputStyle={styles.searchTextInput}
@@ -90,41 +95,33 @@ export default function GenderWise() {
                     maxHeight={200}
                 />
 
-                {loading && genderValue ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size='small' />
-                        <Text style={styles.loadingText}>Loading...</Text>
-                    </View>
-                ) : (
-                    <View style={styles.listContainer}>
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            scrollEnabled={!openGender}
-                            renderItem={({ item }) => (
-                                <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
-                                    <View style={styles.voterDetails}>
-                                        <View style={styles.voterIdContainer}>
-                                            <Text>{item.voter_id}</Text>
-                                        </View>
-                                        <Text>{toTitleCase(item.voter_name)}</Text>
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={filteredVoters}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        scrollEnabled={!openGender}
+                        renderItem={({ item }) => (
+                            <Pressable style={styles.voterItem} onPress={() => { handleVoterPress(item.voter_id) }}>
+                                <View style={styles.voterDetails}>
+                                    <View style={styles.voterIdContainer}>
+                                        <Text>{item.voter_id}</Text>
                                     </View>
-                                </Pressable>
-                            )}
-                        />
-
-                        <VoterDetailsPopUp
-                            isModalVisible={isModalVisible}
-                            selectedVoter={selectedVoter}
-                            setIsModalVisible={setIsModalVisible}
-                        />
-
-                        {filteredVoters.length === 0 && !loading && (
-                            <Text style={styles.noDataText}>No results found</Text>
+                                    <Text>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+                                </View>
+                            </Pressable>
                         )}
-                    </View>
-                )}
+                        ListHeaderComponent={loading && genderValue && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+
+                    <VoterDetailsPopUp
+                        isModalVisible={isModalVisible}
+                        selectedVoter={selectedVoter}
+                        setIsModalVisible={setIsModalVisible}
+                    />
+                </View>
+
             </View>
         </>
     );

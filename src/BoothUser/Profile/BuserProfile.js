@@ -30,7 +30,7 @@ const BuserProfile = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.8:8000/api/booth_user_info/?user_id=${buserId}`);
+      const response = await axios.get(`http://192.168.1.8:8000/api/booth_user_info/${buserId}/`);
       setUserInfo(response.data[0]);
       setLoading(false);
     } catch (error) {
@@ -73,7 +73,7 @@ const BuserProfile = () => {
             <View style={styles.profileImageCircle}>
               <Image source={require('../../../assets/Cover.png')} style={styles.profileImage} />
             </View>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{language === 'en' ? 'Account User' : 'खाते वापरकर्ता'}</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{language === 'en' ? 'Booth User' : 'बूथ  वापरकर्ता'}</Text>
           </View>
 
           <View style={{ marginVertical: 10 }}>
@@ -96,8 +96,8 @@ const BuserProfile = () => {
               readValue={true}
             />
             <CustomeTextInput
-              label={language === 'en' ? 'Town: ' : 'नगर : '}
-              valueDetails={userInfo?.town_names?.join(', ') || ''}
+              label={language === 'en' ? 'Town: ' : 'गाव/शहर : '}
+              valueDetails={userInfo?.town_name || ''}
               styles={styles.profileTextInput}
               readValue={true}
             />
@@ -111,9 +111,7 @@ const BuserProfile = () => {
         </View>
       </View>
 
-      <View style={{
-        height: height * 0.15, justifyContent: 'center'
-      }}>
+      <View style={{ height: height * 0.12, justifyContent: 'center' }}>
         <Pressable style={styles.updateButton} onPress={() => navigation.navigate('LogOut')}>
           <Text style={styles.updateButtonTxt}>{language === 'en' ? 'Logout' : 'लॉगआउट'}</Text>
         </Pressable>

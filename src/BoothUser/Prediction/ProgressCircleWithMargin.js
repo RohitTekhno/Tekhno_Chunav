@@ -5,14 +5,13 @@ import * as Progress from 'react-native-progress'; // Import the entire Progress
 
 const { height, width } = Dimensions.get('screen')
 export default function ProgressCircleWithMargin({ progressValue, circleProgessColor, unfilledColor }) {
-    const value = progressValue / 100;
-    const formattedValue = Math.round(progressValue); // Format value to show as a percentage
+
 
     return (
         <View style={styles.container}>
             <View style={[styles.progressCircle, { borderColor: circleProgessColor }]}>
                 <Progress.Circle
-                    progress={value}
+                    progress={progressValue.toFixed(2)}
                     size={width * 0.32}
                     borderWidth={0}
                     color={circleProgessColor}
@@ -20,7 +19,7 @@ export default function ProgressCircleWithMargin({ progressValue, circleProgessC
                     unfilledColor={unfilledColor}
                     strokeCap={'butt'}
                 />
-                <Text style={[styles.text, { color: circleProgessColor }]}>{formattedValue}%</Text>
+                <Text style={[styles.text, { color: circleProgessColor }]}>{progressValue.toFixed(2)}%</Text>
             </View>
         </View>
     );

@@ -8,6 +8,8 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { width, height } = Dimensions.get('screen');
 const API_BASE_URL = 'http://192.168.1.8:8000/api/';
@@ -23,6 +25,7 @@ const Towns = () => {
 
     const searchedTown = towns.filter(town =>
         (town.town_name && town.town_name.toString().toLowerCase().includes(searchedValue.toLowerCase())) ||
+        (town.town_name_mar && town.town_name_mar.toString().toLowerCase().includes(searchedValue.toLowerCase())) ||
         (town.town_id && town.town_id.toString().includes(searchedValue))
     );
 
@@ -92,7 +95,7 @@ const Towns = () => {
 
     return (
         <HeaderFooterLayout
-            headerText={language === 'en' ? 'Town List' : 'नगर यादी'}
+            headerText={language === 'en' ? 'Town List' : 'शहर/गावांची यादी'}
             showHeader={true}
             showFooter={false}
             rightIconName="file-pdf"
@@ -104,45 +107,33 @@ const Towns = () => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={setSearchValue}
-                        placeholder={language === 'en' ? 'Search Town by name or ID' : 'नाव किंवा आयडीनुसार नगर शोधा'}
+                        placeholder={language === 'en' ? 'Search Town by name or ID' : 'नाव किंवा आयडीनुसार गाव/शहर शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
 
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'large'} color={'black'} />
-                        <Text>
-                            {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-                        </Text>
-                    </View>
-                ) : (
-                    <View style={styles.listContainer}>
-                        <FlatList
-                            data={searchedTown}
-                            keyExtractor={(item, index) => index.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item, index }) => (
-                                <Pressable
-                                    style={styles.voterItem}
-                                    onPress={() => navigation.navigate('Town Voters', { townId: item.town_id, townName: item.town_name })}
-                                >
-                                    <View style={styles.voterDetails}>
-                                        <Text style={styles.index}>{index + 1}</Text>
-                                        {/* <Text style={styles.townId}>{item.town_id}</Text> */}
-                                        <Text>{toTitleCase(item.town_name)}</Text>
-                                    </View>
-                                </Pressable>
-                            )}
-                            ListEmptyComponent={() => (
-                                <Text style={styles.noDataText}>
-                                    {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
-                                </Text>
-                            )}
-                        />
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={searchedTown}
+                        keyExtractor={(item, index) => index.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item, index }) => (
+                            <Pressable
+                                style={styles.voterItem}
+                                onPress={() => navigation.navigate('Town Voters', { townId: item.town_id, townName: language === 'en' ? toTitleCase(item.town_name) : item.town_name_mar })}
+                            >
+                                <View style={styles.voterDetails}>
+                                    <Text style={styles.index}>{index + 1}</Text>
+                                    {/* <Text style={styles.townId}>{item.town_id}</Text> */}
+                                    <Text>{language === 'en' ? toTitleCase(item.town_name) : item.town_name_mar}</Text>
+                                </View>
+                            </Pressable>
+                        )}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+                </View>
 
-                    </View>
-                )}
                 {pdfLoading && (
                     <View style={styles.pdfLoadingOverlay}>
                         <ActivityIndicator size="large" color="white" />
@@ -174,6 +165,7 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         paddingVertical: 10,
+        paddingHorizontal: 10
     },
     listContainer: {
         flex: 1,

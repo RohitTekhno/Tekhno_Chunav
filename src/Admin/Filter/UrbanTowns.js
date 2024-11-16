@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,8 +16,10 @@ const UrbanTowns = () => {
     const { language } = useContext(LanguageContext);
     const [urbanTowns, setUrbanTowns] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const getUrbanTownList = async () => {
+        setLoading(true);
         try {
             const response = await axios.get('http://192.168.1.8:8000/api/town_voter_count/');
             if (response.status === 200) {
@@ -49,6 +53,9 @@ const UrbanTowns = () => {
                 Alert.alert("Error", "An unexpected error occurred. Please try again later.");
             }
         }
+        finally {
+            setLoading(false);
+        }
     };
 
 
@@ -77,9 +84,9 @@ const UrbanTowns = () => {
             </View>
 
             <View style={styles.headerRow}>
-                <Text style={[styles.headerText, { flex: 0.15, paddingLeft: 10 }]}>No.</Text>
-                <Text style={[styles.headerText, { flex: 0.65 }]}>Town Name</Text>
-                <Text style={[styles.headerText, { flex: 0.2 }]}>Voters</Text>
+                <Text style={[styles.headerText, { flex: 0.15, paddingLeft: 10 }]}>{language === 'en' ? 'Sr. No.' : 'क्र.'}</Text>
+                <Text style={[styles.headerText, { flex: 0.65 }]}>{language === 'en' ? 'Town Name' : 'गाव/शहराचे नाव'}</Text>
+                <Text style={[styles.headerText, { flex: 0.2 }]}>{language === 'en' ? 'Voters' : 'मतदार'}</Text>
             </View>
 
             <FlatList
@@ -88,10 +95,12 @@ const UrbanTowns = () => {
                 renderItem={({ item, index }) => (
                     <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Town Booths', { town_id: item.town_id })}>
                         <Text style={styles.srNo}>{index + 1}</Text>
-                        <Text style={styles.townName}>{item.town_name}</Text>
+                        <Text style={styles.townName}>{language === 'en' ? item.town_name : item.town_name_mar}</Text>
                         <Text style={{ flex: 0.2, textAlign: 'center' }}>{item.voter_count}</Text>
                     </TouchableOpacity>
                 )}
+                ListHeaderComponent={loading && <LoadingListComponent />}
+                ListEmptyComponent={!loading && <EmptyListComponent />}
                 contentContainerStyle={styles.listContainer}
             />
         </View>

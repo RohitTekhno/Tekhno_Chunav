@@ -3,6 +3,7 @@ import React, { memo, useContext, useEffect, useState } from 'react';
 import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -13,6 +14,7 @@ const TownVotingBarStats = memo(() => {
     const [nonFavorable, setNonFavorable] = useState(0);
     const [doubted, setDoubted] = useState(0);
     const [nonVoted, setNonVoted] = useState(0);
+    const { language } = useContext(LanguageContext);
 
     const perPercent = totalVoters > 0 ? totalVoters / 100 : 1;
 
@@ -48,7 +50,7 @@ const TownVotingBarStats = memo(() => {
             let nonVotedCount = 0;
 
             voterList.forEach((voter) => {
-                switch (voter.favour_id) {
+                switch (voter.voter_favour_id) {
                     case 1:
                     case 4:
                     case 5:
@@ -83,7 +85,7 @@ const TownVotingBarStats = memo(() => {
     return (
         <View style={styles.container}>
             <View style={styles.barGraphContainer}>
-                <Text style={styles.graphTitle}>Survey Statistics</Text>
+                <Text style={styles.graphTitle}>{language === 'en' ? 'Voting Statistics' : 'मतदानाची आकडेवारी'}</Text>
                 <View style={styles.barChart}>
                     {data.map((item, index) => {
                         const animatedStyle = useAnimatedStyle(() => ({
@@ -104,22 +106,30 @@ const TownVotingBarStats = memo(() => {
                     <View style={styles.legendColumn}>
                         <View style={styles.legendItem}>
                             <View style={[styles.legendColor, { backgroundColor: '#34A853' }]} />
-                            <Text style={styles.legendLabel}>Favorable</Text>
+                            <Text style={styles.legendLabel}>
+                                {language === 'en' ? 'Favorable' : 'समर्थक'}
+                            </Text>
                         </View>
                         <View style={styles.legendItem}>
                             <View style={[styles.legendColor, { backgroundColor: '#EA4335' }]} />
-                            <Text style={styles.legendLabel}>Against</Text>
+                            <Text style={styles.legendLabel}>
+                                {language === 'en' ? 'Against' : 'विरोधी'}
+                            </Text>
                         </View>
                     </View>
 
                     <View style={styles.legendColumn}>
                         <View style={styles.legendItem}>
                             <View style={[styles.legendColor, { backgroundColor: '#FBBC04' }]} />
-                            <Text style={styles.legendLabel}>Doubted</Text>
+                            <Text style={styles.legendLabel}>
+                                {language === 'en' ? 'Doubted' : 'अनिश्चित'}
+                            </Text>
                         </View>
                         <View style={styles.legendItem}>
                             <View style={[styles.legendColor, { backgroundColor: '#545454' }]} />
-                            <Text style={styles.legendLabel}>Non-Voted</Text>
+                            <Text style={styles.legendLabel}>
+                                {language === 'en' ? 'Pending' : 'बाकी'}
+                            </Text>
                         </View>
                     </View>
                 </View>

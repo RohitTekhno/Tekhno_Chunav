@@ -1,5 +1,5 @@
 import { Alert, Dimensions, StyleSheet, Text, TextInput, View, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,12 +7,15 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import TempEditedVoterForm from '../../ReusableCompo/TempEditedVoterForm';
 import { Checkbox } from 'react-native-paper';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 
 const ApprovalScreen = ({ route }) => {
   const { Buser_id } = route.params;
-
+  const { language } = useContext(LanguageContext);
   const [voters, setVoters] = useState([]);
   const [filteredVoters, setFilteredVoters] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -46,7 +49,6 @@ const ApprovalScreen = ({ route }) => {
     } catch (error) {
       if (error.response) {
         if (error.response.status === 404) {
-          Alert.alert('Not Found', 'Voters data not available. Please try later.');
           setMessage('Voters data not available. Please try later.')
         } else {
           Alert.alert('Error', 'Failed to fetch voters. Please try later.');
@@ -264,43 +266,37 @@ const ApprovalScreen = ({ route }) => {
       <TextInput
         value={searchText}
         onChangeText={setSearchText}
-        placeholder='Search voter here...'
+        placeholder={language === 'en' ? 'Search voter here...' : 'मतदार इथे शोधा...'}
         style={styles.searchInput}
       />
-      {refreshing ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} color={'black'} />
-          <Text>Loading...</Text>
-        </View>
-      ) : (
-        <>
-          {message && <Text style={{ textAlign: 'center', padding: 10, color: 'grey' }}>{message}</Text>}
-          {isMultiSelectOn &&
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15, paddingVertical: 10 }}>
-              <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleCancleAll}>
-                <MaterialCommunityIcons name="playlist-remove" size={30} color="black" />
-              </TouchableOpacity>
-              <Checkbox
-                status={isAllChecked ? 'checked' : 'unchecked'}
-                color='green'
-                onPress={handleSelectAll}
-              />
-            </View>
-          }
 
-          <FlatList
-            data={filteredVoters}
-            renderItem={renderVoterItem}
-            keyExtractor={item => item.voter_id?.toString() || Math.random().toString()}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
-            }
+      {isMultiSelectOn &&
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15, paddingVertical: 10 }}>
+          <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleCancleAll}>
+            <MaterialCommunityIcons name="playlist-remove" size={30} color="black" />
+          </TouchableOpacity>
+          <Checkbox
+            status={isAllChecked ? 'checked' : 'unchecked'}
+            color='green'
+            onPress={handleSelectAll}
           />
-        </>
-      )}
+        </View>
+      }
+
+      <FlatList
+        data={filteredVoters}
+        renderItem={renderVoterItem}
+        keyExtractor={item => item.voter_id?.toString() || Math.random().toString()}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+        ListHeaderComponent={refreshing && <LoadingListComponent />}
+        ListEmptyComponent={!refreshing && <EmptyListComponent />}
+      />
+
 
       <TempEditedVoterForm
         isVisible={isFormVisible}

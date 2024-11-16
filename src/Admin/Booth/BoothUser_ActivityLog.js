@@ -1,13 +1,17 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 const BoothUser_ActivityLog = (routes) => {
     const { userId } = routes.route.params;
+    const { language } = useContext(LanguageContext);
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(true);
@@ -64,49 +68,39 @@ const BoothUser_ActivityLog = (routes) => {
                 <TextInput
                     value={searchedValue}
                     onChangeText={text => setSearchValue(text)}
-                    placeholder="Search by user’s name or ID"
+                    placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                     style={styles.searchInput}
                 />
             </View>
 
-            <View style={styles.listContainer}>
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'large'} color={'black'} />
-                        <Text>Loading...</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={searchedTown}
-                        keyExtractor={item => item.voter_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item, index }) => (
-                            <Pressable style={styles.voterItem}>
-                                <View style={styles.voterDetails}>
-                                    <Text style={{
-                                        borderWidth: 1, borderColor: '#3C4CAC', padding: 5,
-                                        textAlign: 'center', borderRadius: 2, fontWeight: '700'
-                                    }}>{index + 1}</Text>
-                                </View>
-                                <View>
-                                    <Text style={{ color: '#9095A1', fontWeight: '600' }}>ID: {item.voter_id}</Text>
-                                    <Text style={{ color: '#3C4CAC', fontWeight: '600' }}>Name: {toTitleCase(item.voter_name)}</Text>
-                                    {renderVoterField('Parent Name', item.voter_parent_name)}
-                                    {renderVoterField('Age', item.voter_age)}
-                                    {renderVoterField('Gender', item.voter_gender)}
-                                    {renderVoterField('Contact', item.voter_contact_number)}
-                                    {renderVoterField('Caste', item.cast_name)}
-                                    {renderVoterField('Updated Date', item.voter_updated_date)}
-                                </View>
-                            </Pressable>
-                        )}
-                        ListEmptyComponent={() => (
-                            <Text style={styles.noDataText}>No results found</Text>
-                        )}
-                    />
+            <FlatList
+                data={searchedTown}
+                keyExtractor={item => item.voter_id.toString()}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item, index }) => (
+                    <Pressable style={styles.voterItem}>
+                        <View style={styles.voterDetails}>
+                            <Text style={{
+                                borderWidth: 1, borderColor: '#3C4CAC', padding: 5,
+                                textAlign: 'center', borderRadius: 2, fontWeight: '700'
+                            }}>{index + 1}</Text>
+                        </View>
+                        <View>
+                            <Text style={{ color: '#9095A1', fontWeight: '600' }}>ID: {item.voter_id}</Text>
+                            <Text style={{ color: '#3C4CAC', fontWeight: '600' }}>Name: {toTitleCase(item.voter_name)}</Text>
+                            {renderVoterField('Parent Name', item.voter_parent_name)}
+                            {renderVoterField('Age', item.voter_age)}
+                            {renderVoterField('Gender', item.voter_gender)}
+                            {renderVoterField('Contact', item.voter_contact_number)}
+                            {renderVoterField('Caste', item.cast_name)}
+                            {renderVoterField('Updated Date', item.voter_updated_date)}
+                        </View>
+                    </Pressable>
                 )}
-            </View>
-        </View>
+                ListHeaderComponent={loading && <LoadingListComponent />}
+                ListEmptyComponent={!loading && <EmptyListComponent />}
+            />
+        </View >
     );
 };
 

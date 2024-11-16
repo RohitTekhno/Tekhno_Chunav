@@ -7,13 +7,15 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { height, width } = Dimensions.get('screen')
 const BoothUserLogin = () => {
     const navigation = useNavigation()
+    const { language } = useContext(LanguageContext);
     const { loginBuser } = useContext(BoothUserContext)
-    const [username, setUsername] = useState("1234567101")
-    const [password, setPassword] = useState("boothuser123")
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
     const [isTextSecure, setTextSecure] = useState(true)
     const [isLoading, setLoading] = useState(false)
     const [nameError, setNameError] = useState('');
@@ -96,15 +98,15 @@ const BoothUserLogin = () => {
                     borderTopLeftRadius: 15, paddingHorizontal: 20, paddingVertical: 30
                 }}>
 
-                    <Text style={{ fontSize: 24, fontWeight: '600', textAlign: 'center' }}>Log in</Text>
+                    <Text style={{ fontSize: 24, fontWeight: '600', textAlign: 'center' }}>{language === 'en' ? 'Log in' : 'लॉग इन'}</Text>
                     <View style={{ paddingVertical: 30 }}>
                         <View style={{ marginVertical: 5 }}>
                             <Text style={{
                                 color: '#424955', fontSize: 18, fontWeight: '700'
-                            }}>Username</Text>
+                            }}>{language === 'en' ? 'Username or Mobile' : 'वापरकर्तानाव किंवा मोबाइल'}</Text>
                             <TextInput
                                 value={username}
-                                placeholder='Enter username here ...'
+                                placeholder={language === 'en' ? 'Enter username or mobile here ...' : 'येथे वापरकर्तानाव किंवा मोबाइल प्रविष्ट करा ...'}
                                 onChangeText={setUsername}
                                 keyboardType='number-pad'
                                 textContentType='telephoneNumber'
@@ -119,7 +121,7 @@ const BoothUserLogin = () => {
                         <View style={{ marginVertical: 5 }}>
                             <Text style={{
                                 color: '#424955', fontSize: 18, fontWeight: '700'
-                            }}>Password</Text>
+                            }}>{language === 'en' ? 'Password' : 'पासवर्ड'}</Text>
                             <View style={{
                                 flexDirection: 'row', paddingHorizontal: 10, marginVertical: 5,
                                 width: '100%', borderWidth: 1, borderColor: '#BCC1CA',
@@ -128,7 +130,7 @@ const BoothUserLogin = () => {
                             }}>
                                 <TextInput
                                     value={password}
-                                    placeholder='Enter password here ...'
+                                    placeholder={language === 'en' ? 'Enter password here ...' : 'इथे पासवर्ड टाका...'}
                                     onChangeText={setPassword}
                                     textContentType='password'
                                     secureTextEntry={isTextSecure}

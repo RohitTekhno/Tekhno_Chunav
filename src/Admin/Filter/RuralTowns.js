@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 const { height } = Dimensions.get('window');
 
@@ -65,30 +67,26 @@ const RuralTowns = () => {
                 />
             </View>
             <View style={styles.headerRow}>
-                <Text style={[styles.headerText, { flex: 0.1, }]}>No.</Text>
-                <Text style={[styles.headerText, { flex: 0.7, }]}>Town Name</Text>
-                <Text style={[styles.headerText, { flex: 0.2, }]}>Voters</Text>
+                <Text style={[styles.headerText, { flex: 0.15, paddingLeft: 10 }]}>{language === 'en' ? 'Sr. No.' : 'क्र.'}</Text>
+                <Text style={[styles.headerText, { flex: 0.65 }]}>{language === 'en' ? 'Town Name' : 'गाव/शहराचे नाव'}</Text>
+                <Text style={[styles.headerText, { flex: 0.2 }]}>{language === 'en' ? 'Voters' : 'मतदार'}</Text>
             </View>
 
+            <FlatList
+                data={filteredData}
+                keyExtractor={(item) => item.town_id.toString()}
+                renderItem={({ item, index }) => (
+                    <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Town Booths', { town_id: item.town_id })}>
+                        <Text style={styles.srNo}>{index + 1}</Text>
+                        <Text style={styles.townName}>{item.town_name}</Text>
+                        <Text style={{ flex: 0.2, textAlign: 'center' }}>{item.voter_count}</Text>
+                    </TouchableOpacity>
+                )}
+                ListHeaderComponent={loading && <LoadingListComponent />}
+                ListEmptyComponent={!loading && <EmptyListComponent />}
+                contentContainerStyle={styles.listContainer}
+            />
 
-            {loading ? <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'large'} color={'black'} />
-                <Text>{language === 'en' ? 'Loading...' : 'लोड करत आहे...'}</Text>
-            </View>
-                :
-                <FlatList
-                    data={filteredData}
-                    keyExtractor={(item) => item.town_id.toString()}
-                    renderItem={({ item, index }) => (
-                        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Town Booths', { town_id: item.town_id })}>
-                            <Text style={styles.srNo}>{index + 1}</Text>
-                            <Text style={styles.townName}>{item.town_name}</Text>
-                            <Text style={{ flex: 0.2, textAlign: 'center' }}>{item.voter_count}</Text>
-                        </TouchableOpacity>
-                    )}
-                    contentContainerStyle={styles.listContainer}
-                />
-            }
         </View>
     );
 };

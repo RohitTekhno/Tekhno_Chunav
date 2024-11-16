@@ -12,6 +12,8 @@ import TownVoters from '../TownUser/Voters/TownVoters';
 import BoothVoters from '../TownUser/Booths/BoothVoters';
 import TownUserMainStack from './TownUserMainStack';
 import LogOut from '../ReusableCompo/LogOut';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { useContext } from 'react';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,6 +27,7 @@ const TabBarIcon = ({ focused, name, IconComponent }) => (
 
 const VotersStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName=''>
@@ -34,6 +37,7 @@ const VotersStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Total Voters' : 'एकूण मतदार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -50,6 +54,7 @@ const VotersStack = () => {
 
 const BoothsStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Booths'>
@@ -59,6 +64,7 @@ const BoothsStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? 'Booths' : 'बूथ यादी',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -75,6 +81,7 @@ const BoothsStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Booth Voters' : 'बूथ मतदार',
                     headerShadowVisible: false, headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
@@ -88,6 +95,8 @@ const BoothsStack = () => {
 }
 
 const ProfileStack = () => {
+    const { language, toggleLanguage } = useContext(LanguageContext);
+
     return (
         <Stack.Navigator initialRouteName='Profile'>
             <Stack.Screen name='Profile' component={TownProfile} options={{ headerShown: false }} />

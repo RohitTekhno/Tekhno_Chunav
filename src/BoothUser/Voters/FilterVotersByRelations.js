@@ -8,11 +8,14 @@ import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
 import { TouchableOpacity } from 'react-native';
 import LoadingModal from '../../ReusableCompo/LoadingModal';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const FilterVoterByRelations = ({ route }) => {
     const { relationId, ScreenName } = route.params;
     const { buserId } = useContext(BoothUserContext);
-
+    const { language } = useContext(LanguageContext);
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -90,12 +93,12 @@ const FilterVoterByRelations = ({ route }) => {
         return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
     };
 
-    const renderVoterItem = ({ item }) => {
+    const renderVoterItem = ({ item, index }) => {
         let color = 'transparent';
         // Assign color based on voter_favour_id
         switch (item.voter_favour_id) {
             case 1: color = '#d3f5d3'; break;
-            case 2: color = '#fa7873'; break;
+            case 2: color = '#fededd'; break;
             case 3: color = '#f8ff96'; break;
             case 4: color = '#6c96f0'; break;
             case 5: color = '#c5d7fc'; break;
@@ -108,9 +111,9 @@ const FilterVoterByRelations = ({ route }) => {
             <TouchableOpacity style={[styles.voterItem, { backgroundColor: color }]} onPress={() => fetchVoterDetails(item.voter_id)}>
                 <View style={styles.voterDetails}>
                     <View style={{ borderRightWidth: 1, borderColor: '#D9D9D9', width: 60, alignItems: 'center' }}>
-                        <Text>{item.voter_id}</Text>
+                        <Text>{index + 1}</Text>
                     </View>
-                    <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                    <Text style={{ flex: 1 }}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -138,7 +141,7 @@ const FilterVoterByRelations = ({ route }) => {
                         <TextInput
                             value={searchedValue}
                             onChangeText={text => setSearchValue(text)}
-                            placeholder='Search by voter’s name or ID'
+                            placeholder={language === 'en' ? 'Search by name or ID' : 'आयडी किंवा नावाने शोधा'}
                             style={styles.searchInput}
                         />
                     </View>
@@ -149,15 +152,8 @@ const FilterVoterByRelations = ({ route }) => {
                             keyExtractor={item => item.voter_id.toString()}
                             showsVerticalScrollIndicator={false}
                             renderItem={renderVoterItem}
-                            ListHeaderComponent={loading && (
-                                <View style={styles.loadingContainer}>
-                                    <ActivityIndicator size={'small'} color={'black'} />
-                                    <Text>Loading...</Text>
-                                </View>
-                            )}
-                            ListEmptyComponent={!loading && (
-                                <Text style={styles.noDataText}>No results found</Text>
-                            )}
+                            ListHeaderComponent={loading && <LoadingListComponent />}
+                            ListEmptyComponent={!loading && <EmptyListComponent />}
                         />
 
                         <VoterDetailsPopUp

@@ -1,21 +1,26 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator, Checkbox } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 
 const TownVoters = ({ route }) => {
     const { townId } = route.params;
+    const { language } = useContext(LanguageContext);
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchedValue, setSearchValue] = useState('');
     const [sortState, setSortState] = useState(0);
     const [initialVoters, setInitialVoters] = useState([]);
+    const [error, setError] = useState(null);
 
     const [selectedVoter, setSelectedVoter] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -169,7 +174,7 @@ const TownVoters = ({ route }) => {
 
     return (
         <HeaderFooterLayout
-            headerText={`${route.params.townName} Voters`}
+            headerText={language === 'en' ? `${route.params.townName} Voters` : `${route.params.townName} मतदार`}
             showHeader={true}
             showFooter={false}
             leftIcon={true}
@@ -185,7 +190,7 @@ const TownVoters = ({ route }) => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder='Search by voter’s name or ID'
+                        placeholder={language === 'en' ? "Search by voter’s name or ID" : "मतदाराचे नाव किंवा आयडी द्वारे शोधा"}
                         style={styles.searchInput}
                     />
                 </View>
@@ -198,46 +203,39 @@ const TownVoters = ({ route }) => {
                     </View>
                 )}
 
-                {(loading) ?
-                    < View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'large'} color={'black'} />
-                        <Text>Loading...</Text>
-                    </View>
-                    :
-                    <View style={styles.listContainer}>
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable
-                                    style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem]}
-                                    onPress={() => handleVoterPress(item.voter_id)}
-                                    onLongPress={() => handleLongPress(item.voter_id)}
-                                >
-                                    <View style={styles.voterDetails}>
-                                        <View style={{
-                                            borderRightWidth: 1, borderColor: '#D9D9D9',
-                                            width: 60, alignItems: 'center', justifyContent: 'center'
-                                        }}>
-                                            <Text>{item.voter_id}</Text>
-                                        </View>
-                                        <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={filteredVoters}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => (
+                            <Pressable
+                                style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem]}
+                                onPress={() => handleVoterPress(item.voter_id)}
+                                onLongPress={() => handleLongPress(item.voter_id)}
+                            >
+                                <View style={styles.voterDetails}>
+                                    <View style={{
+                                        borderRightWidth: 1, borderColor: '#D9D9D9',
+                                        width: 60, alignItems: 'center', justifyContent: 'center'
+                                    }}>
+                                        <Text>{item.voter_id}</Text>
                                     </View>
-                                    {isSelectionMode && (
-                                        <Checkbox
-                                            status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
-                                            onPress={() => toggleVoterSelection(item.voter_id)}
-                                        />
-                                    )}
-                                </Pressable>
-                            )}
-                            ListEmptyComponent={() => (
-                                <Text style={styles.noDataText}>No data found</Text>
-                            )}
-                        />
-                    </View>
-                }
+                                    <Text style={{ flex: 1 }}>{language === 'en' ? toTitleCase(item.voter_name) : toTitleCase(item.voter_name_mar)}</Text>
+                                </View>
+                                {isSelectionMode && (
+                                    <Checkbox
+                                        status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
+                                        onPress={() => toggleVoterSelection(item.voter_id)}
+                                    />
+                                )}
+                            </Pressable>
+                        )}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+                </View>
+
 
                 <VoterDetailsPopUp
                     isModalVisible={isModalVisible}

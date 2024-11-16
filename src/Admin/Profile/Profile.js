@@ -1,14 +1,16 @@
 import { Alert, Dimensions, Image, View, StyleSheet, Text, } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustomeTextInput from './CustomeTextInput';
 import TopNavCompo from '../../ReusableCompo/TopNavCompo';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 const { width, height } = Dimensions.get('screen')
 const Profile = () => {
+    const { language } = useContext(LanguageContext);
     const navigation = useNavigation();
 
     return (
@@ -19,7 +21,7 @@ const Profile = () => {
                     locations={[0.2, 1]}
                     style={styles.gradient}
                 >
-                    <TopNavCompo navigation={navigation} ScreenName={'Profile'} colorName={'white'} />
+                    <TopNavCompo navigation={navigation} ScreenName={language === 'en' ? 'Profile' : 'प्रोफाइल'} colorName={'white'} />
                 </LinearGradient>
             </View>
             <View style={{ height: height * 0.45 }}>
@@ -28,8 +30,7 @@ const Profile = () => {
                         <View style={styles.profileImageCircle}>
                             <Image source={require('../../../assets/Cover.png')} style={styles.profileImage} />
                         </View>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Politician</Text>
-                        <Text>User</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>{language === 'en' ? 'Admin' : 'प्रशासन'}</Text>
                     </View>
                     <View style={{
                         width: "100%",
@@ -39,21 +40,21 @@ const Profile = () => {
                         marginVertical: 10,
                     }}>
                         <CustomeTextInput
-                            label={'User Name : '}
+                            label={language === 'en' ? 'User Name : ' : 'वापरकर्तानाव : '}
                             valueDetails={'Politician'}
                             styles={styles.profileTextInput}
                             readValue={true}
                         />
 
                         <CustomeTextInput
-                            label={'Contact No : '}
-                            valueDetails={'7894561230'}
+                            label={language === 'en' ? 'Contact No : ' : 'संपर्क क्र : '}
+                            valueDetails={'+91 1234567890'}
                             styles={styles.profileTextInput}
                             readValue={true}
                         />
 
                         <CustomeTextInput
-                            label={'Constituency : '}
+                            label={language === 'en' ? 'Constituency : ' : 'मतदारसंघ : '}
                             valueDetails={'Washim'}
                             styles={styles.profileTextInput}
                             readValue={true}
@@ -64,7 +65,7 @@ const Profile = () => {
 
             <View style={{ height: height * 0.1 }}>
                 <Pressable style={styles.logOutButton} onPress={() => { navigation.navigate('LogOut') }}>
-                    <Text style={styles.logOutButtonTxt}>Log Out</Text>
+                    <Text style={styles.logOutButtonTxt}>{language === 'en' ? 'Log Out' : 'लॉग आउट'}</Text>
                 </Pressable>
             </View>
         </ >

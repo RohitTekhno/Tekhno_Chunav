@@ -16,10 +16,13 @@ import BoothVoters from '../TownUser/Booths/BoothVoters';
 import TownProfile from '../TownUser/Profile/TownProfile';
 import CastWiseVoters from '../TownUser/Filter/CastWiseVoters';
 import TownVoters from '../TownUser/Voters/TownVoters';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { useContext } from 'react';
 
 const Stack = createNativeStackNavigator();
 const TownUserMainStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Dashboard'>
@@ -29,6 +32,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Dashboard" : 'डॅशबोर्ड',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <MaterialIcons name="menu" size={30} color="black"
@@ -45,6 +49,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Total Voters' : 'एकूण मतदार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -61,6 +66,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Total Booths' : 'एकूण बूथ',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -76,6 +82,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Approval Voters' : 'मंजूरी मतदार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -92,6 +99,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? 'Booth Users' : 'बूथ कार्यकर्ता',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -106,6 +114,7 @@ const TownUserMainStack = () => {
             <Stack.Screen name='Total Voted' component={TotalVoted}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
+                    headerTitle: language === 'en' ? 'Total Voted' : 'एकूण मतदान केलेले',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -122,6 +131,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Total Non Voted' : 'एकूण मतदान न झालेले',
                     headerShadowVisible: false, headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
@@ -138,6 +148,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Castwise Voters' : 'जात नुसार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5, }}
@@ -154,6 +165,7 @@ const TownUserMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Booth Voters' : 'बूथ मतदार',
                     headerShadowVisible: false, headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >

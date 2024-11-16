@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions, Alert, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function TownUserReg({ navigation, toggleSidebar }) {
     const [name, setName] = useState('');
+    const { language } = useContext(LanguageContext);
     const [contact, setContact] = useState('');
     const [password, setPassword] = useState('');
     const [townId, setTownId] = useState('');
@@ -28,7 +30,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
         axios.get('http://192.168.1.8:8000/api/towns/')
             .then(response => {
                 const townsData = response.data.map(town => ({
-                    label: `${town.town_id} - ${town.town_name}`,
+                    label: `${town.town_id} - ${language === 'en' ? town.town_name : town.town_name_mar}`,
                     value: town.town_id
                 }));
                 setItems(townsData);
@@ -129,7 +131,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
                             <MaterialIcons name="keyboard-backspace" size={28} color="white" />
                         </Pressable>
 
-                        <Text style={styles.text}>Registration</Text>
+                        <Text style={styles.text}>{language === 'en' ? 'Town User Registration' : 'गाव/शहर कार्यकर्ता नोंदणी'}</Text>
 
                         <View style={styles.iconRight} />
                     </View>
@@ -139,17 +141,19 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
 
             <View style={[styles.formContainer, { height: hasErrors() ? height * 0.72 : height * 0.6 }]}>
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>Town User</Text>
+                    <Text style={styles.headerText}>{language === 'en' ? 'Town User' : 'गाव/शहर कार्यकर्ता'}</Text>
                 </View>
 
                 <View style={{ paddingVertical: 20 }}>
-                    <TextInput style={styles.input} placeholder="Enter Username : "
+                    <TextInput style={styles.input}
+                        placeholder={language === 'en' ? 'Enter Name : ' : 'नाव प्रविष्ट करा : '}
                         placeholderTextColor="grey"
                         value={name} onChangeText={setName}
                     />
                     {nameError ? <Text style={styles.errorText}>*{nameError}</Text> : null}
 
-                    <TextInput style={styles.input} placeholder="Enter Contact No : "
+                    <TextInput style={styles.input}
+                        placeholder={language === 'en' ? 'Enter Contact Number : ' : 'संपर्क नंबर प्रविष्ट करा : '}
                         placeholderTextColor="grey" value={contact}
                         onChangeText={setContact} keyboardType="phone-pad"
                     />
@@ -166,7 +170,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
                         multiple={true}
                         min={0}
                         maxHeight={280}
-                        placeholder="Select Town :"
+                        placeholder={language === 'en' ? 'Select Town : ' : 'गाव/शहर निवडा'}
                         placeholderStyle={{ color: 'grey' }}
                         containerStyle={styles.dropdownContainer}
                         style={styles.dropdown}
@@ -179,7 +183,8 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
 
                     <View style={[styles.input, styles.passwordContainer]}>
                         <TextInput style={[styles.passwordInput, { flex: 1 }]}
-                            placeholder="Password : " placeholderTextColor="grey"
+                            placeholder={language === 'en' ? 'Enter Password : ' : 'पासवर्ड प्रविष्ट करा : '}
+                            placeholderTextColor="grey"
                             secureTextEntry={!isPasswordVisible} value={password}
                             onChangeText={setPassword}
                         />
@@ -191,7 +196,7 @@ export default function TownUserReg({ navigation, toggleSidebar }) {
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
-                    <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Register'}</Text>
+                    <Text style={styles.buttonText}>{loading ? language === 'en' ? 'Registering...' : 'नोंदणी करत आहे' : language === 'en' ? 'Register' : 'नोंदणी करा'}</Text>
                 </TouchableOpacity>
             </View>
         </HeaderFooterLayout>

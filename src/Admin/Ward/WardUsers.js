@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -110,7 +112,7 @@ const PrabhagUsers = () => {
     return (
         <HeaderFooterLayout
             showFooter={false}
-            headerText={language === 'en' ? 'Ward Users' : 'प्रभाग वापरकर्ते'}
+            headerText={language === 'en' ? 'Ward Users' : 'प्रभाग कार्यकर्ता'}
             rightIcon={true}
         // rightIconName="file-pdf"
         // onRightIconPress={handlePDFClick}
@@ -121,7 +123,7 @@ const PrabhagUsers = () => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder={language === 'en' ? 'search by user’s name or ID' : 'वापरकर्त्याचे नाव किंवा आयडी द्वारे शोधा'}
+                        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
@@ -158,9 +160,8 @@ const PrabhagUsers = () => {
                                     </View>
                                 </Pressable>
                             )}
-                            ListEmptyComponent={() => (
-                                <Text style={styles.noDataText}>No results found</Text>
-                            )}
+                            ListHeaderComponent={loading && <LoadingListComponent />}
+                            ListEmptyComponent={!loading && <EmptyListComponent />}
                         />
                     )}
                 </View>

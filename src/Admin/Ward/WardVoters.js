@@ -7,6 +7,8 @@ import { LanguageContext } from '../../ContextApi/LanguageContext';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 import { useNavigation } from '@react-navigation/native';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -150,12 +152,12 @@ const WardVoters = ({ route }) => {
                                 >
                                     <View style={styles.voterDetails}>
                                         <Text style={styles.voterId}>{item.voter_id}</Text>
-                                        <Text style={{ paddingLeft: 15, flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                                        <Text style={{ paddingLeft: 15, flex: 1 }}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
                                     </View>
                                 </Pressable>
                             )}
-                            ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-                        />
+                            ListHeaderComponent={loading && <LoadingListComponent />}
+                            ListEmptyComponent={!loading && <EmptyListComponent />} />
                     }
                     <VoterDetailsPopUp isModalVisible={isModalVisible} selectedVoter={selectedVoter} setIsModalVisible={setIsModalVisible} />
                 </View>

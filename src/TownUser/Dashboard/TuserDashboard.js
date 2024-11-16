@@ -1,10 +1,11 @@
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, RefreshControl, Alert } from 'react-native';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View, RefreshControl, Alert, Animated } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import TownVotingBarStats from './TownVotingBarStats';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -23,6 +24,9 @@ const TownDashboard = () => {
     const [finalTotalUsers, setFinalTotalUsers] = useState(0);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const { language, toggleLanguage } = useContext(LanguageContext);
+    const [loading, setLoading] = useState(false);
+
 
     const fetchData = async (url, setter, finalSetter) => {
         try {
@@ -38,11 +42,13 @@ const TownDashboard = () => {
 
     const loadData = () => {
         if (userId) {
+            setLoading(true);
             fetchData(`http://192.168.1.8:8000/api/get_voter_list_by_town_user/${userId}`, setTotalVoters, setFinalTotalVoters);
             fetchData(`http://192.168.1.8:8000/api/get_booth_names_by_town_user/${userId}`, setTotalBoothsCount, setFinalTotalBoothsCount);
             fetchData(`http://192.168.1.8:8000/api/town_user_id/${userId}/confirmation/1/`, setTotalVoted, setFinalTotalVoted);
             fetchData(`http://192.168.1.8:8000/api/town_user_id/${userId}/confirmation/2/`, setTotalNonVoted, setFinalTotalNonVoted);
             fetchData(`http://192.168.1.8:8000/api/get_booth_users_by_town_user/${userId}/`, setTotalUsers, setFinalTotalUsers);
+            setLoading(false);
         }
     };
 
@@ -99,6 +105,33 @@ const TownDashboard = () => {
         navigation.navigate(destination);
     };
 
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.infoContainer}>
+                    <Text style={styles.constituencyText}>
+                        {language === 'en' ? 'Washim Constituency' : 'वाशिम मतदारसंघ'}
+                    </Text>
+                    <Text style={styles.userIdText}>
+                        {language === 'en' ? 'User Id: ' : 'वापरकर्ता आयडी: '} : {userId}
+                    </Text>
+                </View>
+                <View style={styles.loadingGraphsContainer}>
+                    <Animated.View style={[styles.graphWrapper, { transform: [{ rotate }] }]}>
+                        <Progress.Circle
+                            size={width * 0.22}
+                            indeterminate
+                            thickness={15}
+                            color="gray"
+                            unfilledColor="#e0e0e0"
+                            borderWidth={0}
+                        />
+                    </Animated.View>
+                </View>
+            </View>
+        );
+    }
+
     return (
         <ScrollView
             refreshControl={
@@ -112,7 +145,9 @@ const TownDashboard = () => {
         >
             <View style={styles.container}>
                 <View style={styles.headerContainer}>
-                    <Text style={styles.title}>Washim Constituency</Text>
+                    <Text style={styles.title}>
+                        {language === 'en' ? 'Washim Constituency' : 'वशिम मतदारसंघ'}
+                    </Text>
                     <View style={styles.gradientContainer}>
                         <Pressable onPress={() => handlePress('Voters List')}>
                             <LinearGradient
@@ -120,7 +155,7 @@ const TownDashboard = () => {
                                 locations={[0.3, 1]}
                                 style={styles.gradient}
                             >
-                                <Text style={styles.gradientText}>Total Voters</Text>
+                                <Text style={styles.gradientText}>{language === 'en' ? 'Total Voters' : 'एकूण मतदार'}</Text>
                                 <Text style={styles.gradientText}>{totalVoters}</Text>
                             </LinearGradient>
                         </Pressable>
@@ -130,24 +165,24 @@ const TownDashboard = () => {
                 <View style={styles.statsContainer}>
                     <View style={styles.statsRow}>
                         <Pressable onPress={() => handlePress('Total Booths')} style={[styles.statsBox, styles.statsBoxBlue]}>
-                            <Text style={styles.statsLabel}>Total Booths</Text>
+                            <Text style={styles.statsLabel}>{language === 'en' ? 'Total Booths' : 'एकूण बूथ'}</Text>
                             <Text style={styles.statsValue}>{totalBoothsCount}</Text>
                         </Pressable>
 
                         <Pressable onPress={() => handlePress('Booth Users')} style={[styles.statsBox, styles.statsBoxGreen]}>
-                            <Text style={styles.statsLabel}>Total Users</Text>
-                            <Text style={styles.statsValue}>{totalUsers}</Text>
+                            <Text style={styles.statsLabel}>{language === 'en' ? 'Total Users' : 'एकूण कार्यकर्ता'}</Text>
+                            <Text style={styles.statsValue}>{totalUsers || '0'}</Text>
                         </Pressable>
                     </View>
 
                     <View style={styles.statsRow}>
                         <Pressable style={[styles.statsBox, styles.statsBoxYellow]} onPress={() => handlePress('Total Voted')}>
-                            <Text style={styles.statsLabel}>Total Voted</Text>
+                            <Text style={styles.statsLabel}>{language === 'en' ? 'Total Voted' : 'एकूण मतदान'}</Text>
                             <Text style={styles.statsValue}>{totalVoted}</Text>
                         </Pressable>
 
                         <Pressable style={[styles.statsBox, styles.statsBoxCyan]} onPress={() => handlePress('Total Non Voted')}>
-                            <Text style={styles.statsLabel}>Total Non-Voted</Text>
+                            <Text style={styles.statsLabel}>{language === 'en' ? 'Total Non-Voted' : 'एकूण मतदान बाकी'}</Text>
                             <Text style={styles.statsValue}>{totalNonVoted}</Text>
                         </Pressable>
                     </View>
@@ -176,6 +211,11 @@ const styles = StyleSheet.create({
     headerContainer: {
         width: "100%",
         justifyContent: 'center',
+    },
+    constituencyText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#3C4CAC',
     },
     title: {
         fontSize: height * 0.02,
@@ -242,7 +282,7 @@ const styles = StyleSheet.create({
     votingStatsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        height: height * 0.4,
+        height: height * 0.38,
     },
     votingStatsBox: {
         flex: 1,

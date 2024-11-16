@@ -5,6 +5,9 @@ import { ActivityIndicator } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 const { width, height } = Dimensions.get('window');
@@ -13,13 +16,14 @@ const scaleFontSize = (size) => Math.round(size * width * 0.0025);
 
 export default function BLocationWise({ navigation }) {
     const { buserId } = useContext(BoothUserContext);
+    const { language } = useContext(LanguageContext);
     const [boothValue, setBoothValue] = useState(null);
     const [boothItems, setBoothItems] = useState([]);
     const [locationValue, setLocationValue] = useState(null);
     const [locationItems] = useState([
-        { label: 'In City', value: 1 },      // ID 1 for In City
-        { label: 'Near City', value: 2 },    // ID 2 for Near City
-        { label: 'Out of City', value: 3 }   // ID 3 for Out of City
+        { label: language === 'en' ? 'In City' : 'शहरामध्ये', value: 1 },      // ID 1 for In City
+        { label: language === 'en' ? 'Near City' : 'शहराजवळ', value: 2 },    // ID 2 for Near City
+        { label: language === 'en' ? 'Out of City' : 'शहराबाहेर', value: 3 }   // ID 3 for Out of City
     ]);
 
     const [voterData, setVoterData] = useState([]);
@@ -32,23 +36,13 @@ export default function BLocationWise({ navigation }) {
 
     const fetchBoothData = async () => {
         try {
-            const response = await axios.get(`http://192.168.1.8:8000/api/booth_user_info/${buserId}/`);
-            const boothOptions = [];
+            const response = await axios.get(`http://192.168.1.8:8000/api/user_booth/${buserId}`);
+            const boothData = response.data.map(booth => ({
+                label: `${booth.user_booth_booth_id} - ${language === 'en' ? booth.booth_name : booth.booth_name_mar}`,
+                value: booth.user_booth_booth_id,
+            }));
 
-            // Extract booth_ids and booth_names from the response
-            response.data.forEach(item => {
-                const { booth_ids, booth_names } = item;
-                booth_ids.forEach((id, index) => {
-                    if (booth_names[index]) {
-                        boothOptions.push({
-                            label: `${id} - ${booth_names[index]}`, // Combining booth_id and booth_name
-                            value: id,
-                        });
-                    }
-                });
-            });
-
-            setBoothItems(boothOptions);
+            setBoothItems(boothData);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching booth data:', error);
@@ -78,13 +72,13 @@ export default function BLocationWise({ navigation }) {
 
     const renderVoterItem = ({ item }) => (
         <View style={styles.voterItem}>
-            <Text style={styles.voterText}>ID: {item.voter_id}</Text>
-            <Text style={styles.voterText}>Name: {item.voter_name}</Text>
-            <Text style={styles.voterText}>
-                Contact: {item.voter_contact_number ? item.voter_contact_number : 'N/A'}
+            <Text style={styles.voterText}>{language === 'en' ? 'ID' : 'आईडी'}: {item.voter_id}</Text>
+            <Text style={styles.voterText}>{language === 'en' ? 'Name' : 'नाव'}: {language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+            <Text style={styles.voterText}>{language === 'en' ? 'Contact' : 'संपर्क'}:
+                {item.voter_contact_number ? item.voter_contact_number : 'N/A'}
             </Text>
-            <Text style={styles.voterText}>
-                Location: {item.voter_current_location ? item.voter_current_location : 'N/A'}
+            <Text style={styles.voterText}>{language === 'en' ? 'Location' : 'स्थान'}:
+                {item.voter_current_location ? item.voter_current_location : 'N/A'}
             </Text>
         </View>
     );
@@ -105,8 +99,8 @@ export default function BLocationWise({ navigation }) {
                     maxHeight={300}
                     labelField="label"
                     valueField="value"
-                    placeholder="Select Booth"
-                    searchPlaceholder="Search booth..."
+                    placeholder={language === 'en' ? 'Select Booth' : 'बूथ निवडा'}
+                    searchPlaceholder={language === 'en' ? 'Search Booth' : 'बूथ शोधा'}
                     value={boothValue}
                     onChange={(item) => setBoothValue(item.value)}
                 />
@@ -118,7 +112,7 @@ export default function BLocationWise({ navigation }) {
                         data={locationItems}
                         labelField="label"
                         valueField="value"
-                        placeholder="Select Location"
+                        placeholder={language === 'en' ? 'Select Location' : 'स्थान निवडा'}
                         value={locationValue}
                         onChange={(item) => setLocationValue(item.value)}
                     />
@@ -127,7 +121,7 @@ export default function BLocationWise({ navigation }) {
                 {boothValue && locationValue && (
                     <TextInput
                         style={styles.searchBar}
-                        placeholder="Search by voter name..."
+                        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                         value={searchQuery}
                         onChangeText={(text) => setSearchQuery(text)}
                     />
@@ -136,16 +130,8 @@ export default function BLocationWise({ navigation }) {
                     data={filteredVoterData}
                     keyExtractor={(item) => item.voter_id.toString()}
                     renderItem={renderVoterItem}
-                    ListHeaderComponent={loading && (
-                        <View style={styles.loadingContainer} >
-                            <ActivityIndicator size="small" color='black' />
-                            <Text style={styles.loadingText}>Loading...</Text>
-                        </View>
-                    )}
-                    ListEmptyComponent={!loading && (<Text style={{
-                        textAlign: 'center', marginTop: 20,
-                        fontSize: 18, color: 'grey', fontWeight: '600'
-                    }}>No voters found.</Text>)}
+                    ListHeaderComponent={loading && <LoadingListComponent />}
+                    ListEmptyComponent={!loading && <EmptyListComponent />}
                 />
             </View>
         </View >

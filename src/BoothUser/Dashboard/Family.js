@@ -7,6 +7,9 @@ import { Checkbox } from 'react-native-paper';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { toTitleCase } from '../../ReusableCompo/Functions/toTitleCaseConvertor';
 
 
 const { width, height } = Dimensions.get('screen');
@@ -107,14 +110,15 @@ export default function Family({ navigation }) {
             setSearchValue('');
             setIsSelectionMode(false);
         } catch (error) {
-            console.error('Error saving family group:', error);
-            Alert.alert('Error', 'Failed to save family group.');
+            // console.error('Error saving family group:', error);
+            Alert.alert('Error', 'Member are already exists in other family group. \nFailed to save family group !!!.');
         }
     };
 
 
     const searchedVoters = voters.filter(voter =>
         (voter.voter_name && voter.voter_name.toLowerCase().includes(searchedValue.toLowerCase())) ||
+        (voter.voter_name_mar && voter.voter_name_mar.toLowerCase().includes(searchedValue.toLowerCase())) ||
         (voter.voter_id && voter.voter_id.toString().includes(searchedValue))
     );
 
@@ -123,126 +127,111 @@ export default function Family({ navigation }) {
     };
 
     return (
-        <HeaderFooterLayout
-            headerText={language === 'en' ? 'Create Family' : 'कुटुंब तयार करा'}
-            showFooter={false}
-            leftIcon={<MaterialIcons name="keyboard-backspace" size={28} color="black" onPress={handleGoBack} />}
-            rightIcon={<Ionicons name="close-circle" size={26} color="black" onPress={exitSelectionMode} />}
-        >
-            <View style={styles.container}>
+        <View style={styles.container}>
 
-                <View style={styles.buttoncontainer}>
-                    <Pressable style={styles.bigButton} onPress={openFamilyModal}>
-                        <Text style={styles.bigButtonText}>
-                            {language === 'en' ? 'Create Group' : 'गट तयार करा'}
-                        </Text>
-                    </Pressable>
-                    <Pressable style={styles.newButton} onPress={() => navigation.navigate('Familylist')}>
-                        <Text style={styles.bigButtonText}>
-                            {language === 'en' ? 'Families' : 'कुटुंबे'}
-                        </Text>
-                    </Pressable>
-                </View>
-
-
-                <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={20} color="grey" />
-                    <TextInput
-                        value={searchedValue}
-                        onChangeText={text => setSearchValue(text)}
-                        placeholder={language === 'en' ? "Search by voter’s name or ID" : 'मतदाराचे नाव किंवा ओळखपत्राने शोधा'}
-                        style={styles.searchInput}
-                    />
-                </View>
-
-
-
-                {isSelectionMode && (
-                    <View style={styles.selectionToolbar}>
-                        <Ionicons name="close-circle" size={30} color="red" onPress={exitSelectionMode} style={styles.actionIcon} />
-                    </View>
-                )}
-
-                <View style={styles.listContainer}>
-                    <FlatList
-                        data={searchedVoters}
-                        keyExtractor={item => item.voter_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        ListHeaderComponent={(loading) && (
-                            <Text style={styles.loadingText}>
-                                {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-                            </Text>
-                        )}
-                        ListEmptyComponent={(!loading) && (
-                            <Text style={styles.noDataText}>
-                                {language === 'en' ? 'No results found' : 'डेटा नाही'}
-                            </Text>
-                        )}
-                        renderItem={({ item }) => (
-                            <Pressable
-                                style={[
-                                    styles.voterItem,
-                                    selectedVoters.includes(item.voter_id) && styles.selectedVoterItem
-                                ]}
-                                onPress={() => handleVoterPress(item.voter_id)}
-                                onLongPress={() => handleLongPress(item.voter_id)}
-                            >
-                                <View style={styles.voterDetails}>
-                                    <View style={styles.voterIdContainer}>
-                                        <Text>{item.voter_id}</Text>
-                                    </View>
-                                    <Text>{item.voter_name}</Text>
-                                </View>
-
-                                <Checkbox
-                                    status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
-                                    onPress={() => toggleVoterSelection(item.voter_id)}
-                                    style={styles.checkbox}
-                                />
-                            </Pressable>
-                        )}
-                    />
-                </View>
-
-
-                <Modal visible={isFamilyModalVisible} animationType="slide" transparent={true}>
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>
-                                {language === 'en' ? 'Select a voter from the list' : 'यादीतून मतदार निवडा'}
-                            </Text>
-                            <FlatList
-                                data={selectedVoters.map(voter_id => voters.find(voter => voter.voter_id === voter_id))}
-                                keyExtractor={item => item.voter_id.toString()}
-                                renderItem={({ item }) => (
-                                    <Pressable
-                                        style={styles.modalVoterItem}
-                                        onPress={() => setSingleVoterId(item.voter_id)}
-                                    >
-                                        <Text>{item.voter_name}</Text>
-                                        <Checkbox
-                                            status={singleVoterId === item.voter_id ? 'checked' : 'unchecked'}
-                                            onPress={() => setSingleVoterId(item.voter_id)}
-                                        />
-                                    </Pressable>
-                                )}
-                            />
-
-                            <Pressable style={styles.saveButton} onPress={handleSave}>
-                                <Text style={styles.saveButtonText}>
-                                    {language === 'en' ? 'Save' : 'जतन करा'}
-                                </Text>
-                            </Pressable>
-                            <Pressable style={styles.closeButton} onPress={() => setIsFamilyModalVisible(false)}>
-                                <Text style={styles.closeButtonText}>
-                                    {language === 'en' ? 'Close' : 'बंद करा'}
-                                </Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                </Modal>
+            <View style={styles.buttoncontainer}>
+                <Pressable style={styles.bigButton} onPress={openFamilyModal}>
+                    <Text style={styles.bigButtonText}>
+                        {language === 'en' ? 'Create Family Group' : 'कुटुंब तयार करा'}
+                    </Text>
+                </Pressable>
+                <Pressable style={styles.newButton} onPress={() => navigation.navigate('Familylist')}>
+                    <Text style={styles.bigButtonText}>
+                        {language === 'en' ? 'Families' : 'सर्व कुटुंबे पहा'}
+                    </Text>
+                </Pressable>
             </View>
-        </HeaderFooterLayout>
+
+
+            <View style={styles.searchContainer}>
+                <Ionicons name="search" size={20} color="grey" />
+                <TextInput
+                    value={searchedValue}
+                    onChangeText={text => setSearchValue(text)}
+                    placeholder={language === 'en' ? "Search by voter’s name or ID" : 'मतदाराचे नाव किंवा ओळखपत्राने शोधा'}
+                    style={styles.searchInput}
+                />
+            </View>
+
+
+
+            {isSelectionMode && (
+                <View style={styles.selectionToolbar}>
+                    <Ionicons name="close-circle" size={30} color="red" onPress={exitSelectionMode} style={styles.actionIcon} />
+                </View>
+            )}
+
+            <View style={styles.listContainer}>
+                <FlatList
+                    data={searchedVoters}
+                    keyExtractor={item => item.voter_id.toString()}
+                    showsVerticalScrollIndicator={false}
+                    ListHeaderComponent={loading && <LoadingListComponent />}
+                    ListEmptyComponent={!loading && <EmptyListComponent />}
+                    renderItem={({ item }) => (
+                        <Pressable
+                            style={[
+                                styles.voterItem,
+                                selectedVoters.includes(item.voter_id) && styles.selectedVoterItem
+                            ]}
+                            onPress={() => handleVoterPress(item.voter_id)}
+                            onLongPress={() => handleLongPress(item.voter_id)}
+                        >
+                            <View style={styles.voterDetails}>
+                                <View style={styles.voterIdContainer}>
+                                    <Text>{item.voter_id}</Text>
+                                </View>
+                                <Text>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+                            </View>
+
+                            <Checkbox
+                                status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
+                                onPress={() => toggleVoterSelection(item.voter_id)}
+                                style={styles.checkbox}
+                            />
+                        </Pressable>
+                    )}
+                />
+            </View>
+
+
+            <Modal visible={isFamilyModalVisible} animationType="slide" transparent={true}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>
+                            {language === 'en' ? 'Select family head' : 'कुटुंब प्रमुख निवडा '}
+                        </Text>
+                        <FlatList
+                            data={selectedVoters.map(voter_id => voters.find(voter => voter.voter_id === voter_id))}
+                            keyExtractor={item => item.voter_id.toString()}
+                            renderItem={({ item }) => (
+                                <Pressable
+                                    style={styles.modalVoterItem}
+                                    onPress={() => setSingleVoterId(item.voter_id)}
+                                >
+                                    <Text>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+                                    <Checkbox
+                                        status={singleVoterId === item.voter_id ? 'checked' : 'unchecked'}
+                                        onPress={() => setSingleVoterId(item.voter_id)}
+                                    />
+                                </Pressable>
+                            )}
+                        />
+
+                        <Pressable style={styles.saveButton} onPress={handleSave}>
+                            <Text style={styles.saveButtonText}>
+                                {language === 'en' ? 'Save' : 'जतन करा'}
+                            </Text>
+                        </Pressable>
+                        <Pressable style={styles.closeButton} onPress={() => setIsFamilyModalVisible(false)}>
+                            <Text style={styles.closeButtonText}>
+                                {language === 'en' ? 'Close' : 'बंद करा'}
+                            </Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
+        </View>
     );
 }
 
@@ -250,7 +239,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 15,
-        height: '100%',
+        backgroundColor: 'white'
     },
     searchContainer: {
         borderColor: '#9095A1',

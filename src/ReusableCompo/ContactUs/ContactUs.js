@@ -57,9 +57,9 @@ const ContactUs = () => {
                 <View style={styles.bottomView} >
                     <View style={{ marginVertical: 10 }}>
                         <Text style={styles.sectionTitle}>Contact No.</Text>
-                        <Pressable style={styles.infoContainer} onPress={() => { sendWhatsAppMessage('8668363146') }}>
+                        <Pressable style={styles.infoContainer} onPress={() => { sendWhatsAppMessage('1234567890') }}>
                             <Ionicons name="call" size={18} color="black" />
-                            <Text>8668363146</Text>
+                            <Text>1234567890</Text>
                         </Pressable>
                     </View>
 

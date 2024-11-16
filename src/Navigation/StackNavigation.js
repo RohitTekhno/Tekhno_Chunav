@@ -14,6 +14,9 @@ import { AuthenticationContext } from '../ContextApi/AuthenticationContext';
 import WarduserLogin from '../ReusableCompo/Logins/WarduserLogin';
 import { WardUserContext } from '../ContextApi/WardUserContext';
 import WardBottomTabNav from './WardBottomTabNav';
+import KUserLogin from '../ReusableCompo/Logins/KUserLogin';
+import { KaryakartaContext } from '../ContextApi/KaryakartaContext';
+import KUserMainStack from './KUserMainStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +25,7 @@ const StackNavigation = () => {
     const { isWarduserAuthenticated } = useContext(WardUserContext)
     const { isTuserAuthenticated } = useContext(TownUserContext);
     const { isBuserAuthenticated } = useContext(BoothUserContext)
+    const { isKaryakartaAuthenticated } = useContext(KaryakartaContext)
     return (
         <Stack.Navigator
             initialRouteName={"Launch Screen"}
@@ -41,6 +45,8 @@ const StackNavigation = () => {
                     <Stack.Screen name="TownUser" component={TownBottomTabNav} />
                 ) : (isBuserAuthenticated) ? (
                     <Stack.Screen name="BoothUser" component={BoothBottomTabNav} />
+                ) : (isKaryakartaAuthenticated) ? (
+                    <Stack.Screen name="KaryakartaUser" component={KUserMainStack} />
                 ) : (
 
                     <>
@@ -50,6 +56,8 @@ const StackNavigation = () => {
                         <Stack.Screen name="WardUserLogin" component={WarduserLogin} />
                         <Stack.Screen name="TownUserLogin" component={TownUserLogin} />
                         <Stack.Screen name="BoothUserLogin" component={BoothUserLogin} />
+                        <Stack.Screen name="KUserLogin" component={KUserLogin} />
+
                     </>
                 )
             }

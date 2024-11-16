@@ -1,9 +1,12 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ActivityIndicator } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -11,7 +14,7 @@ const AgewiseVoters = () => {
     const [openAge, setOpenAge] = useState(false);
     const [ageValue, setAgeValue] = useState(null);
     const [ageItems, setAgeItems] = useState([]);
-
+    const { language } = useContext(LanguageContext);
     const [loading, setLoading] = useState(true);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [selectedVoter, setSelectedVoter] = useState(null);
@@ -51,9 +54,9 @@ const AgewiseVoters = () => {
 
     const setupAgeRanges = () => {
         const ranges = [
-            { label: '18-30 YRS', value: '18,30' },
-            { label: '31-50 YRS', value: '31,50' },
-            { label: '51-100 YRS', value: '51,100' },
+            { label: language === 'en' ? '18-30 YRS' : '18-30 वर्षे', value: '18,30' },
+            { label: language === 'en' ? '31-50 YRS' : '31-50 वर्षे', value: '31,50' },
+            { label: language === 'en' ? '51-100 YRS' : '51-100 वर्षे', value: '51,100' },
         ];
         setAgeItems(ranges);
     };
@@ -80,9 +83,9 @@ const AgewiseVoters = () => {
                 setOpen={setOpenAge}
                 setValue={setAgeValue}
                 setItems={setAgeItems}
-                placeholder='Select Age Range'
+                placeholder={language === 'en' ? 'Select Age Range' : 'वय श्रेणी निवडा'}
                 searchable={true}
-                searchPlaceholder="Search age range..."
+                searchPlaceholder={language === 'en' ? 'Search Age Range' : 'वय श्रेणी शोधा'}
                 placeholderStyle={styles.placeholder}
                 style={styles.dropdown}
                 searchTextInputStyle={styles.searchTextInput}
@@ -91,12 +94,7 @@ const AgewiseVoters = () => {
                 maxHeight={200}
             />
 
-            {loading && ageValue ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size='small' />
-                    <Text style={styles.loadingText}>Loading...</Text>
-                </View>
-            ) : (
+            {ageValue && (
                 <View style={styles.listContainer}>
                     <FlatList
                         data={filteredVoters}
@@ -109,11 +107,12 @@ const AgewiseVoters = () => {
                                     <View style={styles.voterIdContainer}>
                                         <Text>{item.voter_id}</Text>
                                     </View>
-                                    <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+                                    <Text style={{ flex: 1 }}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
                                 </View>
                             </Pressable>
                         )}
-                        ListEmptyComponent={() => <Text style={styles.noDataText}>No voters found</Text>}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
                     />
 
                     <VoterDetailsPopUp

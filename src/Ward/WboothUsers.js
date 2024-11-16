@@ -9,6 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import WardHeaderFooter from './WardHeaderFooter';
 import { LanguageContext } from '../ContextApi/LanguageContext';
 import { WardUserContext } from '../ContextApi/WardUserContext';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
 
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
@@ -89,46 +91,40 @@ export default function WboothUsers() {
         <TextInput
           value={searchedValue}
           onChangeText={text => setSearchedValue(text)}
-          placeholder={language === 'en' ? "Search by user’s name or ID" : 'वापरकर्त्याचे नाव किंवा आयडी द्वारे शोधा'}
+          placeholder={language === 'en' ? "Search by voter’s name or ID" : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
           style={styles.searchInput}
         />
       </View>
 
-
-      {loading ?
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text>
-            {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-          </Text>
-        </View>
-        :
-        <FlatList
-          data={searchedUsers}
-          keyExtractor={(item) => item.user_id.toString()}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <Pressable
-              style={styles.userItem}
-              onLongPress={() => handleLongPressDelete(item.user_id)}
-            >
-              <View style={styles.userDetails}>
-                <Text style={styles.wardUserId}>{item.user_id}</Text>
-                <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Text>{item.user_name}</Text>
-                  <Text style={styles.phoneText}>Ph. No: {item.user_phone}</Text>
-                </View>
+      <FlatList
+        data={searchedUsers}
+        keyExtractor={(item) => item.user_id.toString()}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <Pressable
+            style={styles.userItem}
+            onLongPress={() => handleLongPressDelete(item.user_id)}
+          >
+            <View style={styles.userDetails}>
+              <Text style={styles.wardUserId}>{item.user_id}</Text>
+              <View style={{ flexDirection: 'column', flex: 1 }}>
+                <Text>{item.user_name}</Text>
+                <Text style={styles.phoneText}>Ph. No: {item.user_phone}</Text>
               </View>
-              <Pressable onPress={() => { navigation.navigate('Approve Survey', { wardUserId: item.user_id }) }}>
-                <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
-              </Pressable>
+            </View>
+            <Pressable onPress={() => { navigation.navigate('Approve Survey', { wardUserId: item.user_id }) }}>
+              <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
             </Pressable>
-          )}
-        />
-      }
+          </Pressable>
+        )}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
+      />
+
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

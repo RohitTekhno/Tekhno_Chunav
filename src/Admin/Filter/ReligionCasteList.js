@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, FlatList, Alert, } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 export default function ReligionCasteList() {
+  const { language } = useContext(LanguageContext);
   const [townValue, setTownValue] = useState(null);
   const [townItems, setTownItems] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [boothValue, setBoothValue] = useState(null);
   const [boothItems, setBoothItems] = useState([]);
 
   const [religionValue, setReligionValue] = useState(null);
   const [religionItems, setReligionItems] = useState([
-    { label: 'Hindu', value: 1 },
-    { label: 'Muslim', value: 2 },
-    { label: 'Christian', value: 3 },
+    { label: language === 'en' ? 'Hindu' : 'हिंदू', value: 1 },
+    { label: language === 'en' ? 'Muslim' : 'मुस्लिम', value: 2 },
+    { label: language === 'en' ? 'Christian' : 'ख्रिश्चन', value: 3 },
   ]);
 
   const [casteValue, setCasteValue] = useState(null);
@@ -30,7 +33,7 @@ export default function ReligionCasteList() {
     try {
       const response = await axios.get('http://192.168.1.8:8000/api/towns/');
       const townsData = response.data.map(town => ({
-        label: `${town.town_id} - ${town.town_name}`,
+        label: `${town.town_id} - ${language === 'en' ? town.town_name : town.town_name_mar}`,
         value: town.town_id,
       }));
       setTownItems(townsData);
@@ -44,7 +47,7 @@ export default function ReligionCasteList() {
     try {
       const response = await axios.get(`http://192.168.1.8:8000/api/booths_by_town/${townId}`);
       const boothsData = response.data.map(booth => ({
-        label: `${booth.booth_id} - ${booth.booth_name}`,
+        label: `${booth.booth_id} - ${language === 'en' ? booth.booth_name : booth.booth_name_mar}`,
         value: booth.booth_id,
       }));
       setBoothItems(boothsData);
@@ -102,8 +105,8 @@ export default function ReligionCasteList() {
 
   const renderVoterItem = ({ item }) => (
     <View style={styles.voterItem}>
-      <Text style={styles.voterText}>{item.voter_id} - {item.voter_name}</Text>
-      <Text style={styles.voterContact}>Contact: {item.voter_contact_number || "N/A"}</Text>
+      <Text style={styles.voterText}>{item.voter_id} - {language === 'en' ? item.voter_name : item.voter_id}</Text>
+      <Text style={styles.voterContact}>{language === 'en' ? 'Contact' : 'संपर्क'}: {item.voter_contact_number}</Text>
     </View>
   );
 
@@ -150,45 +153,48 @@ export default function ReligionCasteList() {
         data={townItems}
         labelField="label"
         valueField="value"
-        placeholder="Select Town"
+        placeholder={language === 'en' ? 'Select Town' : 'गाव/शहर निवडा'}
         value={townValue}
         onChange={item => setTownValue(item.value)}
       />
+
       {townValue && (
         <Dropdown
           style={styles.dropdown}
           data={boothItems}
           labelField="label"
           valueField="value"
-          placeholder="Select Booth"
+          placeholder={language === 'en' ? 'Select Booth' : 'बूथ निवडा'}
           value={boothValue}
           onChange={item => setBoothValue(item.value)}
         />
       )}
+
       {boothValue && (
         <Dropdown
           style={styles.dropdown}
           data={religionItems}
           labelField="label"
           valueField="value"
-          placeholder="Select Religion"
+          placeholder={language === 'en' ? 'Select Religion' : 'धर्म निवडा'}
           value={religionValue}
           onChange={item => setReligionValue(item.value)}
         />
       )}
+
       {religionValue && (
         <Dropdown
           style={styles.dropdown}
           data={casteItems}
           labelField="label"
           valueField="value"
-          placeholder="Select Caste"
+          placeholder={language === 'en' ? 'Select Caste' : 'जात निवडा'}
           value={casteValue}
           onChange={item => setCasteValue(item.value)}
         />
       )}
 
-      <Text style={styles.filteredVotersText}>------ Filtered Voters -----</Text>
+      <Text style={styles.filteredVotersText}>------{language === 'en' ? 'Filtered Voters' : 'फिल्टर केलेले मतदार'}------</Text>
 
     </>
   );
@@ -196,7 +202,7 @@ export default function ReligionCasteList() {
   return (
     <HeaderFooterLayout
       showFooter={false}
-      headerText='Caste Wise Voters'
+      headerText={language === 'en' ? 'Caste Wise Voters' : 'जातीनुसार मतदार'}
       rightIconName="file-pdf"
       onRightIconPress={handlePDFClick}
     >
@@ -205,7 +211,7 @@ export default function ReligionCasteList() {
         ListHeaderComponent={renderDropdown}
         renderItem={renderVoterItem}
         keyExtractor={(item) => item.voter_id.toString()}
-        ListEmptyComponent={<Text style={styles.noVotersText}>No Voters Found</Text>}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
         contentContainerStyle={styles.container}
       />
     </HeaderFooterLayout>

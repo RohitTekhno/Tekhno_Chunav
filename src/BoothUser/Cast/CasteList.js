@@ -7,6 +7,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 
 const { width, height } = Dimensions.get('window');
@@ -19,7 +21,7 @@ export default function CasteList({ navigation }) {
   const [selectedCast, setSelectedCast] = useState(null);
   const [colorLegendModalVisible, setColorLegendModalVisible] = useState(false);
   const [selectedVoterId, setSelectedVoterId] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
 
@@ -46,6 +48,7 @@ export default function CasteList({ navigation }) {
         params: { buserId, castId }
       });
       if (response.status === 200) {
+        console.log(response.data);
         setVoters(response.data);
       } else {
         Alert.alert('Error', 'Failed to load voters. Please try again later.');
@@ -151,7 +154,7 @@ export default function CasteList({ navigation }) {
 
   const renderVoterItem = ({ item }) => (
     <View style={[styles.voterItem, { backgroundColor: item.color || '#FFFFFF' }]}>
-      <Text style={styles.voterText}>{item.voter_id} - {toTitleCase(item.voter_name)}</Text>
+      <Text style={styles.voterText}>{item.voter_id} - {language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
       <TouchableOpacity style={styles.closeCircle} onPress={() => openColorLegendModal(item.voter_id)}>
         <View style={styles.circle}></View>
       </TouchableOpacity>
@@ -190,8 +193,8 @@ export default function CasteList({ navigation }) {
             keyExtractor={(item) => item.voter_id.toString()}
             renderItem={renderVoterItem}
             contentContainerStyle={styles.voterList}
-            ListEmptyComponent={() => <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16 }}>No voters found.</Text>}
-          />
+            ListHeaderComponent={loading && <LoadingListComponent />}
+            ListEmptyComponent={!loading && <EmptyListComponent />} />
         </View>
       )}
 

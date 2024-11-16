@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, Dimensions, TextInput } from 'react-native';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width } = Dimensions.get('window');
 
 const VoterListSection = ({ voters, filteredVoters, searchQuery, handleSearch }) => {
-
+  const { language } = useContext(LanguageContext);
   const toTitleCase = (str) => {
     return str
       .split(' ')
@@ -24,7 +27,7 @@ const VoterListSection = ({ voters, filteredVoters, searchQuery, handleSearch })
       {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by voter ID or name"
+        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
         value={searchQuery}
         onChangeText={handleSearch}
       />
@@ -35,7 +38,8 @@ const VoterListSection = ({ voters, filteredVoters, searchQuery, handleSearch })
         keyExtractor={(item) => item.voter_id.toString()}
         renderItem={renderItem}
         style={styles.voterList}
-        ListEmptyComponent={<Text>No voters found</Text>}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
       />
     </View>
   );

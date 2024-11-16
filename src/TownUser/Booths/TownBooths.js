@@ -8,6 +8,8 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const TownBooths = ({ route }) => {
     const navigation = useNavigation();
@@ -31,7 +33,6 @@ const TownBooths = ({ route }) => {
         try {
             const response = await axios.get(`http://192.168.1.8:8000/api/get_booth_names_by_town_user/${userId}`);
             const formattedTowns = response.data;
-            console.log(formattedTowns);
 
             if (Array.isArray(formattedTowns)) {
                 setBooths(formattedTowns);
@@ -40,7 +41,7 @@ const TownBooths = ({ route }) => {
             }
             setLoading(false);
         } catch (error) {
-            Alert.alert('Error', `Error fetching data: ${error}`);
+            Alert.alert('Message', `Town Booth Not Found`);
 
             setLoading(false);
         }
@@ -63,32 +64,24 @@ const TownBooths = ({ route }) => {
                 />
             </View>
 
-            {loading ? <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'large'} color={'black'} />
-                <Text>{language === 'en' ? 'Loading...' : 'लोड करत आहे...'}</Text>
-            </View>
-                :
-                <FlatList
-                    data={searchedBooth}
-                    keyExtractor={item => item.booth_id.toString()}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <Pressable style={styles.voterItem}
-                            onPress={() => {
-                                navigation.navigate('Booth Voters', { boothId: item.booth_id });
-                            }}
-                        >
-                            <Text style={styles.boothIdText}>{item.booth_id}</Text>
-                            <Text style={styles.boothNameText}>{item.booth_name}</Text>
-                        </Pressable>
-                    )}
-                    ListEmptyComponent={() => (
-                        <Text style={styles.noDataText}>
-                            {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
-                        </Text>
-                    )}
-                />
-            }
+            <FlatList
+                data={searchedBooth}
+                keyExtractor={item => item.booth_id.toString()}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                    <Pressable style={styles.voterItem}
+                        onPress={() => {
+                            navigation.navigate('Booth Voters', { boothId: item.booth_id });
+                        }}
+                    >
+                        <Text style={styles.boothIdText}>{item.booth_id}</Text>
+                        <Text style={styles.boothNameText}>{language === 'en' ? item.booth_name : item.booth_name_mar}</Text>
+                    </Pressable>
+                )}
+                ListHeaderComponent={loading && <LoadingListComponent />}
+                ListEmptyComponent={!loading && <EmptyListComponent />}
+            />
+
             {pdfLoading && (
                 <View style={styles.pdfLoadingOverlay}>
                     <ActivityIndicator size="large" color="white" />
@@ -149,6 +142,7 @@ const styles = StyleSheet.create({
     },
     boothNameText: {
         flex: 1,
+        fontSize: 16,
         flexWrap: 'wrap',
     },
     noDataText: {

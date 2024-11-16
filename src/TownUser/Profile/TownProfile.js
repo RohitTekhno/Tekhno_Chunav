@@ -9,12 +9,14 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
 import axios from 'axios';
 import { err } from 'react-native-svg';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('window');
 
 const TownProfile = () => {
   const navigation = useNavigation();
   const { userId } = useContext(TownUserContext)
+  const { language } = useContext(LanguageContext);
 
   const [TownUser, setTownUser] = useState({
     "UserId": null,
@@ -40,7 +42,7 @@ const TownProfile = () => {
         "UserId": response.data[0].town_user_id,
         "Name": response.data[0].town_user_name,
         "Contact": response.data[0].town_user_contact_number,
-        "Town": response.data[0].town_names
+        "Town": response.data[0].town_name_mar || response.data[0].town_names
       })
 
     } catch (error) {
@@ -68,7 +70,7 @@ const TownProfile = () => {
               <Octicons name="chevron-left" size={30} color={'white'} />
             </Pressable>
 
-            <Text style={[styles.text, { color: 'white' }]}>Profile</Text>
+            <Text style={[styles.text, { color: 'white' }]}>{language === 'en' ? 'Profile' : 'प्रोफाइल'}</Text>
 
             <Pressable onPress={handleNotificationBtn}>
               <AntDesign name="bells" size={25} color={'white'} />
@@ -83,42 +85,44 @@ const TownProfile = () => {
             <View style={styles.profileImageCircle}>
               <Image source={require('../../../assets/Cover.png')} style={styles.profileImage} />
             </View>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', }}>{TownUser.Name}</Text>
-            <Text>User</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3C4CAC' }}>{TownUser.Name}</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{language === 'en' ? 'Town User' : 'गाव/शहर कार्यकर्ता'}</Text>
           </View>
 
           <View style={styles.detailsContainer}>
             <TextInput
               style={styles.profileTextInput}
-              value={`User Name : ${TownUser.Name}`}
+              value={language === 'en' ? `User Name : ${TownUser.Name}` : `वापरकर्ता नाव : ${TownUser.Name}`}
               editable={false}
               placeholder='User Name'
+              multiline={true}
             />
             <TextInput
               style={styles.profileTextInput}
-              value={`User Id : ${TownUser.UserId}`}
+              value={language === 'en' ? `User Id : ${TownUser.UserId}` : `आयडी : ${TownUser.UserId}`}
               editable={false}
               placeholder='User Id'
             />
             <TextInput
               style={styles.profileTextInput}
-              value={`Contact No. : ${TownUser.Contact}`}
+              value={language === 'en' ? `Contact No : ${TownUser.Contact}` : `फोन नंबर : ${TownUser.Contact}`}
               editable={false}
               placeholder='Contact No'
             />
             <TextInput
               style={styles.profileTextInput}
-              value={`Town : ${TownUser.Town}`}
+              value={language === 'en' ? `Town : ${TownUser.Town}` : `गाव/शहर : ${TownUser.Town}`}
               editable={false}
-              placeholder='Town'
+              placeholder={language === 'en' ? 'Town' : 'गाव/शहर'}
+              multiline={true}
             />
           </View >
         </View>
 
 
-        <View style={{ height: height * 0.1, marginTop: height * 0.05 }}>
+        <View style={{ height: height * 0.1, marginTop: height * 0.01 }}>
           <Pressable style={styles.logOutButton} onPress={() => { navigation.navigate('LogOut') }}>
-            <Text style={styles.logOutButtonTxt}>Log Out</Text>
+            <Text style={styles.logOutButtonTxt}>{language === 'en' ? 'Log Out' : 'लॉग आउट'}</Text>
           </Pressable>
         </View>
       </View>

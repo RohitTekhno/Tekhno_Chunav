@@ -31,7 +31,7 @@ export default function Wsignup({ navigation }) {
         axios.get(`http://192.168.1.8:8000/api/booth_details_by_prabhag_user/${wardUserId}/`)
             .then(response => {
                 const boothsData = response.data.map(booth => ({
-                    label: `${booth.booth_id} - ${booth.booth_name}`,
+                    label: `${booth.booth_id} - ${language === 'en' ? booth.booth_name : booth.booth_name_mar}`,
                     value: booth.booth_id
                 }));
                 setItems(boothsData);
@@ -98,9 +98,7 @@ export default function Wsignup({ navigation }) {
                     booth_ids: value,
                 });
 
-                Alert.alert('Success', 'Signup successful', [
-                    { text: 'OK', onPress: () => navigation.navigate('WardDash') },
-                ]);
+                Alert.alert('Success', 'Signup successful');
             } catch (error) {
                 Alert.alert('Error', 'Signup failed. Please try again.');
             } finally {
@@ -108,6 +106,7 @@ export default function Wsignup({ navigation }) {
             }
         }
     };
+
 
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
@@ -117,6 +116,12 @@ export default function Wsignup({ navigation }) {
         navigation.goBack();
     };
 
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Checks if there are any errors in the form fields.
+     * @returns {boolean} true if there are any errors, false otherwise.
+     */
+    /******  ba61fa28-cdcb-4c71-9cc0-2236e32e44c2  *******/
     const hasErrors = () => {
         return nameError || contactError || passwordError || townIdError;
     };

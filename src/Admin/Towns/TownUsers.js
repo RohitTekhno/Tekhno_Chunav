@@ -1,5 +1,5 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
@@ -7,12 +7,16 @@ import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 const { width, height } = Dimensions.get('screen');
 
 const TownUsers = () => {
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
+    const { language } = useContext(LanguageContext);
     const [loading, setLoading] = useState(true);
     const [pdfLoading, setPdfLoading] = useState(false);
     const [townUsers, setTownUsers] = useState([]);
@@ -102,19 +106,11 @@ const TownUsers = () => {
         );
     };
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'large'} color={'black'} />
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
 
     return (
         <HeaderFooterLayout
             showFooter={false}
-            headerText='Town Users'
+            headerText={language === 'en' ? 'Town Users' : 'गाव/शहर कार्यकर्ता'}
             rightIcon={true}
             rightIconName="file-pdf"
             onRightIconPress={handlePDFClick}
@@ -125,40 +121,38 @@ const TownUsers = () => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder='search by user’s name or ID'
+                        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
 
                 <View style={styles.listContainer}>
-                    {searchedTown.length > 0 ? (
-                        <FlatList
-                            data={searchedTown}
-                            keyExtractor={item => item.town_user_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable
-                                    style={styles.voterItem}
-                                    onLongPress={() => confirmDelete(item.town_user_id)} // Long press to delete
-                                >
-                                    <View style={styles.voterDetails}>
-                                        <View style={styles.townUserIdContainer}>
-                                            <Text style={styles.townUserIdText}>{item.town_user_id}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'column', flex: 1 }}>
-                                            <Text style={{ fontWeight: '700' }}>{toTitleCase(item.town_user_name)}</Text>
-                                            <Text style={styles.townUserContactText}>Ph. No: {item.town_user_contact_number}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'column', flex: 1 }}>
-                                            <Text style={styles.townUserTownText}>Town: {toTitleCase(item.town_names)}</Text>
-                                        </View>
+                    <FlatList
+                        data={searchedTown}
+                        keyExtractor={item => item.town_user_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => (
+                            <Pressable
+                                style={styles.voterItem}
+                                onLongPress={() => confirmDelete(item.town_user_id)} // Long press to delete
+                            >
+                                <View style={styles.voterDetails}>
+                                    <View style={styles.townUserIdContainer}>
+                                        <Text style={styles.townUserIdText}>{item.town_user_id}</Text>
                                     </View>
-                                </Pressable>
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
+                                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                                        <Text style={{ fontWeight: '700' }}>{toTitleCase(item.town_user_name)}</Text>
+                                        <Text style={styles.townUserContactText}>Ph. No: {item.town_user_contact_number}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                                        <Text style={styles.townUserTownText}>Town: {toTitleCase(item.town_names)}</Text>
+                                    </View>
+                                </View>
+                            </Pressable>
+                        )}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
                 </View>
 
                 {/* PDF loading overlay */}
@@ -177,6 +171,7 @@ export default TownUsers;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 0.9,
         paddingHorizontal: 15,
         backgroundColor: 'white',
     },

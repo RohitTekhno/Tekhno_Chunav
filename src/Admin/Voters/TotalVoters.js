@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, Dimensions, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import EditVoterForm from '../../ReusableCompo/EditVoterForm';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { width, height } = Dimensions.get('screen');
 
 const Totalvoters = () => {
+    const { language } = useContext(LanguageContext);
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [searchText, setSearchText] = useState('');
@@ -28,19 +32,20 @@ const Totalvoters = () => {
             Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
         }
     };
-
     const handleSearch = (text) => {
         setSearchText(text);
         const filtered = voters.filter(voter =>
-            voter.voter_id.toString().includes(text) || voter.voter_name.toLowerCase().includes(text.toLowerCase())
+            voter.voter_id.toString().includes(text) || (voter.voter_name && voter.voter_name.toLowerCase().includes(text.toLowerCase()))
         );
         setFilteredVoters(filtered);
     };
+
 
     const handleVoterEditForm = (voter_id) => {
         fetchVoterDetails(voter_id);
         setFormVisible(true);
     };
+
 
     const handleCloseEditForm = () => {
         setFormVisible(false);
@@ -119,7 +124,7 @@ const Totalvoters = () => {
 
         switch (item.voter_favour_id) {
             case 1:
-                backgroundColor = '#d3f5d3'; // red
+                backgroundColor = '#d3f5d3';
                 break;
             case 2:
                 backgroundColor = '#f5d3d3';
@@ -130,8 +135,18 @@ const Totalvoters = () => {
             case 4:
                 backgroundColor = '#c9daff';
                 break;
-            default:
+            case 5:
+                backgroundColor = 'skyblue';
                 break;
+            case 6:
+                backgroundColor = '#fcacec';
+                break;
+            case 7:
+                backgroundColor = '#dcacfa';
+                break;
+
+            default:
+                backgroundColor = 'white';
         }
 
         return (
@@ -140,7 +155,7 @@ const Totalvoters = () => {
                     <Text style={styles.itemText}>{item.voter_id}</Text>
                 </View>
                 <View style={styles.nameSection}>
-                    <Text style={styles.itemText}>{toTitleCase(item.voter_name)}</Text>
+                    <Text style={styles.itemText}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -151,42 +166,32 @@ const Totalvoters = () => {
             <LinearGradient colors={['#3C4CAC', '#F04393']} locations={[0.3, 1]} style={styles.gradient}>
                 <TextInput
                     style={styles.searchBar}
-                    placeholder="Search by ID or Name"
+                    placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                     value={searchText}
                     onChangeText={handleSearch}
                 />
                 <View style={styles.voterCountContainer}>
-                    <Text style={styles.updatedVotersText}>Updated Voters: {updatedVoters}</Text>
-                    <Text style={styles.remainingVotersText}>Remaining Voters: {remainingVoters}</Text>
+                    <Text style={styles.updatedVotersText}>{language === 'en' ? 'Updated Voters' : 'अपडेट झालेले मतदार :'} {updatedVoters}</Text>
+                    <Text style={styles.remainingVotersText}>{language === 'en' ? 'Remaining Voters' : 'उरलेले मतदार :'} {remainingVoters}</Text>
                 </View>
             </LinearGradient>
 
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color="#3C4CAC" />
-                    <Text style={{ color: 'black' }}>Wait a minute...</Text>
-                </View>
-            ) : (
-                <>
-                    <FlatList
-                        data={filteredVoters}
-                        keyExtractor={item => item.voter_id.toString()}
-                        renderItem={renderItem}
-                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#3C4CAC']} />}
-                        contentContainerStyle={styles.flatListContent}
-                        ListEmptyComponent={(
-                            <Text style={{ alignSelf: 'center', color: 'black', }}>No voters found.</Text>
-                        )}
-                    />
-                    <EditVoterForm
-                        isVisible={isFormVisible}
-                        onClose={handleCloseEditForm}
-                        selectedVoter={selectedVoter}
-                        onEditVoter={handleSelectedVoterDetails}
-                    />
-                </>
-            )}
-        </View>
+            <FlatList
+                data={filteredVoters}
+                keyExtractor={item => item.voter_id.toString()}
+                renderItem={renderItem}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#3C4CAC']} />}
+                contentContainerStyle={styles.flatListContent}
+                ListHeaderComponent={loading && <LoadingListComponent />}
+                ListEmptyComponent={!loading && <EmptyListComponent />}
+            />
+            <EditVoterForm
+                isVisible={isFormVisible}
+                onClose={handleCloseEditForm}
+                selectedVoter={selectedVoter}
+                onEditVoter={handleSelectedVoterDetails}
+            />
+        </View >
     );
 };
 

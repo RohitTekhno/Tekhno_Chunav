@@ -1,8 +1,9 @@
 
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
 import PieChart from 'react-native-pie-chart';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { height, width } = Dimensions.get('screen');
 
@@ -10,6 +11,7 @@ const CastDonutStat = () => {
     const widthAndHeight = width * 0.34;
     const [series, setSeries] = useState([0, 0, 1]);
     const sliceColor = ['orange', 'green', '#545454'];
+    const { language } = useContext(LanguageContext);
 
     const getReligionwiseData = async () => {
         try {
@@ -30,7 +32,7 @@ const CastDonutStat = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Religionwise Statistics</Text>
+            <Text style={styles.title}>{language === 'en' ? 'Religion Wise Statistics' : 'धर्मानुसार आकडेवारी'}</Text>
 
             <View style={{ marginTop: '20%', width: "100%", alignItems: 'center', height: "50%", justifyContent: 'center' }}>
                 <PieChart
@@ -47,15 +49,15 @@ const CastDonutStat = () => {
                 <View style={styles.legendColumn}>
                     <View style={styles.legendItem}>
                         <View style={[styles.legendColor, { backgroundColor: '#F8700F' }]} />
-                        <Text style={styles.legendLabel}>Hindu : {series[0]}</Text>
+                        <Text style={styles.legendLabel}>{language === 'en' ? 'Hinduu' : 'हिंदू '} : {series[0]}</Text>
                     </View>
                     <View style={styles.legendItem}>
                         <View style={[styles.legendColor, { backgroundColor: 'green' }]} />
-                        <Text style={styles.legendLabel}>Muslim : {series[1]}</Text>
+                        <Text style={styles.legendLabel}>{language === 'en' ? 'Muslim' : 'मुस्लिम'} {series[1]}</Text>
                     </View>
                     <View style={styles.legendItem}>
                         <View style={[styles.legendColor, { backgroundColor: '#545454' }]} />
-                        <Text style={styles.legendLabel}>Not Defined : {series[2]}</Text>
+                        <Text style={styles.legendLabel}>{language === 'en' ? 'Not Defined' : 'अन्य'} {series[2]}</Text>
                     </View>
                 </View>
             </View>

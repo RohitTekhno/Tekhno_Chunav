@@ -176,7 +176,7 @@ export default function Prediction() {
                 >
                     <View style={styles.buttonContainer}>
                         <Text style={styles.buttonText}>
-                            {language === 'en' ? 'Prediction' : 'संभाव्यता'} {predictionPercentage}%
+                            {language === 'en' ? 'Prediction' : 'संभाव्यता'}
                         </Text>
                     </View>
                 </LinearGradient>

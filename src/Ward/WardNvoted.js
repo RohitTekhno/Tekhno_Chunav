@@ -7,6 +7,10 @@ import WardVoterDetailsPopup from './WardVoterDetailsPopup';
 import WardHeaderFooter from './WardHeaderFooter';
 import { LanguageContext } from '../ContextApi/LanguageContext';
 import { WardUserContext } from '../ContextApi/WardUserContext';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
+import LoadingModal from '../ReusableCompo/LoadingModal';
+import VoterDetailsPopUp from '../ReusableCompo/VoterDetailsPopUp';
 
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
@@ -24,6 +28,7 @@ export default function WardNvoted({ route, navigation }) {
   const [animatedValue] = useState(new Animated.Value(1));
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedVoter, setSelectedVoter] = useState(null);
+  const [LoadingModalDetails, setLoadingModalDetails] = useState(false);
 
   useEffect(() => {
     const fetchVoters = async () => {
@@ -73,6 +78,7 @@ export default function WardNvoted({ route, navigation }) {
   };
 
   const fetchVoterDetails = (voter_id) => {
+    setLoadingModalDetails(true);
     axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
       .then(response => {
         setSelectedVoter(response.data); // Set selected voter details
@@ -80,7 +86,10 @@ export default function WardNvoted({ route, navigation }) {
       })
       .catch(error => {
         Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
-      });
+      })
+      .finally(() => {
+        setLoadingModalDetails(false);
+      })
   };
 
   const renderItem = ({ item }) => {
@@ -126,7 +135,7 @@ export default function WardNvoted({ route, navigation }) {
             }}>
               <Text>{item.voter_id}</Text>
             </View>
-            <Text style={{ flex: 1 }}>{item.voter_name}</Text>
+            <Text style={{ flex: 1 }}>{language === 'en' ? item.voter_name : item.voter_name_mar}</Text>
           </View>
         </View>
       </Pressable>
@@ -142,34 +151,30 @@ export default function WardNvoted({ route, navigation }) {
           value={search}
           onChangeText={setSearch}
           placeholder={language === 'en' ? 'Search by voter’s name or ID' : 'मतदाराचे नाव किंवा ओळखपत्राने शोधा'}
-
           style={styles.searchInput}
         />
       </View>
 
-      {loading ?
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'large'} color={'black'} />
-          <Text>
-            {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-          </Text>
-        </View>
+      <FlatList
+        data={filteredVoters}
+        keyExtractor={item => item.voter_id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        renderItem={renderItem}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />} />
+
+
+
+      {LoadingModalDetails ?
+        <LoadingModal />
         :
-        <FlatList
-          data={filteredVoters}
-          keyExtractor={item => item.voter_id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          renderItem={renderItem}
-          ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
+        <VoterDetailsPopUp
+          isModalVisible={isModalVisible}
+          setIsModalVisible={setIsModalVisible}
+          selectedVoter={selectedVoter}
         />
       }
-      {/* Modal to show selected voter details */}
-      <WardVoterDetailsPopup
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible}
-        selectedVoter={selectedVoter}
-      />
     </View>
   );
 }

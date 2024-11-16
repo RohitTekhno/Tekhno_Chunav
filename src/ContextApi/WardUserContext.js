@@ -11,6 +11,7 @@ export const WardUserProvider = ({ children }) => {
     const [boothId, setBoothId] = useState('');
     const [isWarduserAuthenticated, setWarduserAuthenticated] = useState(false);
     const [token, setToken] = useState(null)
+    const [error, setError] = useState(null);
 
     const loadUser = async () => {
         try {

@@ -6,11 +6,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Octicons from '@expo/vector-icons/Octicons';
 import axios from 'axios';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
-
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 const { width, height } = Dimensions.get('window');
 
 export default BuserRegistration = ({ navigation }) => {
     const { userId } = useContext(TownUserContext);
+    const { language } = useContext(LanguageContext);
     const [name, setName] = useState('');
     const [contact, setContact] = useState('');
     const [password, setPassword] = useState('');
@@ -29,7 +30,7 @@ export default BuserRegistration = ({ navigation }) => {
             try {
                 const response = await axios.get(`http://192.168.1.8:8000/api/get_booth_names_by_town_user/${userId}/`);
                 const boothsData = response.data.map(booth => ({
-                    label: `${booth.booth_id} - ${booth.booth_name}`,
+                    label: `${booth.booth_id} - ${language === 'en' ? booth.booth_name : booth.booth_name_mar}`,
                     value: booth.booth_id
                 }));
                 setItems(boothsData);
@@ -142,7 +143,7 @@ export default BuserRegistration = ({ navigation }) => {
                         <Pressable onPress={handleGoBack} style={styles.iconLeft}>
                             <Octicons name="arrow-left" size={30} color="white" />
                         </Pressable>
-                        <Text style={styles.text}>Registration</Text>
+                        <Text style={styles.text}>{language === 'en' ? 'Booth User Registration' : 'बूथ कार्यकर्ता रजिस्टर'}</Text>
                         <View style={styles.iconRight} />
                     </View>
                 </LinearGradient>
@@ -150,12 +151,12 @@ export default BuserRegistration = ({ navigation }) => {
 
             <View style={[styles.formContainer, { height: hasErrors() ? 600 : 500 }]}>
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>Booth User</Text>
+                    <Text style={styles.headerText}>{language === 'en' ? 'Booth User' : 'बूथ कार्यकर्ता'}</Text>
                 </View>
 
                 <View style={{ marginTop: 20, }}>
                     <View style={{ marginVertical: 10 }}>
-                        <TextInput style={styles.input} placeholder="Enter Username"
+                        <TextInput style={styles.input} placeholder={language === 'en' ? 'Enter Name' : 'नाव टाईप करा'}
                             placeholderTextColor="grey"
                             value={name} onChangeText={setName}
                         />
@@ -163,7 +164,7 @@ export default BuserRegistration = ({ navigation }) => {
                     </View>
 
                     <View style={{ marginVertical: 10 }}>
-                        <TextInput style={styles.input} placeholder="Enter Contact No"
+                        <TextInput style={styles.input} placeholder={language === 'en' ? 'Enter Contact' : 'संपर्क टाईप करा'}
                             placeholderTextColor="grey" value={contact}
                             onChangeText={setContact} keyboardType="phone-pad"
                         />
@@ -173,7 +174,8 @@ export default BuserRegistration = ({ navigation }) => {
                     <View style={{ marginVertical: 10 }}>
                         <View style={[styles.input, styles.passwordContainer]}>
                             <TextInput style={[styles.passwordInput, { flex: 1 }]}
-                                placeholder="Password" placeholderTextColor="grey"
+                                placeholder={language === 'en' ? 'Enter Password' : 'पासवर्ड टाईप करा'}
+                                placeholderTextColor="grey"
                                 secureTextEntry={!isPasswordVisible} value={password}
                                 onChangeText={setPassword}
                             />
@@ -194,7 +196,7 @@ export default BuserRegistration = ({ navigation }) => {
                             setItems={setItems}
                             multiple={true}
                             min={0}
-                            placeholder="Select Booth"
+                            placeholder={language === 'en' ? 'Select Booth' : 'बूथ निवडा'}
                             placeholderStyle={{ color: 'grey' }}
                             style={[styles.dropdown]}
                             containerStyle={styles.dropdownContainer}

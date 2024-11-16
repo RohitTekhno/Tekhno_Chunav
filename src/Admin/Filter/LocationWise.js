@@ -1,24 +1,28 @@
 import { Dimensions, StyleSheet, Text, View, TextInput, FlatList, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
 const { width, height } = Dimensions.get('window');
 
 export default function LocationWise() {
+    const { language } = useContext(LanguageContext);
     const [boothValue, setBoothValue] = useState(null);
     const [boothItems, setBoothItems] = useState([]);
     const [locationValue, setLocationValue] = useState(null);
     const [locationItems] = useState([
-        { label: 'In City', value: 1 },
-        { label: 'Near City', value: 2 },
-        { label: 'Out of City', value: 3 }
+        { label: language === 'en' ? 'In City' : 'शहरामध्ये', value: 1 },
+        { label: language === 'en' ? 'Near City' : 'शहराजवळ', value: 2 },
+        { label: language === 'en' ? 'Out of City' : 'शहराबाहेर', value: 3 }
     ]);
 
     const [voterData, setVoterData] = useState([]);
@@ -34,7 +38,7 @@ export default function LocationWise() {
         try {
             const response = await axios.get('http://192.168.1.8:8000/api/booths/');
             const boothOptions = response.data.map((item) => ({
-                label: `${item.booth_id} - ${item.booth_name}`,
+                label: `${item.booth_id} - ${language === 'en' ? item.booth_name : item.booth_name_mar}`,
                 value: item.booth_id,
             }));
             setBoothItems(boothOptions);
@@ -97,13 +101,13 @@ export default function LocationWise() {
 
     const renderVoterItem = ({ item }) => (
         <View style={styles.voterItem}>
-            <Text style={styles.voterText}>ID: {item.voter_id}</Text>
-            <Text style={styles.voterText}>Name: {item.voter_name}</Text>
-            <Text style={styles.voterText}>
-                Contact: {item.voter_contact_number ? item.voter_contact_number : 'N/A'}
+            <Text style={styles.voterText}>{language === 'en' ? 'ID' : 'आईडी'}: {item.voter_id}</Text>
+            <Text style={styles.voterText}>{language === 'en' ? 'Name' : 'नाव'}: {language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+            <Text style={styles.voterText}>{language === 'en' ? 'Contact' : 'संपर्क'}:
+                {item.voter_contact_number ? item.voter_contact_number : 'N/A'}
             </Text>
-            <Text style={styles.voterText}>
-                Location: {item.voter_current_location ? item.voter_current_location : 'N/A'}
+            <Text style={styles.voterText}>{language === 'en' ? 'Location' : 'स्थान'}:
+                {item.voter_current_location ? item.voter_current_location : 'N/A'}
             </Text>
         </View>
     );
@@ -115,7 +119,7 @@ export default function LocationWise() {
     return (
         <HeaderFooterLayout
             showFooter={false}
-            headerText='Location Wise Voter'
+            headerText={language === 'en' ? 'Location Wise Voter' : 'स्थानानुसार मतदार'}
             rightIcon={true}
             rightIconName="file-pdf"
             onRightIconPress={handlePDFClick}
@@ -131,8 +135,8 @@ export default function LocationWise() {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        placeholder="Select Booth"
-                        searchPlaceholder="Search booth..."
+                        placeholder={language === 'en' ? 'Select Booth' : 'बूथ निवडा'}
+                        searchPlaceholder={language === 'en' ? 'Search Booth' : 'बूथ शोधा'}
                         value={boothValue}
                         onChange={(item) => setBoothValue(item.value)}
                     />
@@ -142,32 +146,25 @@ export default function LocationWise() {
                         data={locationItems}
                         labelField="label"
                         valueField="value"
-                        placeholder="Select Location"
+                        placeholder={language === 'en' ? 'Select Location' : 'स्थान निवडा'}
                         value={locationValue}
                         onChange={(item) => setLocationValue(item.value)}
                     />
                     <TextInput
                         style={styles.searchBar}
-                        placeholder="Search by voter name..."
+                        placeholder={language === 'en' ? 'Search by name' : 'नाव शोधा'}
                         value={searchQuery}
                         onChangeText={(text) => setSearchQuery(text)}
                     />
 
-                    {loading ? (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="small" />
-                            <Text style={styles.loadingText}>Loading...</Text>
-                        </View>
-                    ) : (
-                        <FlatList
-                            data={filteredVoterData}
-                            keyExtractor={(item) => item.voter_id.toString()}
-                            renderItem={renderVoterItem}
-                            ListEmptyComponent={<Text style={{
-                                textAlign: 'center', color: 'grey', fontSize: 18
-                            }}>No voters found.</Text>}
-                        />
-                    )}
+
+                    <FlatList
+                        data={filteredVoterData}
+                        keyExtractor={(item) => item.voter_id.toString()}
+                        renderItem={renderVoterItem}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
                 </View>
             </View>
         </HeaderFooterLayout>

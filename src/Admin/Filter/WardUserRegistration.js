@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function WardUserRegistration({ navigation, toggleSidebar }) {
+    const { language } = useContext(LanguageContext);
     const [name, setName] = useState('');
     const [contact, setContact] = useState('');
     const [password, setPassword] = useState('');
@@ -134,7 +136,7 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
                             <MaterialIcons name="keyboard-backspace" size={28} color="white" />
                         </Pressable>
 
-                        <Text style={styles.text}>Registration</Text>
+                        <Text style={styles.text}>{language === 'en' ? 'Ward User Registration' : 'प्रभाग कार्यकर्ता नोंदणी'}</Text>
 
                         <View style={styles.iconRight} />
                     </View>
@@ -144,17 +146,19 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
 
             <View style={[styles.formContainer, { height: nameError || contactError || passwordError || townIdError ? height * 0.7 : height * 0.6 }]}>
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>Ward User</Text>
+                    <Text style={styles.headerText}>{language === 'en' ? 'Ward User' : 'प्रभाग कार्यकर्ता'}</Text>
                 </View>
 
                 <View style={{ paddingVertical: 20 }}>
-                    <TextInput style={styles.input} placeholder="Enter Username : "
+                    <TextInput style={styles.input}
+                        placeholder={language === 'en' ? 'Enter Name : ' : 'नाव प्रविष्ट करा : '}
                         placeholderTextColor="grey"
                         value={name} onChangeText={setName}
                     />
                     {nameError ? <Text style={styles.errorText}>*{nameError}</Text> : null}
 
-                    <TextInput style={styles.input} placeholder="Enter Contact No : "
+                    <TextInput style={styles.input}
+                        placeholder={language === 'en' ? 'Enter Contact Number : ' : 'संपर्क नंबर प्रविष्ट करा : '}
                         placeholderTextColor="grey" value={contact}
                         onChangeText={setContact} keyboardType="phone-pad"
                     />
@@ -169,7 +173,7 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
                         setItems={setItems}
                         multiple={false}
                         maxHeight={240}
-                        placeholder="Select Town :"
+                        placeholder={language === 'en' ? 'Select Ward : ' : 'प्रभाग निवडा'}
                         placeholderStyle={{ color: 'grey' }}
                         containerStyle={styles.dropdownContainer}
                         style={styles.dropdown}
@@ -183,7 +187,8 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
 
                     <View style={[styles.input, styles.passwordContainer]}>
                         <TextInput style={[styles.passwordInput, { flex: 1 }]}
-                            placeholder="Password : " placeholderTextColor="grey"
+                            placeholder={language === 'en' ? 'Enter Password : ' : 'पासवर्ड प्रविष्ट करा : '}
+                            placeholderTextColor="grey"
                             secureTextEntry={!isPasswordVisible} value={password}
                             onChangeText={setPassword}
                         />
@@ -196,7 +201,7 @@ export default function WardUserRegistration({ navigation, toggleSidebar }) {
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
-                    <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Register'}</Text>
+                    <Text style={styles.buttonText}>{loading ? language === 'en' ? 'Registering...' : 'नोंदणी करत आहे' : language === 'en' ? 'Register' : 'नोंदणी करा'}</Text>
                 </TouchableOpacity>
             </View>
         </HeaderFooterLayout>

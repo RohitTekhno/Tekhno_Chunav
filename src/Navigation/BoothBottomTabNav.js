@@ -12,9 +12,8 @@ import CasteList from '../BoothUser/Cast/CasteList';
 import BoothDashbord from '../BoothUser/Dashboard/BoothDashbord';
 import BoothNVoted from '../BoothUser/Dashboard/BoothNVoted';
 import BoothVotedList from '../BoothUser/Dashboard/BoothVotedList';
-import { VoterProvider } from '../ContextApi/VoterContext';
 import BoothVoters from '../BoothUser/Voters/BoothVoters';
-import ExitPoll from '../BoothUser/Exit Poll/ExitPoll';
+import ExitPoll from '../BoothUser/Prediction/ExitPoll';
 import FilterVoterByRelations from '../BoothUser/Voters/FilterVotersByRelations';
 import BoothRightMenu from '../BoothUser/Dashboard/BoothRightMenu';
 import Family from '../BoothUser/Dashboard/Family';
@@ -45,6 +44,7 @@ const DashboardStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Dashboard" : 'डॅशबोर्ड',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <MaterialIcons name="menu" size={30} color="black"
@@ -57,12 +57,30 @@ const DashboardStack = () => {
                 }}
             />
 
+            <Stack.Screen name='Voters List' component={BoothVoters}
+                options={{
+                    headerShown: true, headerTitleAlign: 'center',
+                    headerTitle: language === 'en' ? "Voter List" : 'मतदार यादी',
+                    headerTitleStyle: {
+                        fontSize: 22
+                    },
+                    headerShadowVisible: false,
+                    headerLeft: () => (
+                        <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
+                            onPress={() => navigation.goBack()}  >
+                            <MaterialIcons name="keyboard-backspace" size={30} color="black" />
+                        </Pressable>
+                    ),
+                }}
+            />
+
             <Stack.Screen name="Non Voted" component={BoothNVoted}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Non Voted" : 'मतदान न केलेले',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -78,6 +96,7 @@ const DashboardStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Voted" : 'मतदान केलेले',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -106,7 +125,7 @@ const DashboardStack = () => {
 
             <Stack.Screen name="Family" component={Family}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: true, headerTitleAlign: 'center',
                     headerTitle: language === 'en' ? 'Create Family' : 'कुटुंब तयार करा',
                     headerTitleStyle: { fontSize: 22 },
 
@@ -122,10 +141,11 @@ const DashboardStack = () => {
 
             <Stack.Screen name="Familylist" component={Familylist}
                 options={{
-                    headerShown: false, headerTitleAlign: 'center',
+                    headerShown: true, headerTitleAlign: 'center',
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Family List' : 'कुटुंब सूची',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -142,6 +162,7 @@ const DashboardStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Add Voters' : 'मतदार जोडा',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -158,6 +179,7 @@ const DashboardStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Locationwise Voters' : 'स्थानानुसार मतदार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -176,12 +198,14 @@ const DashboardStack = () => {
 
 const VotersStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Voters List'>
             <Stack.Screen name='Voters List' component={BoothVoters}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
+                    headerTitle: language === 'en' ? "Voter List" : 'मतदार यादी',
                     headerTitleStyle: {
                         fontSize: 22
                     },
@@ -200,6 +224,7 @@ const VotersStack = () => {
 
 const CastStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='CasteList'>
@@ -209,6 +234,7 @@ const CastStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? 'Caste-wise Voters' : 'जातीनुसार मतदार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -224,6 +250,7 @@ const CastStack = () => {
 
 const PredictionStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Prediction'>
@@ -233,6 +260,7 @@ const PredictionStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? 'Prediction' : 'संभाव्यता',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -249,6 +277,7 @@ const PredictionStack = () => {
                     headerTitleStyle: {
                         fontSize: 22,
                     },
+                    headerTitle: language === 'en' ? 'Exit Poll' : 'एक्झिट पोल',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -265,6 +294,7 @@ const PredictionStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? 'Total Voters' : 'एकूण मतदार',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
@@ -295,6 +325,8 @@ const PredictionStack = () => {
 }
 
 const ProfileStack = () => {
+    const { language, toggleLanguage } = useContext(LanguageContext);
+
     return (
         <Stack.Navigator initialRouteName='Profile'>
             <Stack.Screen name='Profile' component={BuserProfile} options={{ headerShown: false }} />

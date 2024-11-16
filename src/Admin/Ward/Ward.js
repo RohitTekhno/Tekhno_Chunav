@@ -10,6 +10,8 @@ import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -101,22 +103,22 @@ export default function Ward() {
                 navigation.navigate('Booth Voters', { boothId: item.booth_id });
             }}
         >
-            <Text style={styles.boothId}>Serial No: {item.serial_number}</Text>
+            <Text style={styles.boothId}>{language === 'en' ? 'Serial No: ' : 'सीरियल नंबर: '}{item.serial_number}</Text>
             <Text style={styles.boothName}>
-                <Text style={{ fontWeight: '600', fontSize: 14 }}>Booth No:</Text> {item.booth_id}
+                <Text style={{ fontWeight: '600', fontSize: 14 }}>{language === 'en' ? 'Booth ID: ' : 'बूथ आईडी: '}</Text> {item.booth_id}
             </Text>
             <Text style={styles.boothName}>
-                <Text style={{ fontWeight: '600', fontSize: 14 }}>Booth Name: </Text>{item.booth_name}
+                <Text style={{ fontWeight: '600', fontSize: 14 }}>{language === 'en' ? 'Booth Name: ' : 'बूथ नाव: '} </Text>{language === 'en' ? item.booth_name : item.booth_name_mar}
             </Text>
             <Text style={styles.voterCount}>
-                <Text style={{ fontWeight: '600', fontSize: 14 }}>Voter Count:</Text> {item.voter_count}
+                <Text style={{ fontWeight: '600', fontSize: 14 }}>{language === 'en' ? 'Voter Count:: ' : 'मतदार संख्या: '}</Text> {item.voter_count}
             </Text>
         </TouchableOpacity>
     );
 
     return (
         <HeaderFooterLayout
-            headerText={language === 'en' ? 'Ward List' : 'वार्ड सूची'}
+            headerText={language === 'en' ? 'Ward List' : 'प्रभाग सूची'}
             showHeader={true}
             showFooter={false}
             rightIconName="filter"
@@ -128,7 +130,7 @@ export default function Ward() {
                     <TextInput
                         value={searchedValue}
                         onChangeText={setSearchValue}
-                        placeholder={language === 'en' ? 'Search Ward by name or ID' : 'नाव किंवा आयडीनुसार वार्ड शोधा'}
+                        placeholder={language === 'en' ? 'Search Ward by name or ID' : 'नाव किंवा आयडीनुसार प्रभाग शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
@@ -139,63 +141,55 @@ export default function Ward() {
                             setSelectedFilter(null)
                             setFilterVisible(false)
                         }}>
-                            <Text style={[styles.filterOption, selectedFilter === null && styles.selectedFilterOption]}>All</Text>
+                            <Text style={[styles.filterOption, selectedFilter === null && styles.selectedFilterOption]}>{language === 'en' ? 'All' : 'सर्व'}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => {
                             setSelectedFilter(1)
                             setFilterVisible(false)
                         }}>
-                            <Text style={[styles.filterOption, selectedFilter === 1 && styles.selectedFilterOption]}>Urban</Text>
+                            <Text style={[styles.filterOption, selectedFilter === 1 && styles.selectedFilterOption]}>{language === 'en' ? 'Urban' : 'शहरी'}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => {
                             setSelectedFilter(2)
                             setFilterVisible(false)
                         }}>
-                            <Text style={[styles.filterOption, selectedFilter === 2 && styles.selectedFilterOption]}>Rural</Text>
+                            <Text style={[styles.filterOption, selectedFilter === 2 && styles.selectedFilterOption]}>{language === 'en' ? 'Rural' : 'ग्रामीण'}</Text>
                         </TouchableOpacity>
                     </View>
                 )}
 
 
                 <View style={styles.wardHeader}>
-                    <Text style={styles.wardHeaderText}>No</Text>
-                    <Text style={styles.wardHeaderText}>Ward Name</Text>
-                    <Text style={styles.wardHeaderText}>Booths</Text>
-                    <Text style={styles.wardHeaderText}>Action</Text>
+                    <Text style={styles.wardHeaderText}>{language === 'en' ? 'Ward ID' : ' आईडी'}</Text>
+                    <Text style={styles.wardHeaderText}>{language === 'en' ? 'Ward Name' : 'प्रभाग नाव'}</Text>
+                    <Text style={styles.wardHeaderText}>{language === 'en' ? 'Booth Count' : 'बूथ संख्या'}</Text>
+                    <Text style={styles.wardHeaderText}>{language === 'en' ? 'Ward Voters' : ' प्रभाग मतदार'}</Text>
                 </View>
 
-                {wardLoading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#0073e6" />
-                        <Text style={styles.loadingText}>{language === 'en' ? 'Loading booths...' : 'लोड करत आहे...'}</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={searchedWards}
-                        keyExtractor={(item) => item.prabhag_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity style={styles.wardItem} onPress={() => {
-                                getBoothsByWard(item.prabhag_id);
-                                setSelectedWard(item.prabhag_id);
-                            }}>
-                                <View style={styles.wardDetails}>
-                                    <Text style={styles.index}>{item.prabhag_id}</Text>
-                                    <Text style={styles.wardName}>{item.prabhag_name}</Text>
-                                </View>
-                                <View style={styles.actionContainer}>
-                                    <Text style={{ backgroundColor: 'white' }}>{item.booth_count}</Text>
-                                    <TouchableOpacity style={styles.userButton} onPress={() => handleUserPress(item.prabhag_id)}>
-                                        <FontAwesome5 name="users" size={20} color="black" />
-                                    </TouchableOpacity>
-                                </View>
-                            </TouchableOpacity>
-                        )}
-                        ListEmptyComponent={
-                            <Text style={styles.emptyMessage}>{language === 'en' ? "No wards found." : 'कोणतेही वार्ड नाहीत.'}</Text>
-                        }
-                    />
-                )}
+                <FlatList
+                    data={searchedWards}
+                    keyExtractor={(item) => item.prabhag_id.toString()}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity style={styles.wardItem} onPress={() => {
+                            getBoothsByWard(item.prabhag_id);
+                            setSelectedWard(item.prabhag_id);
+                        }}>
+                            <View style={styles.wardDetails}>
+                                <Text style={styles.index}>{item.prabhag_id}</Text>
+                                <Text style={styles.wardName}>{item.prabhag_name}</Text>
+                            </View>
+                            <View style={styles.actionContainer}>
+                                <Text style={{ backgroundColor: 'white' }}>{item.booth_count}</Text>
+                                <TouchableOpacity style={styles.userButton} onPress={() => handleUserPress(item.prabhag_id)}>
+                                    <FontAwesome5 name="users" size={20} color="black" />
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    ListHeaderComponent={wardLoading && <LoadingListComponent />}
+                    ListEmptyComponent={!wardLoading && <EmptyListComponent />}
+                />
 
                 <Modal visible={modalVisible} transparent animationType="slide">
                     <View style={styles.modalContainer}>
@@ -207,18 +201,17 @@ export default function Ward() {
                         ) : (
                             <View style={styles.modalContent}>
                                 <Text style={styles.modalHeader}>
-                                    {language === 'en' ? `Booths In Ward :- ${selectedWard}` : `वार्ड ${selectedWard} मधले बूथ`}
+                                    {language === 'en' ? `Booths In Ward :- ${selectedWard}` : `प्रभाग ${selectedWard} मधले बूथ`}
                                 </Text>
                                 <FlatList
                                     data={booths}
                                     renderItem={renderItem}
                                     keyExtractor={(item) => item.booth_id.toString()}
-                                    ListEmptyComponent={() =>
-                                        <Text style={styles.emptyMessage}>{language === 'en' ? "No booths found." : 'कोणतेही बूथ नाहीत.'}</Text>
-                                    }
+                                    ListHeaderComponent={loading && <LoadingListComponent />}
+                                    ListEmptyComponent={!loading && <EmptyListComponent />}
                                 />
                                 <TouchableOpacity style={styles.closeButton} onPress={handleModalClose}>
-                                    <Text style={styles.closeText}>Close</Text>
+                                    <Text style={styles.closeText}>{language === 'en' ? 'Close' : 'बंद करा'}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

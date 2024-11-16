@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import WardHeaderFooter from './WardHeaderFooter';
 import { LanguageContext } from '../ContextApi/LanguageContext';
 import { WardUserContext } from '../ContextApi/WardUserContext';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
 
 
 // const { height, width } = Dimensions.get('window');
@@ -73,32 +75,24 @@ export default function WardBooths() {
                 />
             </View>
 
-            {loading ? <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'large'} color={'black'} />
-                <Text>{language === 'en' ? 'Loading...' : 'लोड करत आहे...'}</Text>
-            </View>
-                :
-                <FlatList
-                    data={searchedBooth}
-                    keyExtractor={item => item.booth_id.toString()}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <Pressable style={styles.voterItem}
-                            onPress={() => {
-                                navigation.navigate('Booth Voters', { boothId: item.booth_id });
-                            }}
-                        >
-                            <Text style={styles.boothIdText}>{item.booth_id}</Text>
-                            <Text style={styles.boothNameText}>{item.booth_name}</Text>
-                        </Pressable>
-                    )}
-                    ListEmptyComponent={() => (
-                        <Text style={styles.noDataText}>
-                            {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
-                        </Text>
-                    )}
-                />
-            }
+            <FlatList
+                data={searchedBooth}
+                keyExtractor={item => item.booth_id.toString()}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                    <Pressable style={styles.voterItem}
+                        onPress={() => {
+                            navigation.navigate('Booth Voters', { boothId: item.booth_id });
+                        }}
+                    >
+                        <Text style={styles.boothIdText}>{item.booth_id}</Text>
+                        <Text style={styles.boothNameText}>{language === 'en' ? item.booth_name : item.booth_name_mar}</Text>
+                    </Pressable>
+                )}
+                ListHeaderComponent={loading && <LoadingListComponent />}
+                ListEmptyComponent={!loading && <EmptyListComponent />}
+            />
+
         </View>
     );
 }

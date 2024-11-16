@@ -10,6 +10,8 @@ import WardHeaderFooter from './WardHeaderFooter';
 import { LanguageContext } from '../ContextApi/LanguageContext';
 import { WardUserContext } from '../ContextApi/WardUserContext';
 import EditVoterForm from '../ReusableCompo/EditVoterForm';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
 
 const { height, width } = Dimensions.get('window');
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
@@ -134,7 +136,7 @@ export default function Wardvoterlist({ route, navigation }) {
             <Text style={styles.itemText}>{item.voter_id}</Text>
           </View>
           <View style={styles.nameSection}>
-            <Text style={styles.itemText}>{toTitleCase(item.voter_name)}</Text>
+            <Text style={styles.itemText}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -158,41 +160,29 @@ export default function Wardvoterlist({ route, navigation }) {
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by ID or Name"
+        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
         value={searchText}
         onChangeText={handleSearch}
       />
 
-      {(refreshing) ? (
-        < View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} color={'black'} />
-          <Text>wait a minute...</Text>
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={filteredVoters}
-            keyExtractor={item => item.voter_id.toString()}
-            renderItem={renderItem}
-            contentContainerStyle={styles.flatListContent}
-            extraData={filteredVoters}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
-            }
-          />
+      <FlatList
+        data={filteredVoters}
+        keyExtractor={item => item.voter_id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.flatListContent}
+        extraData={filteredVoters}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
+      />
 
-          <EditVoterForm
-            isVisible={isFormVisible}
-            onClose={handleCloseEditForm}
-            selectedVoter={selectedVoter}
-            onEditVoter={handleSelectedVoterDetails}
-          />
-        </>
-      )}
-    </View>
+      <EditVoterForm
+        isVisible={isFormVisible}
+        onClose={handleCloseEditForm}
+        selectedVoter={selectedVoter}
+        onEditVoter={handleSelectedVoterDetails}
+      />
+    </View >
   );
 }
 

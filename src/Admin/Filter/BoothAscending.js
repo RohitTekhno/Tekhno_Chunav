@@ -49,7 +49,7 @@ export default function BoothAscending() {
 
   const getStageColor = (percentage) => {
     if (percentage <= 0) return 'red';
-    if (percentage <= 2) return 'yellow';
+    if (percentage <= 25) return 'yellow';
     return 'green';
   };
 
@@ -93,13 +93,6 @@ export default function BoothAscending() {
   return (
 
     <View style={styles.container}>
-      {/* Search Bar */}
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search Booths..."
-        value={searchText}
-        onChangeText={setSearchText}
-      />
 
       {/* Show loading spinner while data is being fetched */}
       {loading ? (

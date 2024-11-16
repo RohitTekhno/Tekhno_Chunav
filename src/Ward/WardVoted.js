@@ -5,6 +5,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { LanguageContext } from '../ContextApi/LanguageContext';
 import { WardUserContext } from '../ContextApi/WardUserContext';
 import WardVoterDetailsPopup from './WardVoterDetailsPopup';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
 
 const { height, width } = Dimensions.get('window');
 
@@ -130,23 +132,18 @@ export default function WardVoted({ route, navigation }) {
         />
       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="black" />
-          <Text>{language === 'en' ? 'Loading...' : 'लोड करत आहे...'}</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredVoters}
-          keyExtractor={item => item.voter_id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          renderItem={renderItem}
-          ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-          refreshing={refreshing}
-          onRefresh={handleRefresh} // Add pull-to-refresh handler
-        />
-      )}
+
+      <FlatList
+        data={filteredVoters}
+        keyExtractor={item => item.voter_id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        renderItem={renderItem}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
+        refreshing={refreshing}
+        onRefresh={handleRefresh} // Add pull-to-refresh handler
+      />
 
       <WardVoterDetailsPopup
         isModalVisible={isModalVisible}

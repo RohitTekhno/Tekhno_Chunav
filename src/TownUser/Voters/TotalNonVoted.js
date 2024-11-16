@@ -4,12 +4,16 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
 import axios from 'axios';
 import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 const { width, height } = Dimensions.get('screen');
 
 
 
 const TotalNonVoted = () => {
     const { userId } = useContext(TownUserContext);
+    const { language } = useContext(LanguageContext);
     const [searchedValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(true);
     const [voters, setVoters] = useState([]);
@@ -64,10 +68,10 @@ const TotalNonVoted = () => {
         );
     }
 
-    const VoterItem = memo(({ item, onPress }) => (
+    const VoterItem = memo(({ item, index, onPress }) => (
         <Pressable style={styles.voterItem} onPress={onPress}>
-            <Text style={styles.voterIdText}>{item.voter_id}</Text>
-            <Text style={{ flex: 1 }}>{convertToCamel(item.voter_name)}</Text>
+            <Text style={styles.voterIdText}>{index}</Text>
+            <Text style={{ flex: 1 }}>{language === 'en' ? convertToCamel(item.voter_name) : item.voter_name_mar}</Text>
         </Pressable>
     ));
 
@@ -78,42 +82,37 @@ const TotalNonVoted = () => {
                 <TextInput
                     value={searchedValue}
                     onChangeText={setSearchValue}
-                    placeholder='Search by user’s name or ID'
+                    placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                     style={styles.searchInput}
                 />
             </View>
 
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'large'} color={'black'} />
-                    <Text>Loading...</Text>
-                </View>
-            ) : (
-                <View style={styles.listContainer}>
-                    {searchedVoter.length > 0 ? (
-                        <>
-                            <FlatList
-                                data={searchedVoter}
-                                keyExtractor={item => item.voter_id.toString()}
-                                showsVerticalScrollIndicator={false}
-                                renderItem={({ item }) => (
-                                    <VoterItem
-                                        item={item}
-                                        onPress={() => fetchVoterDetails(item.voter_id)}
-                                    />
-                                )}
+
+            <View style={styles.listContainer}>
+                <>
+                    <FlatList
+                        data={searchedVoter}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item, index }) => (
+                            <VoterItem
+                                item={item}
+                                index={index + 1}
+                                onPress={() => fetchVoterDetails(item.voter_id)}
                             />
-                            <VoterDetailsPopUp
-                                isModalVisible={isModalVisible}
-                                selectedVoter={selectedVoter}
-                                setIsModalVisible={setIsModalVisible}
-                            />
-                        </>
-                    ) : (
-                        <Text style={styles.noDataText}>No results found</Text>
-                    )}
-                </View>
-            )}
+                        )}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+                    <VoterDetailsPopUp
+                        isModalVisible={isModalVisible}
+                        selectedVoter={selectedVoter}
+                        setIsModalVisible={setIsModalVisible}
+                    />
+                </>
+
+            </View>
+
         </View>
     );
 };
@@ -139,6 +138,7 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         paddingVertical: 10,
+        paddingHorizontal: 10
     },
     listContainer: {
         flex: 1,

@@ -1,5 +1,5 @@
 import { Alert, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,10 +10,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import { Pressable } from 'react-native';
+import { LanguageContext } from '../ContextApi/LanguageContext';
 
 
 const { height, width } = Dimensions.get('screen')
 const CustomDrawerContent = ({ navigation }) => {
+    const { language, toggleLanguage } = useContext(LanguageContext);
     const handleCloseDrawer = () => {
         navigation.closeDrawer();
     };
@@ -30,13 +32,21 @@ const CustomDrawerContent = ({ navigation }) => {
                     flexDirection: 'row', alignItems: 'center', marginTop: 20,
                     justifyContent: 'space-between', marginBottom: 20
                 }}>
-                    <Pressable style={{ marginLeft: 10 }} onPress={handleCloseDrawer}>
+                    <TouchableOpacity style={{ marginLeft: 10 }} onPress={handleCloseDrawer}>
                         <Icon name='chevron-left' size={25} color={'white'} />
-                    </Pressable>
+                    </TouchableOpacity>
                     <Text style={{
                         color: 'white', fontWeight: '500', fontSize: 15,
                         textAlign: 'center',
-                    }}>Welcome to</Text>
+                    }}>{language === 'en' ? 'Welcome to' : ' आपले स्वागत आहे'}</Text>
+                    <TouchableOpacity
+                        style={styles.languageToggle}
+                        onPress={toggleLanguage}
+                    >
+                        <Text style={styles.languageToggleText}>
+                            {language === 'en' ? 'EN' : 'MR'}
+                        </Text>
+                    </TouchableOpacity>
                     <View />
                 </View>
 
@@ -50,24 +60,24 @@ const CustomDrawerContent = ({ navigation }) => {
                 <View style={{ marginTop: 20 }}>
                     <TouchableOpacity onPress={() => { navigation.navigate("About Us") }} style={styles.drawerList} >
                         <Entypo name="info-with-circle" size={25} color="white" />
-                        <Text style={styles.drawerListText}>About Us</Text>
+                        <Text style={styles.drawerListText}>{language === 'en' ? 'About Us' : 'आमच्याबद्दल'}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { navigation.navigate("Contact Us") }} style={styles.drawerList} >
                         <MaterialIcons name="contact-phone" size={25} color="white" />
-                        <Text style={styles.drawerListText}>Contact Us</Text>
+                        <Text style={styles.drawerListText}>{language === 'en' ? 'Contact Us' : 'संपर्क करा'}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { navigation.navigate("Help") }} style={styles.drawerList} >
                         <FontAwesome5 name="hands-helping" size={25} color="white" />
-                        <Text style={styles.drawerListText}>Help</Text>
+                        <Text style={styles.drawerListText}>{language === 'en' ? 'Help' : 'मदत '}</Text>
                     </TouchableOpacity>
 
                 </View>
 
                 <Pressable style={styles.logOutView} onPress={() => { navigation.navigate('LogOut') }}>
                     <Feather name="log-out" size={25} color="#3C4CAC" />
-                    <Text style={{ color: '#3C4CAC', fontSize: 20 }}>Log Out</Text>
+                    <Text style={{ color: '#3C4CAC', fontSize: 20 }}>{language === 'en' ? 'Log Out' : 'लॉग आउट'}</Text>
                 </Pressable>
             </LinearGradient >
         </View >
@@ -129,5 +139,22 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 15,
         columnGap: 15
+    },
+    languageToggle: {
+        // position: 'absolute',
+        // // top: 40,
+        // // right: 20,
+        backgroundColor: '#F04393',
+        borderRadius: 20,
+        width: 35,
+        height: 35,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+    },
+    languageToggleText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

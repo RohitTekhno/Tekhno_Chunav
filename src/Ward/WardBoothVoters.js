@@ -4,12 +4,20 @@ import axios from 'axios';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import WardHeaderFooter from './WardHeaderFooter';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import LoadingModal from '../ReusableCompo/LoadingModal';
+import VoterDetailsPopUp from '../ReusableCompo/VoterDetailsPopUp';
+import { TouchableOpacity } from 'react-native';
+import EditVoterForm from '../ReusableCompo/EditVoterForm';
 
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
 const { height, width } = Dimensions.get('window');
 
 export default function WardBoothVoters({ route, navigation }) {
+  const { language, toggleLanguage } = useContext(LanguageContext);
   const [voters, setVoters] = useState([]);
   const [filteredVoters, setFilteredVoters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +26,9 @@ export default function WardBoothVoters({ route, navigation }) {
   const [clickedVoter, setClickedVoter] = useState(null);
   const [animatedValue] = useState(new Animated.Value(1));
   const { boothId } = route.params;
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [selectedVoter, setSelectedVoter] = useState(null);
+  const [LoadingModalDetails, setLoadingModalDetails] = useState(false);
 
   useEffect(() => {
     const fetchVoters = async () => {
@@ -27,7 +38,8 @@ export default function WardBoothVoters({ route, navigation }) {
 
           const voterData = response.data.map(voter => ({
             voter_id: voter.voter_id,
-            voter_name: voter.voter_name
+            voter_name: voter.voter_name,
+            voter_name_mar: voter.voter_name_mar
           }));
           setVoters(voterData);
           setFilteredVoters(voterData);
@@ -57,46 +69,74 @@ export default function WardBoothVoters({ route, navigation }) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
 
-
-  const handleVoterPress = (voter) => {
-    setClickedVoter(voter.voter_id);
-
-
-    Animated.sequence([
-      Animated.timing(animatedValue, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
+  const fetchVoterDetails = (voter_id) => {
+    setLoadingModalDetails(true);
+    axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
+      .then(response => {
+        setSelectedVoter(response.data);
+        setFormVisible(true);
       })
-    ]).start();
+      .catch(error => {
+        Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
+      })
+      .finally(() => {
+        setLoadingModalDetails(false);
+      })
+  };
+
+  const handleCloseEditForm = () => {
+    setFormVisible(false);
+    setSelectedVoter(null);
+  };
+
+
+  const handleSelectedVoterDetails = (newDetails) => {
+    const updatedFilteredVoters = filteredVoters.map(voter =>
+      voter.voter_id.toString() === newDetails.voter_id.toString() ? { ...voter, ...newDetails } : voter
+    );
+    setFilteredVoters(updatedFilteredVoters);
   };
 
   const renderItem = ({ item }) => {
-    const isClicked = item.voter_id === clickedVoter;
+    let backgroundColor = 'white';
+
+    switch (item.voter_favour_id) {
+      case 1:
+        backgroundColor = '#d3f5d3';
+        break;
+      case 2:
+        backgroundColor = '#f5d3d3';
+        break;
+      case 3:
+        backgroundColor = '#f5f2d3';
+        break;
+      case 4:
+        backgroundColor = '#c9daff';
+        break;
+      case 5:
+        backgroundColor = 'skyblue';
+        break;
+      case 6:
+        backgroundColor = '#fcacec';
+        break;
+      case 7:
+        backgroundColor = '#dcacfa';
+        break;
+
+      default:
+        backgroundColor = 'white';
+    }
 
     return (
-      <Animated.View
-        style={[
-          styles.voterItem,
-          isClicked && {
-            transform: [{ scale: animatedValue }],
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.8,
-            shadowRadius: 9,
-            elevation: 10,
-          }
-        ]}
-      >
-        <View style={styles.voterDetails}>
-          <View style={{
-            borderRightWidth: 1, borderColor: '#D9D9D9',
-            width: 60, alignItems: 'center',
-          }}>
-            <Text>{item.voter_id}</Text>
-          </View>
-          <Text>{item.voter_name}</Text>
+      <TouchableOpacity style={[styles.voterItem, { backgroundColor }]}
+        onPress={() => fetchVoterDetails(item.voter_id)}>
+        <View style={styles.idSection}>
+          <Text style={styles.itemText}>{item.voter_id}</Text>
         </View>
-      </Animated.View>
+        <View style={styles.nameSection}>
+          <Text style={styles.itemText}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -107,24 +147,29 @@ export default function WardBoothVoters({ route, navigation }) {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder='Search by voter’s name or ID'
+          placeholder={language === 'en' ? "search booth by name or ID" : 'नाव किंवा आयडीद्वारे बूथ शोधा'}
           style={styles.searchInput}
         />
       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} color={'black'} />
-          <Text>Loading...</Text>
-        </View>
-      ) :
-        <FlatList
-          data={filteredVoters}
-          keyExtractor={item => item.voter_id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          renderItem={renderItem}
-          ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
+      <FlatList
+        data={filteredVoters}
+        keyExtractor={item => item.voter_id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        renderItem={renderItem}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
+      />
+
+      {LoadingModalDetails ?
+        <LoadingModal />
+        :
+        <EditVoterForm
+          isVisible={isFormVisible}
+          onClose={handleCloseEditForm}
+          selectedVoter={selectedVoter}
+          onEditVoter={handleSelectedVoterDetails}
         />
       }
     </View>
@@ -197,6 +242,24 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 16,
     color: 'red',
-  }
+  },
+  idSection: {
+    width: '20%',
+    borderRightWidth: 1,
+    borderRightColor: 'black',
+    paddingRight: 10,
+    alignItems: 'center',
+  },
+  nameSection: {
+    width: '80%',
+    paddingLeft: 10,
+  },
+  itemText: {
+    fontSize: height * 0.018,
+  },
+  flatListContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
 
 });

@@ -7,6 +7,7 @@ import { BoothUserProvider } from './src/ContextApi/BuserContext';
 import { LanguageProvider } from './src/ContextApi/LanguageContext';
 import { AuthenticationProvider } from './src/ContextApi/AuthenticationContext';
 import { WardUserProvider } from './src/ContextApi/WardUserContext';
+import { KaryakartaProvider } from './src/ContextApi/KaryakartaContext';
 
 export default function App() {
   return (
@@ -17,11 +18,13 @@ export default function App() {
           <WardUserProvider>
             <TownUserProvider>
               <BoothUserProvider>
-                <NavigationContainer>
-                  <DrawerNavigationComp>
-                    <StackNavigation />
-                  </DrawerNavigationComp>
-                </NavigationContainer>
+                <KaryakartaProvider>
+                  <NavigationContainer>
+                    <DrawerNavigationComp>
+                      <StackNavigation />
+                    </DrawerNavigationComp>
+                  </NavigationContainer>
+                </KaryakartaProvider>
               </BoothUserProvider>
             </TownUserProvider>
           </WardUserProvider>

@@ -12,6 +12,7 @@ export const BoothUserProvider = ({ children }) => {
     const [buserId, setBuserId] = useState(null)
     const [isBuserAuthenticated, setBuserAuthenticated] = useState(false);
     const [token, setToken] = useState(null);
+    console.log(token);
 
     const loadUser = async () => {
         try {
@@ -20,7 +21,6 @@ export const BoothUserProvider = ({ children }) => {
                 const decoded = jwtDecode(storedUser);
                 setBuserId(JSON.parse(decoded.user_id));
                 const expirationDate = new Date(decoded.exp * 1000);
-                setBuserAuthenticated(true);
 
                 if (expirationDate > new Date()) {
                     setBoothId(decoded.politician_id);

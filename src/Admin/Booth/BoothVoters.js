@@ -1,23 +1,28 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { ActivityIndicator, Checkbox } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
-
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EditVoterForm from '../../ReusableCompo/EditVoterForm';
+import { render } from 'react-dom';
 
 const BoothVoters = ({ route }) => {
     const { boothId } = route.params;
+    const { language } = useContext(LanguageContext);
     const [voters, setVoters] = useState([]);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchedValue, setSearchValue] = useState('');
     const [sortState, setSortState] = useState(0);
     const [initialVoters, setInitialVoters] = useState([]);
-
+    const [error, setError] = useState(null);
     const [selectedVoter, setSelectedVoter] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isFormVisible, setIsFormVisible] = useState(false);
 
     const [selectedVoters, setSelectedVoters] = useState([]);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -26,9 +31,10 @@ const BoothVoters = ({ route }) => {
         axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
             .then(response => {
                 setSelectedVoter(response.data);
-                setIsModalVisible(true);
+                setIsFormVisible(true);
             })
             .catch(error => {
+                console.error(error);
                 Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
             });
     };
@@ -42,11 +48,13 @@ const BoothVoters = ({ route }) => {
     };
 
     const toggleVoterSelection = (voter_id) => {
-        if (selectedVoters.includes(voter_id)) {
-            setSelectedVoters(selectedVoters.filter(id => id !== voter_id));
-        } else {
-            setSelectedVoters([...selectedVoters, voter_id]);
-        }
+        setSelectedVoters(prevSelectedVoters => {
+            if (prevSelectedVoters.includes(voter_id)) {
+                return prevSelectedVoters.filter(id => id !== voter_id);
+            } else {
+                return [...prevSelectedVoters, voter_id];
+            }
+        });
     };
 
     const handleLongPress = (voter_id) => {
@@ -59,69 +67,65 @@ const BoothVoters = ({ route }) => {
         setSelectedVoters([]);
     };
 
-    const searchedVoters = voters.filter(voter =>
-        (voter.voter_name && voter.voter_name.toLowerCase().includes(searchedValue.toLowerCase())) ||
-        (voter.voter_id && voter.voter_id.toString().includes(searchedValue))
-    );
+    const searchedVoters = useMemo(() => {
+        return voters.filter(voter =>
+            (voter.voter_name && voter.voter_name.toLowerCase().includes(searchedValue.toLowerCase())) ||
+            (voter.voter_name_mar && voter.voter_name_mar.toLowerCase().includes(searchedValue.toLowerCase())) ||
+            (voter.voter_id && voter.voter_id.toString().includes(searchedValue))
+        );
+    }, [searchedValue, voters]);
 
     useEffect(() => {
         setFilteredVoters(searchedVoters);
-    }, [searchedValue, voters]);
+    }, [searchedVoters]);
 
     const sortVotersAlphabetically = () => {
+        const sortedVoters = [...filteredVoters];
         if (sortState === 0) {
-
-            const sortedVoters = [...filteredVoters].sort((a, b) => {
+            sortedVoters.sort((a, b) => {
                 const nameA = a.voter_name ? a.voter_name.toLowerCase() : '';
                 const nameB = b.voter_name ? b.voter_name.toLowerCase() : '';
                 return nameA.localeCompare(nameB);
             });
-            setFilteredVoters(sortedVoters);
             setSortState(1);
         } else if (sortState === 1) {
-            // Sort Z-A
-            const sortedVoters = [...filteredVoters].sort((a, b) => {
+            sortedVoters.sort((a, b) => {
                 const nameA = a.voter_name ? a.voter_name.toLowerCase() : '';
                 const nameB = b.voter_name ? b.voter_name.toLowerCase() : '';
                 return nameB.localeCompare(nameA);
             });
-            setFilteredVoters(sortedVoters);
             setSortState(2);
         } else {
-            // Reset to default order (initial voters)
-            setFilteredVoters(initialVoters);
+            sortedVoters.sort((a, b) => a.voter_id - b.voter_id); // Default sort by ID
             setSortState(0);
         }
+        setFilteredVoters(sortedVoters);
     };
 
     useEffect(() => {
         axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}/`)
             .then(response => {
-                if (response.data.voters && Array.isArray(response.data.voters)) {
-                    setVoters(response.data.voters);
-                    setFilteredVoters(response.data.voters);
-                    setInitialVoters(response.data.voters);
+                if (response.data && Array.isArray(response.data)) {
+                    setVoters(response.data);
+                    setFilteredVoters(response.data);
+                    setInitialVoters(response.data);
                 } else {
                     setError('Unexpected API response format.');
                 }
                 setLoading(false);
             })
             .catch(error => {
+                console.error(error);
                 Alert.alert('Error fetching voter data', error.toString ? error.toString() : 'Unknown error');
-
                 setError('Error fetching data. Please try again later.');
                 setLoading(false);
             });
     }, [boothId]);
 
     const getIconName = () => {
-        if (sortState === 0) {
-            return "sort";
-        } else if (sortState === 1) {
-            return "sort-alpha-down";
-        } else if (sortState === 2) {
-            return "sort-alpha-up-alt";
-        }
+        if (sortState === 0) return "sort";
+        if (sortState === 1) return "sort-alpha-down";
+        return "sort-alpha-up-alt";
     };
 
     const send_WhatsApp_Message = async () => {
@@ -129,12 +133,12 @@ const BoothVoters = ({ route }) => {
             const response = await axios.post(`http://192.168.1.8:8000/api/send_whatsapp_message/`, {
                 "voter_ids": selectedVoters
             });
-
             if (response.status === 200) {
                 alert("WhatsApp message sent successfully!");
                 exitSelectionMode();
             }
         } catch (error) {
+            console.error(error);
             Alert.alert("Error sending WhatsApp message:", error.toString ? error.toString() : 'Unknown error');
         }
     };
@@ -144,18 +148,89 @@ const BoothVoters = ({ route }) => {
             const response = await axios.post(`http://192.168.1.8:8000/api/send_text_message/`, {
                 "voter_ids": selectedVoters
             });
-
             if (response.status === 200) {
-                alert("Text message sent successfully!");
+                Alert.alert("Alert", "Text message sent successfully!");
                 exitSelectionMode();
             }
         } catch (error) {
+            console.error(error);
             Alert.alert("Error sending text message:", error.toString ? error.toString() : 'Unknown error');
         }
     };
 
+    const renderItem = ({ item }) => {
+        let backgroundColor = 'white';
+
+        switch (item.voter_favour_id) {
+            case 1:
+                backgroundColor = '#d3f5d3';
+                break;
+            case 2:
+                backgroundColor = '#f5d3d3';
+                break;
+            case 3:
+                backgroundColor = '#f5f2d3';
+                break;
+            case 4:
+                backgroundColor = '#c9daff';
+                break;
+            case 5:
+                backgroundColor = 'skyblue';
+                break;
+            case 6:
+                backgroundColor = '#fcacec';
+                break;
+            case 7:
+                backgroundColor = '#dcacfa';
+                break;
+
+            default:
+                backgroundColor = 'white';
+        }
+
+        console.log(item.voter_favour_id, backgroundColor);
+
+
+        return (
+
+            <Pressable
+                style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem, { backgroundColor }]}
+                onPress={() => handleVoterPress(item.voter_id)}
+                onLongPress={() => handleLongPress(item.voter_id)}
+            >
+                <View style={styles.voterDetails}>
+                    <View style={{
+                        borderRightWidth: 1, borderColor: '#D9D9D9',
+                        width: 60, alignItems: 'center',
+                    }}>
+                        <Text>{item.voter_id}</Text>
+                    </View>
+                    <Text style={{ flex: 1, fontSize: 16 }}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+                </View>
+                {isSelectionMode && (
+                    <Checkbox
+                        status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
+                        onPress={() => toggleVoterSelection(item.voter_id)}
+                    />
+                )}
+            </Pressable>
+        )
+    }
+
     const selectAllVoters = () => {
         setSelectedVoters(filteredVoters.map(item => item.voter_id));
+    };
+
+    const handleSelectedVoterDetails = (newDetails) => {
+        const updatedFilteredVoters = filteredVoters.map(voter =>
+            voter.voter_id.toString() === newDetails.voter_id.toString() ? { ...voter, ...newDetails } : voter
+        );
+        setFilteredVoters(updatedFilteredVoters);
+    };
+
+    const handleCloseEditForm = () => {
+        setIsFormVisible(false);
+        setSelectedVoter(null);
     };
 
     const toTitleCase = (str) => {
@@ -167,7 +242,7 @@ const BoothVoters = ({ route }) => {
 
     return (
         <HeaderFooterLayout
-            headerText={`Voters in Booth : ${route.params.boothId}  `}
+            headerText={language === 'en' ? `Voters in Booth : ${route.params.boothId}` : `बूथमधील मतदार : ${route.params.boothId}`}
             showHeader={true}
             showFooter={false}
             leftIcon={true}
@@ -182,7 +257,7 @@ const BoothVoters = ({ route }) => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder='Search by voter’s name or ID'
+                        placeholder={language === 'en' ? 'Search by voter’s name or ID' : 'मतदाराचे नाव किंवा ओळखपत्राने शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
@@ -195,54 +270,26 @@ const BoothVoters = ({ route }) => {
                     </View>
                 )}
 
-                {(loading) ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'large'} color={'black'} />
-                        <Text>Loading...</Text>
-                    </View>
-                ) : (
-                    < View style={styles.listContainer}>
-                        <FlatList
-                            data={filteredVoters}
-                            keyExtractor={item => item.voter_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable
-                                    style={[styles.voterItem, selectedVoters.includes(item.voter_id) && styles.selectedVoterItem]}
-                                    onPress={() => handleVoterPress(item.voter_id)}
-                                    onLongPress={() => handleLongPress(item.voter_id)}
-                                >
-                                    <View style={styles.voterDetails}>
-                                        <View style={{
-                                            borderRightWidth: 1, borderColor: '#D9D9D9',
-                                            width: 60, alignItems: 'center',
-                                        }}>
-                                            <Text>{item.voter_id}</Text>
-                                        </View>
-                                        <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
-                                    </View>
-                                    {isSelectionMode && (
-                                        <Checkbox
-                                            status={selectedVoters.includes(item.voter_id) ? 'checked' : 'unchecked'}
-                                            onPress={() => toggleVoterSelection(item.voter_id)}
-                                        />
-                                    )}
-                                </Pressable>
-                            )}
-                            ListEmptyComponent={() => (
-                                <Text style={styles.noDataText}>No results found</Text>
-                            )}
-                        />
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={filteredVoters}
+                        keyExtractor={item => item.voter_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={renderItem}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
 
-                        <VoterDetailsPopUp
-                            isModalVisible={isModalVisible}
-                            selectedVoter={selectedVoter}
-                            setIsModalVisible={setIsModalVisible}
-                        />
-                    </View>)
-                }
+
+                    <EditVoterForm
+                        isVisible={isFormVisible}
+                        onClose={handleCloseEditForm}
+                        selectedVoter={selectedVoter}
+                        onEditVoter={handleSelectedVoterDetails}
+                    />
+                </View>
             </View>
-        </HeaderFooterLayout >
+        </HeaderFooterLayout>
     );
 };
 

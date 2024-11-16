@@ -6,6 +6,8 @@ import { AuthenticationContext } from '../ContextApi/AuthenticationContext';
 import { TownUserContext } from '../ContextApi/TownUserProvider';
 import { BoothUserContext } from '../ContextApi/BuserContext';
 import { WardUserContext } from '../ContextApi/WardUserContext';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { KaryakartaContext } from '../ContextApi/KaryakartaContext';
 
 const { height, width } = Dimensions.get('screen');
 const topMargin = height * 0.1;
@@ -20,12 +22,13 @@ const Button = ({ onPress, title, backgroundColor }) => (
 );
 
 const LogOut = () => {
+    const { language } = useContext(LanguageContext);
     const navigation = useNavigation();
     const { isTuserAuthenticated, logoutTuser } = useContext(TownUserContext);
     const { logoutWuser, isWarduserAuthenticated } = useContext(WardUserContext)
     const { logout, isAuthenticated } = useContext(AuthenticationContext);
     const { isBuserAuthenticated, logoutBuser } = useContext(BoothUserContext)
-
+    const { isKaryakartaAuthenticated, KuserId, token, Klogin, Klogout } = useContext(KaryakartaContext)
     const handleLogOut = async () => {
         Alert.alert(
             "Log Out",
@@ -49,6 +52,10 @@ const LogOut = () => {
                         if (isBuserAuthenticated) {
                             await logoutBuser();
                         }
+
+                        if (isKaryakartaAuthenticated) {
+                            await Klogout();
+                        }
                     }
                 },
             ],
@@ -66,8 +73,8 @@ const LogOut = () => {
                 style={styles.gradient}
             >
                 <View style={styles.contentContainer}>
-                    <Text style={styles.bigText}>Log Out?</Text>
-                    <Text style={styles.text}>Are you sure you want to log out?</Text>
+                    <Text style={styles.bigText}>{language === 'en' ? 'Log Out' : 'लॉग आउट'}</Text>
+                    <Text style={styles.text}>{language === 'en' ? 'Are you sure you want to log out?' : 'तुमची खात्री आहे की तुम्ही लॉग आउट करू इच्छिता?'}</Text>
                     <Image
                         source={require('../../assets/bye.png')}
                         style={styles.image}
@@ -77,12 +84,12 @@ const LogOut = () => {
                 <View style={styles.bottomView}>
                     <Button
                         onPress={handleLogOut}
-                        title="Log Out"
+                        title={language === 'en' ? 'Log Out' : 'लॉग आउट'}
                         backgroundColor="#E54394"
                     />
                     <Button
                         onPress={() => navigation.goBack()}
-                        title="Cancel"
+                        title={language === 'en' ? 'Cancel' : 'रद्द करा'}
                         backgroundColor="#9095A1"
                     />
                 </View>

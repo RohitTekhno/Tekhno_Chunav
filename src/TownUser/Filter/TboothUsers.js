@@ -7,11 +7,15 @@ import { TownUserContext } from '../../ContextApi/TownUserProvider';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import BuserDetailsPopUp from '../../ReusableCompo/BuserDetailsPopUp';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 const TboothUsers = () => {
     const navigation = useNavigation()
     const { userId } = useContext(TownUserContext);
+    const { language, toggleLanguage } = useContext(LanguageContext);
     const [searchedValue, setSearchValue] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [booths, setBooths] = useState([]);
@@ -91,50 +95,41 @@ const TboothUsers = () => {
                 <TextInput
                     value={searchedValue}
                     onChangeText={text => setSearchValue(text)}
-                    placeholder='search by user’s name or ID'
+                    placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                     style={styles.searchInput}
                 />
             </View>
 
 
-            {refreshing ?
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} color={'black'} />
-                    <Text>Loading...</Text>
-                </View>
-                :
-                <FlatList
-                    data={searchedBooth}
-                    keyExtractor={item => item.user_id.toString()}
-                    showsVerticalScrollIndicator={false}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-                    }
-                    renderItem={({ item, index }) => (
-                        <Pressable style={styles.voterItem} onLongPress={() => fetchUserDetails(item.user_id)}
-                            onPress={() => {
-                                navigation.navigate("Approval Voters", { Buser_id: item.user_id });
-                            }}
-
-                        >
-                            <Text style={{
-                                borderWidth: 1, borderColor: 'blue', width: 30,
-                                textAlign: 'center', borderRadius: 3, fontWeight: '700'
-                            }}>{index + 1}</Text>
-                            <View style={{ flexDirection: 'column', flex: 1 }}>
-                                <Text style={{ flex: 1 }}>{item.user_name}</Text>
-                                <Text style={styles.phoneText}>Ph. No: {item.user_phone}</Text>
-                            </View>
-                            <Pressable onPress={() => { navigation.navigate('Approval Voters', { Buser_id: item.user_id }) }}>
-                                <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
-                            </Pressable>
+            <FlatList
+                data={searchedBooth}
+                keyExtractor={item => item.user_id.toString()}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                }
+                renderItem={({ item, index }) => (
+                    <Pressable style={styles.voterItem} onLongPress={() => fetchUserDetails(item.user_id)}
+                        onPress={() => {
+                            navigation.navigate("Approval Voters", { Buser_id: item.user_id });
+                        }}>
+                        <Text style={{
+                            borderWidth: 1, borderColor: 'blue', width: 30,
+                            textAlign: 'center', borderRadius: 3, fontWeight: '700'
+                        }}>{index + 1}</Text>
+                        <View style={{ flexDirection: 'column', flex: 1 }}>
+                            <Text style={{ flex: 1 }}>{item.user_name}</Text>
+                            <Text style={styles.phoneText}>Ph. No: {item.user_phone}</Text>
+                        </View>
+                        <Pressable onPress={() => { navigation.navigate('Approval Voters', { Buser_id: item.user_id }) }}>
+                            <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
                         </Pressable>
-                    )}
-                    ListEmptyComponent={
-                        <Text style={styles.noDataText}>No results found</Text>
-                    }
-                />
-            }
+                    </Pressable>
+                )}
+                ListHeaderComponent={refreshing && <LoadingListComponent />}
+                ListEmptyComponent={!refreshing && <EmptyListComponent />}
+            />
+
             <BuserDetailsPopUp
                 isModalVisible={isModalVisible}
                 selectedBuser={selectedBuser}

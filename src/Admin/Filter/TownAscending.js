@@ -92,15 +92,6 @@ export default function TownAscending() {
   return (
 
     <View style={styles.container}>
-      {/* Search Bar */}
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search Towns..."
-        value={searchText}
-        onChangeText={setSearchText}
-      />
-
-      {/* Show loading spinner while data is being fetched */}
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (

@@ -5,6 +5,8 @@ import { Dropdown } from 'react-native-element-dropdown'; // Import Dropdown
 import { TouchableOpacity } from 'react-native';
 import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { height } = Dimensions.get('screen');
 
@@ -96,32 +98,23 @@ const CastWiseVoters = () => {
             />
 
 
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} color={'black'} />
-                    <Text>Loading...</Text>
+
+            {selectedCast && (
+                <View style={styles.selectedCastContainer}>
+                    <FlatList
+                        data={voters}
+                        keyExtractor={(item) => item.voter_id.toString()}
+                        renderItem={renderVoterItem}
+                        contentContainerStyle={styles.voterList}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+                    <VoterDetailsPopUp
+                        isModalVisible={isModalVisible}
+                        selectedVoter={selectedVoter}
+                        setIsModalVisible={setIsModalVisible}
+                    />
                 </View>
-            ) : (
-                <>
-                    {selectedCast ? (
-                        <View style={styles.selectedCastContainer}>
-                            <FlatList
-                                data={voters}
-                                keyExtractor={(item) => item.voter_id.toString()}
-                                renderItem={renderVoterItem}
-                                contentContainerStyle={styles.voterList}
-                                ListEmptyComponent={<Text style={{ alignItems: 'center', textAlign: 'center', marginTop: 20, fontSize: 18 }}>No Data Found..</Text>}
-                            />
-                            <VoterDetailsPopUp
-                                isModalVisible={isModalVisible}
-                                selectedVoter={selectedVoter}
-                                setIsModalVisible={setIsModalVisible}
-                            />
-                        </View>
-                    ) : (
-                        <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16 }}>No selected Cast</Text>
-                    )}
-                </>
             )}
         </View>
     );

@@ -8,6 +8,9 @@ import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { WardUserContext } from '../ContextApi/WardUserContext';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../ContextApi/LanguageContext';
 
 const scaleFontSize = (size) => Math.round(size * width * 0.0025);
 const { height, width } = Dimensions.get('window');
@@ -15,11 +18,18 @@ const { height, width } = Dimensions.get('window');
 
 export default function WuserwiseLocation({ navigation }) {
     const { wardUserId } = useContext(WardUserContext);
+    const { language } = useContext(LanguageContext);
     const [locationValue, setLocationValue] = useState(null);
+    // const [locationItems] = useState([
+    //     { label: 'In City', value: 1 },
+    //     { label: 'Near City', value: 2 },
+    //     { label: 'Out of City', value: 3 }
+    // ]);
+
     const [locationItems] = useState([
-        { label: 'In City', value: 1 },
-        { label: 'Near City', value: 2 },
-        { label: 'Out of City', value: 3 }
+        { label: language === 'en' ? 'In City' : 'शहरामध्ये', value: 1 },
+        { label: language === 'en' ? 'Near City' : 'शहराजवळ', value: 2 },
+        { label: language === 'en' ? 'Out of City' : 'शहराबाहेर', value: 3 }
     ]);
     const [voterData, setVoterData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -80,13 +90,13 @@ export default function WuserwiseLocation({ navigation }) {
 
     const renderVoterItem = ({ item }) => (
         <View style={styles.voterItem}>
-            <Text style={styles.voterText}>ID: {item.voter_id}</Text>
-            <Text style={styles.voterText}>Name: {item.voter_name}</Text>
-            <Text style={styles.voterText}>
-                Contact: {item.voter_contact_number ? item.voter_contact_number : 'N/A'}
+            <Text style={styles.voterText}>{language === 'en' ? 'ID' : 'आईडी'} {item.voter_id}</Text>
+            <Text style={styles.voterText}>{language === 'en' ? 'Name' : 'नाव'} {item.voter_name}</Text>
+            <Text style={styles.voterText}>{language === 'en' ? 'Contact' : 'संपर्क'}
+                {item.voter_contact_number ? item.voter_contact_number : 'N/A'}
             </Text>
-            <Text style={styles.voterText}>
-                Location: {item.voter_current_location ? item.voter_current_location : 'N/A'}
+            <Text style={styles.voterText}>{language === 'en' ? 'Location' : 'स्थान'}
+                {item.voter_current_location ? item.voter_current_location : 'N/A'}
             </Text>
         </View>
     );
@@ -102,44 +112,40 @@ export default function WuserwiseLocation({ navigation }) {
     return (
         <WardHeaderFooter
             showFooter={false}
-            headerText='Location Wise Voter Data'
+            headerText={language === 'en' ? 'Location Wise Voter Data' : 'स्थानानुसार मतदार'}
             leftIcon={<MaterialIcons name="keyboard-backspace" size={scaleFontSize(28)} color="black" />}
             leftIconAction={handleGoBack}
             rightIcon={<FontAwesome5 name="file-pdf" size={scaleFontSize(28)} color="black" />}
             rightIconAction={handlePDFClick}
         >
             <View style={styles.container}>
-                {loading || pdfLoading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="small" />
-                        <Text style={styles.loadingText}>{pdfLoading ? 'Generating PDF...' : 'Loading...'}</Text>
-                    </View>
-                ) : (
-                    <View style={styles.contentContainer}>
-                        <Dropdown
-                            style={styles.dropdown}
-                            containerStyle={styles.dropdownContainer}
-                            data={locationItems}
-                            labelField="label"
-                            valueField="value"
-                            placeholder="Select Location"
-                            value={locationValue}
-                            onChange={(item) => setLocationValue(item.value)}
-                        />
-                        <TextInput
-                            style={styles.searchBar}
-                            placeholder="Search by voter name..."
-                            value={searchQuery}
-                            onChangeText={(text) => setSearchQuery(text)}
-                        />
-                        <FlatList
-                            data={filteredVoterData}
-                            keyExtractor={(item) => item.voter_id.toString()}
-                            renderItem={renderVoterItem}
-                            ListEmptyComponent={<Text>No voters found.</Text>}
-                        />
-                    </View>
-                )}
+                <View style={styles.contentContainer}>
+                    <Dropdown
+                        style={styles.dropdown}
+                        containerStyle={styles.dropdownContainer}
+                        data={locationItems}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={language === 'en' ? 'Select Location' : 'स्थान निवडा'}
+                        value={locationValue}
+                        onChange={(item) => setLocationValue(item.value)}
+                    />
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
+                        value={searchQuery}
+                        onChangeText={(text) => setSearchQuery(text)}
+                    />
+                    <FlatList
+                        data={filteredVoterData}
+                        keyExtractor={(item) => item.voter_id.toString()}
+                        renderItem={renderVoterItem}
+                        ListHeaderComponent={loading || pdfLoading ? <LoadingListComponent /> : null} // Fixed here
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+
+                </View>
+
             </View>
         </WardHeaderFooter>
     );

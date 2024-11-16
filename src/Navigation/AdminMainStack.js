@@ -7,14 +7,14 @@ import Dashboard from '../Admin/Dashboard/Dashboard'
 import LogOut from '../ReusableCompo/LogOut'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Profile from '../Admin/Profile/Profile'
-import React, { useContext,  useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import TownUserReg from '../Admin/Filter/TownUserReg'
 import TownUsers from '../Admin/Towns/TownUsers'
 import Towns from '../Admin/Towns/Towns'
 import Totalvoters from '../Admin/Voters/TotalVoters'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import {  Animated, Dimensions, TouchableOpacity } from 'react-native'
+import { Animated, Dimensions, TouchableOpacity } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Voted from '../Admin/Voters/Voted'
 import Nvoted from '../Admin/Voters/Nvoted'
@@ -28,12 +28,12 @@ import TownAscending from '../Admin/Filter/TownAscending'
 import { FontAwesome5 } from '@expo/vector-icons'
 
 import RuralTowns from '../Admin/Filter/RuralTowns'
-import TownBooths from '../TownUser/Booths/TownBooths'
 import UrbanTowns from '../Admin/Filter/UrbanTowns'
 import { LanguageContext } from '../ContextApi/LanguageContext'
 import LocationWise from '../Admin/Filter/LocationWise'
 import WardUsers from '../Admin/Ward/WardUsers'
 import WardUserRegistration from '../Admin/Filter/WardUserRegistration'
+import TownBooths from '../Admin/Filter/TownBooths'
 
 
 const Stack = createNativeStackNavigator();
@@ -50,6 +50,7 @@ const AdminMainStack = () => {
             <Stack.Screen name="Dashboard" component={Dashboard}
                 options={{
                     headerShown: true, headerTitleAlign: 'center',
+                    headerTitle: language === 'en' ? "Dashboard" : 'डैशबोर्ड',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <MaterialIcons name="menu" size={30} color="black"
@@ -63,6 +64,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Total Voters' component={Totalvoters}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? "Total Voters" : 'एकूण मतदार',
                     headerLeft: () => (
                         <TouchableOpacity style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
@@ -100,7 +102,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Booths' component={Booths}
                 options={{
                     headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitle: 'Booth List',
+                    headerTitle: language === 'en' ? "Booths" : 'बॉथ',
                     headerTitleStyle: { fontSize: 20, fontWeight: '600', color: 'black' },
                     headerShadowVisible: false,
                     headerLeft: () => (
@@ -132,6 +134,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Voted' component={Voted}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? "Voted" : 'मतदान केले',
                     headerTitleStyle: { fontSize: 22, fontWeight: '600' },
                     headerShadowVisible: false,
                     headerLeft: () => (
@@ -145,7 +148,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Nvoted' component={Nvoted}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitle: 'Not Voted',
+                    headerTitle: language === 'en' ? "Not Voted" : 'मतदान केले नाही',
                     headerTitleStyle: { fontSize: 22, fontWeight: '600' },
                     headerShadowVisible: false,
                     headerLeft: () => (
@@ -164,6 +167,7 @@ const AdminMainStack = () => {
                     headerTitleStyle: {
                         fontSize: 22
                     },
+                    headerTitle: language === 'en' ? "Family" : 'कुटुंब',
                     headerShadowVisible: false,
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
@@ -200,9 +204,9 @@ const AdminMainStack = () => {
 
             <Stack.Screen name='Town Booths' component={TownBooths}
                 options={{
-                    headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
                     headerTitleStyle: { textAlign: 'center', fontSize: 22, fontWeight: '600' },
-                    headerTitle: language === 'en' ? 'Town Booths' : 'शहरातील बूथ',
+                    headerTitle: language === 'en' ? 'Town Booths' : 'गाव/शहरातील बूथ',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
                             <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
@@ -222,6 +226,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Updated Voters' component={BoothUser_ActivityLog}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? 'Updated Voters' : 'अपडेट केलेले मतदार',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
                             <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
@@ -232,6 +237,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Age Wise Voters' component={AgewiseVoters}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? 'Age Wise Voters' : 'वयानुसार मतदार',
                     headerTitleStyle: { fontSize: 20, fontWeight: '600' },
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
@@ -259,6 +265,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='GenderWise' component={GenderWise}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? 'Gender Wise Voters' : 'लिंगानुसार मतदार',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
                             <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
@@ -270,6 +277,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Booth Analysis' component={BoothAscending}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? 'Booth Analysis' : 'बूथ विश्लेषण',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
                             <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
@@ -281,6 +289,7 @@ const AdminMainStack = () => {
             <Stack.Screen name='Town Analysis' component={TownAscending}
                 options={{
                     headerShown: true, headerTitleAlign: 'center', headerShadowVisible: false,
+                    headerTitle: language === 'en' ? 'Town Analysis' : 'गाव/शहराचे विश्लेषण',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.goBack()}  >
                             <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />

@@ -76,7 +76,7 @@ const BoothRightMenu = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <MaterialIcons name="family-restroom" size={25} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Family</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Family' : 'कुटुंब'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -90,7 +90,7 @@ const BoothRightMenu = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <MaterialCommunityIcons name="account-cash-outline" size={25} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Pro Voters</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Pro Voters' : 'प्रो मतदार'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -99,12 +99,12 @@ const BoothRightMenu = () => {
                                     ScreenName: language === 'en' ? 'Pro+ Voters' : 'प्रो+ मतदार'
                                 })}
                                 style={styles.modalOption}
-                                accessibilityLabel="Go to Location Wise Voters"
+                                accessibilityLabel="Go to Pro+ Voters"
                             >
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <MaterialCommunityIcons name="cash-check" size={30} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Pro+ Voters</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Pro+ Voters' : 'प्रो+ मतदार'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -115,7 +115,7 @@ const BoothRightMenu = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <Feather name="user-plus" size={24} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Add Voters</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Add Voters' : 'मतदार जोडा'}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => { handleNavigation('Locationwise Voters') }}
@@ -125,12 +125,12 @@ const BoothRightMenu = () => {
                                 <View style={{ width: 40, alignItems: 'center' }}>
                                     <FontAwesome5 name="search-location" size={24} color="black" />
                                 </View>
-                                <Text style={styles.modalText}>Location wise</Text>
+                                <Text style={styles.modalText}>{language === 'en' ? 'Location Wise' : 'स्थानानुसार मतदार'}</Text>
                             </TouchableOpacity>
                         </Animated.View>
                     </View>
                 </TouchableWithoutFeedback>
-            </Modal>
+            </Modal >
         </>
     );
 };

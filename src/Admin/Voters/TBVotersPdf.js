@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Animated, Easing, Modal, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 const { width, height } = Dimensions.get('screen')
 export default function TBVotersPdf() {
-
+  const { language } = useContext(LanguageContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -166,9 +169,9 @@ export default function TBVotersPdf() {
         keyExtractor={(item) => item.voter_id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.memberItem} onPress={() => handleVoterSelect(item)}>
-            <Text style={styles.memberText}>ID: {item.voter_id}</Text>
-            <Text style={styles.memberText}>Name: {item.voter_name}</Text>
-            <Text style={styles.memberText}>Contact: {item.voter_contact_number || 'N/A'}</Text>
+            <Text style={styles.memberText}>{language === 'en' ? 'ID' : 'क्र.'}:  {item.voter_id}</Text>
+            <Text style={styles.memberText}>{language === 'en' ? 'Name' : 'नाव'}: {language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+            <Text style={styles.memberText}>{language === 'en' ? 'Contact' : 'संपर्क'}: {item.voter_contact_number || 'N/A'}</Text>
           </TouchableOpacity>
         )}
       />
@@ -178,24 +181,22 @@ export default function TBVotersPdf() {
   return (
 
     <View style={styles.container}>
-      {loading ? (
-        <Text style={{ textAlign: 'center' }}>Loading...</Text>
-      ) : error ? (
+      {error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : (
         <FlatList
           data={data}
           keyExtractor={(item) => item.family_group_id.toString()}
           renderItem={renderItem}
-          ListEmptyComponent={<Text style={{ textAlign: 'center', fontSize: 18, color: 'grey' }}>Family groups not available</Text>}
-        />
+          ListHeaderComponent={loading && <LoadingListComponent />}
+          ListEmptyComponent={!loading && <EmptyListComponent />} />
       )}
 
       {/* Members Modal */}
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Group Members</Text>
+            <Text style={styles.modalTitle}>{language === 'en' ? 'Family Members' : 'कुटुंब सदस्य'}</Text>
             <View style={{ alignSelf: 'center', flex: 1 }}>
               {renderModalContent()}
             </View>
@@ -203,7 +204,7 @@ export default function TBVotersPdf() {
               setModalVisible(false)
               setMembers([])
             }}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>{language === 'en' ? 'Close' : 'बंद करा'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -213,8 +214,8 @@ export default function TBVotersPdf() {
       <Modal visible={confirmModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.actionModal}>
-            <Text style={styles.modalTitle}>Remove Voter</Text>
-            <Text>Are you sure you want to remove {selectedVoter?.voter_name} from the family group?</Text>
+            <Text style={styles.modalTitle}>{language === 'en' ? 'Remove Voter' : 'मतदार काढून टाका'}</Text>
+            <Text>{language === 'en' ? 'Are you sure you want to remove' : 'तुम्हाला काढायचे आहे का'} {selectedVoter?.voter_name} {language === 'en' ? 'from the group' : 'यानाकुटुंब गटातून?'}</Text>
             <View style={styles.confirmButtonContainer}>
               <TouchableOpacity
                 style={styles.confirmButton}
@@ -230,7 +231,7 @@ export default function TBVotersPdf() {
                 onPress={() => setConfirmModalVisible(false)}
                 disabled={removalLoading}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>{language === 'en' ? 'Cancel' : 'रद्द करा'}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -332,7 +333,6 @@ const styles = StyleSheet.create({
   },
   memberItem: {
     marginVertical: 10,
-
   },
   memberText: {
     fontSize: 16,

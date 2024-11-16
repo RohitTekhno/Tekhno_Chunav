@@ -1,9 +1,10 @@
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 
@@ -24,6 +25,7 @@ const voterNameList = [
 
 const DoubtedRecors = () => {
     const navigation = useNavigation();
+    const { language } = useContext(LanguageContext);
 
     const [searchedValue, setSearchValue] = useState(null)
 
@@ -53,7 +55,7 @@ const DoubtedRecors = () => {
                 <TextInput
                     value={searchedValue}
                     onChangeText={text => { setSearchValue(text) }}
-                    placeholder='search by user’s name or ID '
+                    placeholder={language === 'en' ? 'Search by voter’s name or ID' : 'मतदाराचे नाव किंवा ओळखपत्राने शोधा'}
                     style={{ flex: 1, padding: 5, }}
                 />
             </View>

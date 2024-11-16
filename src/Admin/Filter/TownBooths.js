@@ -17,7 +17,9 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { LanguageContext } from '../../LanguageContext';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -114,22 +116,11 @@ const TownBooths = ({ route }) => {
         }
     };
 
-    if (loading) {
-        return (
-
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size={'large'} color={'black'} />
-                <Text>
-                    {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-                </Text>
-            </View>
-        );
-    }
 
     return (
         <HeaderFooterLayout
-            headerText={language === 'en' ? "Town Booths" : 'बूथ'}
-            showFooter={true}
+            headerText={language === 'en' ? "Town Booths" : 'गाव/शहरातील बूथ'}
+            showFooter={false}
             leftIcon={true}
             rightIcon={true}
             leftIconName="keyboard-backspace"
@@ -147,28 +138,29 @@ const TownBooths = ({ route }) => {
                     />
                 </View>
 
-                {searchedBooth.length > 0 ? (
-                    <FlatList
-                        data={searchedBooth}
-                        keyExtractor={item => item.booth_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <Pressable
-                                style={styles.voterItem}
-                                onPress={() => {
-                                    navigation.navigate('Booth Voters', { boothId: item.booth_id });
-                                }}
-                            >
-                                <Text style={styles.boothIdText}>{item.booth_id}</Text>
-                                <Text style={styles.boothNameText}>{item.booth_name}</Text>
-                            </Pressable>
-                        )}
-                    />
-                ) : (
-                    <Text style={styles.noDataText}>
-                        {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
-                    </Text>
-                )}
+                <FlatList
+                    data={searchedBooth}
+                    keyExtractor={item => item.booth_id.toString()}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <Pressable
+                            style={styles.voterItem}
+                            onPress={() => {
+                                navigation.navigate('Booth Voters', { boothId: item.booth_id });
+                            }}
+                        >
+                            <Text style={styles.boothIdText}>{item.booth_id}</Text>
+                            <Text style={styles.boothNameText}>{language === 'en' ? item.booth_name : item.booth_name_mar}</Text>
+                        </Pressable>
+                    )}
+                    ListHeaderComponent={loading && (
+                        <LoadingListComponent />
+                    )}
+                    ListEmptyComponent={!loading && (
+                        <EmptyListComponent />
+                    )}
+                />
+
 
 
                 {pdfLoading && (
@@ -226,6 +218,7 @@ const styles = StyleSheet.create({
         gap: 10,
         alignItems: 'center',
         flexWrap: 'wrap',
+        paddingHorizontal: 10
 
     },
     boothIdText: {

@@ -1,5 +1,5 @@
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
@@ -8,12 +8,17 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { ActivityIndicator } from 'react-native';
 import { RefreshControl } from 'react-native';
+import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 
 const BoothUsers = () => {
     const navigation = useNavigation();
     const [searchedValue, setSearchValue] = useState('');
+    const { language } = useContext(LanguageContext);
     const [loading, setLoading] = useState(true);
     const [pdfLoading, setPdfLoading] = useState(false);
     const [boothUsers, setBoothUsers] = useState([]);
@@ -137,7 +142,7 @@ const BoothUsers = () => {
 
     return (
         <HeaderFooterLayout
-            headerText="Booth Users"
+            headerText={language === 'en' ? 'Booth Users' : 'बूथ कार्यकर्ता'}
             showFooter={false}
             leftIcon={true}
             rightIcon={true}
@@ -151,54 +156,48 @@ const BoothUsers = () => {
                     <TextInput
                         value={searchedValue}
                         onChangeText={text => setSearchValue(text)}
-                        placeholder="Search by user’s name or ID"
+                        placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                         style={styles.searchInput}
                     />
                 </View>
 
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'small'} color={"black"} />
-                        <Text style={{ color: 'black' }}>Loading...</Text>
-                    </View>
-                ) : (
-                    <View style={styles.listContainer}>
-                        <FlatList
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={refreshing}
-                                    onRefresh={handleRefresh}
-                                />}
-                            data={searchedTown}
-                            keyExtractor={item => item.user_id.toString()}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <Pressable
-                                    style={styles.voterItem}
-                                    onLongPress={() => handleLongPressDelete(item.user_id)}
-                                >
-                                    <View style={styles.voterDetails}>
-                                        <Text style={{
-                                            borderWidth: 1, borderColor: 'blue', width: 30,
-                                            textAlign: 'center', borderRadius: 3, fontWeight: '700'
-                                        }}>{item.user_id}</Text>
-                                        <View style={{ flexDirection: 'column', flex: 1 }}>
-                                            <Text>{toTitleCase(item.user_name)}</Text>
-                                            <Text style={{ color: '#565D6D', fontSize: 11 }}>Ph. No:{item.user_phone}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'column', flex: 1 }}>
-                                            <Text style={{ color: '#565D6D', fontSize: 11 }}>Booth : {(item.booth_names)}</Text>
-                                        </View>
+                <View style={styles.listContainer}>
+                    <FlatList
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                            />}
+                        data={searchedTown}
+                        keyExtractor={item => item.user_id.toString()}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => (
+                            <Pressable
+                                style={styles.voterItem}
+                                onLongPress={() => handleLongPressDelete(item.user_id)}
+                            >
+                                <View style={styles.voterDetails}>
+                                    <Text style={{
+                                        borderWidth: 1, borderColor: 'blue', width: 30,
+                                        textAlign: 'center', borderRadius: 3, fontWeight: '700'
+                                    }}>{item.user_id}</Text>
+                                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                                        <Text>{toTitleCase(item.user_name)}</Text>
+                                        <Text style={{ color: '#565D6D', fontSize: 11 }}>Ph. No:{item.user_phone}</Text>
                                     </View>
-                                    <Pressable onPress={() => { navigation.navigate('Updated Voters', { userId: item.user_id }) }}>
-                                        <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
-                                    </Pressable>
+                                    <View style={{ flexDirection: 'column', flex: 1 }}>
+                                        <Text style={{ color: '#565D6D', fontSize: 11 }}>Booth Id : {(item.booth_ids[0])}</Text>
+                                    </View>
+                                </View>
+                                <Pressable onPress={() => { navigation.navigate('Updated Voters', { userId: item.user_id }) }}>
+                                    <MaterialCommunityIcons name="arrow-right-bold-box" size={height * 0.04} color="#0077b6" />
                                 </Pressable>
-                            )}
-                            ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-                        />
-                    </View>
-                )}
+                            </Pressable>
+                        )}
+                        ListHeaderComponent={loading && <LoadingListComponent />}
+                        ListEmptyComponent={!loading && <EmptyListComponent />}
+                    />
+                </View>
             </View>
         </HeaderFooterLayout>
     );
@@ -208,6 +207,7 @@ export default BoothUsers;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 0.9,
         paddingHorizontal: 15,
         backgroundColor: 'white',
     },

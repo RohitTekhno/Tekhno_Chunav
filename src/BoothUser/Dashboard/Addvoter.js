@@ -26,7 +26,7 @@ export default function AddVoter({ navigation }) {
         const response = await axios.get(`http://192.168.1.8:8000/api/user_booth/${buserId}`);
         if (response.status === 200) {
           const boothData = response.data.map(booth => ({
-            label: `${booth.user_booth_booth_id} - ${booth.booth_name}`,
+            label: `${booth.user_booth_booth_id} - ${language === 'en' ? booth.booth_name : booth.booth_name_mar}`,
             value: booth.user_booth_booth_id,
           }));
           setBooths(boothData);
@@ -93,7 +93,7 @@ export default function AddVoter({ navigation }) {
         <>
           <TextInput
             style={styles.input}
-            placeholder="Enter voter name here"
+            placeholder={language === 'en' ? 'Enter name here' : 'येथे नाव प्रविष्ट करा'}
             placeholderTextColor="#888"
             onChangeText={setNewVotername}
             value={newVotername}
@@ -101,7 +101,7 @@ export default function AddVoter({ navigation }) {
 
           <TextInput
             style={styles.input}
-            placeholder="Enter contact here"
+            placeholder={language === 'en' ? 'Enter contact number here' : 'येथे फोन नंबर प्रविष्ट करा'}
             placeholderTextColor="#888"
             onChangeText={setNewVotercontact}
             value={newVotercontact}
@@ -109,7 +109,7 @@ export default function AddVoter({ navigation }) {
           />
 
           <TouchableOpacity style={styles.submitButton} onPress={handleAddNewVoter}>
-            <Text style={styles.submitButtonText}>Submit</Text>
+            <Text style={styles.submitButtonText}>{language === 'en' ? 'Add Voter' : 'वोटर जोडा'}</Text>
           </TouchableOpacity>
         </>
       )}

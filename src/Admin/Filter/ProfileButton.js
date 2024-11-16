@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Pressable, Modal, Text, StyleSheet, TouchableOpacity, Dimensions, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 
 const { width, height } = Dimensions.get('screen');
@@ -9,6 +10,7 @@ const { width, height } = Dimensions.get('screen');
 const ProfileButton = () => {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     const handleToggleModal = () => {
         setModalVisible(!modalVisible);
@@ -39,50 +41,49 @@ const ProfileButton = () => {
                                     onPress={() => { navigation.navigate('Family'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Family</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Family' : 'कुटुंब'}</Text>
                                 </TouchableOpacity>
-
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Urban Towns'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Urban Towns</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Urban Towns' : 'शहरी नगर'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Rural Towns'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Rural Towns</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Rural Towns' : 'ग्रामीण नगर'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Towns Users'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Town User</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Towns Users' : 'नगर कार्यकर्ता'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Booth Users'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Booth User</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Booth Users' : 'बूथ कार्यकर्ता'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Ward Users'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Ward Users</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Ward Users' : 'प्रभाग कार्यकर्ता'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('LocationWise Voters'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Location-wise Voters</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Location-wise Voters' : 'स्थानानुसार मतदार'}</Text>
                                 </TouchableOpacity>
 
 
@@ -90,46 +91,46 @@ const ProfileButton = () => {
                                     onPress={() => { navigation.navigate('Age Wise Voters'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Age-wise Voters</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Age-wise Voters' : 'वयानुसार मतदार'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Castwise'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Cast-wise Voters</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Cast-wise Voters' : 'जातिनुसार मतदार'}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('GenderWise'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Gender-wise Voters</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Gender-wise Voters' : 'लिंगनुसार मतदार'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Booth Analysis'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Booth Analysis</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Booth Analysis' : 'बूथ विश्लेषण'}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Town Analysis'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Town Analysis</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Town Analysis' : 'नगर विश्लेषण'}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => { navigation.navigate('Registration'); handleCloseModal(); }}
                                     style={styles.modalButton}
                                 >
-                                    <Text style={styles.modalText}>Registeration</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'Townuser Registration' : 'शहरातील  कार्यकर्ता नोंदणी'}</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     style={[styles.modalButton, { marginBottom: 5 }]}
                                     onPress={() => { navigation.navigate('WardUser Register'); handleCloseModal(); }}
                                 >
-                                    <Text style={styles.modalText}>Ward User Register</Text>
+                                    <Text style={styles.modalText}>{language === 'en' ? 'WardUser Registration' : 'प्रभाग कार्यकर्ता नोंदणी'}</Text>
                                 </TouchableOpacity>
                             </ScrollView>
                         </TouchableWithoutFeedback>

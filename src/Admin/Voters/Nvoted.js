@@ -1,19 +1,22 @@
 import { Alert, Dimensions, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import VoterDetailsPopUp from '../Voters/VoterDetailsPopUp';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { width, height } = Dimensions.get('screen');
 
 export default function Nvoted({ route }) {
     const [voters, setVoters] = useState([]);
-
+    const { language } = useContext(LanguageContext);
     const [filteredVoters, setFilteredVoters] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchedValue, setSearchValue] = useState('');
-
+    const [error, setError] = useState(null);
     const [selectedVoter, setSelectedVoter] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -91,42 +94,34 @@ export default function Nvoted({ route }) {
                 <TextInput
                     value={searchedValue}
                     onChangeText={text => setSearchValue(text)}
-                    placeholder='search by voter’s name or ID'
+                    placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
                     style={styles.searchInput}
                 />
             </View>
 
-
-            {(loading) ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size={'small'} color='black' />
-                    <Text>Loading...</Text>
-                </View>
-            ) : (
-                <View style={styles.listContainer}>
-                    <FlatList
-                        data={filteredVoters}
-                        keyExtractor={item => item.voter_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <Pressable style={[styles.voterItem, styles.selectedVoterItem,
-                            { backgroundColor: getBackgroundColor(item.voter_favour_id) }]}
-                                onPress={() => { handleVoterPress(item.voter_id) }}>
-                                <View style={styles.voterDetails}>
-                                    <View style={{
-                                        borderRightWidth: 1, borderColor: '#D9D9D9',
-                                        width: 60, alignItems: 'center',
-                                    }}>
-                                        <Text style={{}}>{item.voter_id}</Text>
-                                    </View>
-                                    <Text style={{ flex: 1 }}>{toTitleCase(item.voter_name)}</Text>
+            <View style={styles.listContainer}>
+                <FlatList
+                    data={filteredVoters}
+                    keyExtractor={item => item.voter_id.toString()}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <Pressable style={[styles.voterItem, styles.selectedVoterItem,
+                        { backgroundColor: getBackgroundColor(item.voter_favour_id) }]}
+                            onPress={() => { handleVoterPress(item.voter_id) }}>
+                            <View style={styles.voterDetails}>
+                                <View style={{
+                                    borderRightWidth: 1, borderColor: '#D9D9D9',
+                                    width: 60, alignItems: 'center',
+                                }}>
+                                    <Text style={{}}>{item.voter_id}</Text>
                                 </View>
-                            </Pressable>
-                        )}
-                        ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-                    />
-                </View>
-            )}
+                                <Text style={{ flex: 1 }}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+                            </View>
+                        </Pressable>
+                    )}
+                    ListHeaderComponent={loading && <LoadingListComponent />}
+                    ListEmptyComponent={!loading && <EmptyListComponent />} />
+            </View>
 
             <VoterDetailsPopUp
                 isModalVisible={isModalVisible}
@@ -141,6 +136,7 @@ export default function Nvoted({ route }) {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingHorizontal: 15,
         backgroundColor: 'white'
     },
@@ -160,7 +156,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     listContainer: {
-        // flex: 1,
+        backgroundColor: 'white'
     },
     voterItem: {
         // flex: 1,

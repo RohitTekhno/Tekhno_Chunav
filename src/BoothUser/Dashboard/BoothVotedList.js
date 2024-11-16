@@ -6,6 +6,11 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
+import { toTitleCase } from '../../ReusableCompo/Functions/toTitleCaseConvertor';
+import { fetchVoterDetails } from '../../ReusableCompo/Functions/FetchVoterDetails';
+import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const { height, width } = Dimensions.get('window');
 
@@ -27,6 +32,7 @@ export default function BoothVotedList({ route, navigation }) {
       try {
         const response = await axios.get(`http://192.168.1.8:8000/api/voted_voters_list_By_booth_user/${buserId}/1/?lang=${language === 'en' ? 'en' : 'mr'}/`);
         if (response.data.voters && Array.isArray(response.data.voters)) {
+          console.log(response.data.voters);
           setVoters(response.data.voters);
           setFilteredVoters(response.data);
         } else {
@@ -46,33 +52,24 @@ export default function BoothVotedList({ route, navigation }) {
   useEffect(() => {
     const filtered = voters.filter(voter =>
       voter.voter_id.toString().includes(search) ||
-      voter.voter_name.toLowerCase().includes(search.toLowerCase())
+      voter.voter_name.toLowerCase().includes(search.toLowerCase()) ||
+      voter.voter_name_mar.toLowerCase().includes(search.toLowerCase())
+
     );
     setFilteredVoters(filtered);
   }, [search, voters]);
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size={'large'} color={'black'} />
-        <Text>
-          {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-        </Text>
-      </View>
-    );
-  }
 
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
 
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
 
-  const handleVoterPress = (voter) => {
+  const handleVoterPress = async (voter) => {
     setClickedVoter(voter.voter_id);
-    fetchVoterDetails(voter.voter_id);
+    const response = await fetchVoterDetails(voter.voter_id);
+    console.log(response.data);
+    setSelectedVoter(response.data); // Set selected voter details
+    setIsModalVisible(true); // Show the modal
 
     Animated.sequence([
       Animated.timing(animatedValue, {
@@ -83,33 +80,33 @@ export default function BoothVotedList({ route, navigation }) {
     ]).start();
   };
 
-  const fetchVoterDetails = (voter_id) => {
-    axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
-      .then(response => {
-        setSelectedVoter(response.data); // Set selected voter details
-        setIsModalVisible(true); // Show the modal
-      })
-      .catch(error => {
-        Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
-      });
-  };
-
   const renderItem = ({ item }) => {
     const isClicked = item.voter_id === clickedVoter;
+
+    let color = 'transparent';
+
+    if (item.voter_favour_id === 1) {
+      color = '#d3f5d3';
+    } else if (item.voter_favour_id === 2) {
+      color = '#fededd';
+    } else if (item.voter_favour_id === 3) {
+      color = '#f8ff96';
+    } else if (item.voter_favour_id === 4) {
+      color = '#6c96f0';
+    } else if (item.voter_favour_id === 5) {
+      color = '#c5d7fc';
+    } else if (item.voter_favour_id === 6) {
+      color = '#fcaef2';
+    } else if (item.voter_favour_id === 7) {
+      color = '#c86dfc';
+    }
+
 
     return (
       <Pressable onPress={() => handleVoterPress(item)}>
         <Animated.View
           style={[
-            styles.voterItem,
-            isClicked && {
-              transform: [{ scale: animatedValue }], // Apply the animation
-              shadowColor: 'black',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.8,
-              shadowRadius: 9,
-              elevation: 10, // Add shadow for Android
-            }
+            styles.voterItem, { backgroundColor: color }
           ]}
         >
           <View style={styles.voterDetails}>
@@ -119,7 +116,7 @@ export default function BoothVotedList({ route, navigation }) {
             }}>
               <Text>{item.voter_id}</Text>
             </View>
-            <Text>{item.voter_name}</Text>
+            <Text>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
           </View>
         </Animated.View>
       </Pressable>
@@ -144,15 +141,16 @@ export default function BoothVotedList({ route, navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={renderItem}
-        ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
       />
 
       {/* Modal to show selected voter details */}
-      {/* <TownVoterDetailsPopup 
+      <VoterDetailsPopUp
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
         selectedVoter={selectedVoter}
-      /> */}
+      />
     </View>
   );
 }
@@ -201,7 +199,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 0.8,
     borderColor: '#919090',
-    backgroundColor: '#fff',
   },
   voterDetails: {
     flexDirection: 'row',
@@ -217,5 +214,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+    color: 'red',
   },
 });

@@ -140,7 +140,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
         </Text>
       </View>
 
-      <View style={styles.totalVotersContainer}>
+      <TouchableOpacity style={styles.totalVotersContainer} onPress={() => navigation.navigate('Voters List')}>
         <LinearGradient
           colors={['#3C4CAC', '#F04393']}
           locations={[0.3, 1]}
@@ -151,7 +151,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
           </Text>
           <Text style={styles.gradientText}>{voterCounts.total}</Text>
         </LinearGradient>
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.statsRow}>
         <TouchableOpacity style={[styles.statsBox, styles.statsBoxYellow]}
@@ -159,7 +159,7 @@ const BoothDashbord = ({ navigation, toggleSidebar }) => {
             navigation.navigate('Voted', { buserId })
           }}>
           <Text style={styles.statsLabel}>
-            {language === 'en' ? 'Total Voted' : 'एकूण मतदान'}
+            {language === 'en' ? 'Total Voted' : 'एकूण मतदान झालेले'}
           </Text>
           <Text style={styles.statsValue}>{totalVoted}</Text>
         </TouchableOpacity>

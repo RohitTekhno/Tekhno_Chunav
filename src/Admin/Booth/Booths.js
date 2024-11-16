@@ -18,6 +18,8 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { LanguageContext } from '../../ContextApi/LanguageContext';
 import HeaderFooterLayout from '../../ReusableCompo/HeaderFooterLayout';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 
 const Booths = () => {
     const { language, toggleLanguage } = useContext(LanguageContext);
@@ -31,9 +33,10 @@ const Booths = () => {
     const searchedBooth = booths.filter(booth => {
         const boothId = booth.booth_id ? booth.booth_id.toString().toLowerCase() : '';
         const boothName = booth.booth_name ? booth.booth_name.toLowerCase() : '';
+        const boothName1 = booth.booth_name_mar ? booth.booth_name_mar.toLowerCase() : '';
         const searchValueLower = searchedValue.toLowerCase();
 
-        return boothId.includes(searchValueLower) || boothName.includes(searchValueLower);
+        return boothId.includes(searchValueLower) || boothName.includes(searchValueLower) || boothName1.includes(searchValueLower);
     });
 
     const fetchData = async () => {
@@ -126,35 +129,21 @@ const Booths = () => {
                         style={styles.searchInput}
                     />
                 </View>
-
-                {(loading) ?
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'large'} color={'black'} />
-                        <Text>
-                            {language === 'en' ? 'Loading...' : 'लोड करत आहे...'}
-                        </Text>
-                    </View>
-                    :
-                    <FlatList
-                        data={searchedBooth}
-                        keyExtractor={item => item.booth_id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <Pressable style={styles.voterItem}
-                                onPress={() => { navigation.navigate('Booth Voters', { boothId: item.booth_id }) }}
-                            >
-                                <Text style={styles.boothIdText}>{item.booth_id}</Text>
-                                <Text style={styles.boothNameText}>{item.booth_name}</Text>
-                            </Pressable>
-                        )}
-
-                        ListEmptyComponent={() => (
-                            <Text style={styles.noDataText}>
-                                {language === 'en' ? 'No results found' : 'कोणतेही परिणाम आढळले नाहीत'}
-                            </Text>
-                        )}
-                    />
-                }
+                <FlatList
+                    data={searchedBooth}
+                    keyExtractor={item => item.booth_id.toString()}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <Pressable style={styles.voterItem}
+                            onPress={() => { navigation.navigate('Booth Voters', { boothId: item.booth_id }) }}
+                        >
+                            <Text style={styles.boothIdText}>{item.booth_id}</Text>
+                            <Text style={styles.boothNameText}>{language === 'en' ? item.booth_name : item.booth_name_mar}</Text>
+                        </Pressable>
+                    )}
+                    ListHeaderComponent={loading && <LoadingListComponent />}
+                    ListEmptyComponent={!loading && <EmptyListComponent />}
+                />
 
                 {pdfLoading && (
                     <View style={styles.pdfLoadingOverlay}>

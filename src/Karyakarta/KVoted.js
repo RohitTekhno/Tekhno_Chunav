@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TextInput, Dimensions, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TextInput, Dimensions, Pressable, Animated, Alert } from 'react-native';
 import axios from 'axios';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { TownUserContext } from '../Neta/TownUserProvider';
+import { KaryakartaContext } from '../ContextApi/KaryakartaContext';
+import { LanguageContext } from '../ContextApi/LanguageContext';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import EmptyListComponent from '../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../ReusableCompo/LoadingListComponent';
+import { toTitleCase } from '../ReusableCompo/Functions/toTitleCaseConvertor';
 
 const { height, width } = Dimensions.get('window');
 
-export default function TownBoothVoters({ route, navigation }) {
-  const { userId } = useContext(TownUserContext);
+export default function KVoted({ route, navigation }) {
+  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { KuserId } = useContext(KaryakartaContext);
   const [voters, setVoters] = useState([]);
   const [filteredVoters, setFilteredVoters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,21 +22,17 @@ export default function TownBoothVoters({ route, navigation }) {
   const [search, setSearch] = useState('');
   const [clickedVoter, setClickedVoter] = useState(null);
   const [animatedValue] = useState(new Animated.Value(1));
-  const { boothId } = route.params;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedVoter, setSelectedVoter] = useState(null);
 
   useEffect(() => {
     const fetchVoters = async () => {
       try {
-
-        const response = await axios.get(`http://192.168.1.8:8000/api/get_voters_by_booth/${boothId}`);
-        if (response.data && response.data.voters && Array.isArray(response.data.voters)) {
-
-          const voterData = response.data.voters.map(voter => ({
-            voter_id: voter.voter_id,
-            voter_name: voter.voter_name
-          }));
-          setVoters(voterData);
-          setFilteredVoters(voterData);
+        const response = await axios.get(`http://192.168.1.8:8000/api/voter_status/${KuserId}/1/
+ `);
+        if (response.data && Array.isArray(response.data)) {
+          setVoters(response.data);
+          setFilteredVoters(response.data);
         } else {
           setError('Unexpected API response format.');
         }
@@ -43,7 +44,8 @@ export default function TownBoothVoters({ route, navigation }) {
     };
 
     fetchVoters();
-  }, [route.params.boothId]);
+  }, [KuserId, language]); // Trigger the useEffect hook whenever the KuserId or language changes
+
 
   useEffect(() => {
     const filtered = voters.filter(voter =>
@@ -54,6 +56,7 @@ export default function TownBoothVoters({ route, navigation }) {
   }, [search, voters]);
 
 
+
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
@@ -62,13 +65,11 @@ export default function TownBoothVoters({ route, navigation }) {
     navigation.goBack();
   };
 
-  const handleNotificationBtn = () => {
-    Alert.alert("Notification Pressed...");
-  };
-
   const handleVoterPress = (voter) => {
     setClickedVoter(voter.voter_id);
 
+    // Fetch voter details and show modal
+    fetchVoterDetails(voter.voter_id);
 
     Animated.sequence([
       Animated.timing(animatedValue, {
@@ -79,20 +80,49 @@ export default function TownBoothVoters({ route, navigation }) {
     ]).start();
   };
 
+  const fetchVoterDetails = (voter_id) => {
+    axios.get(`http://192.168.1.8:8000/api/voters/${voter_id}`)
+      .then(response => {
+        setSelectedVoter(response.data); // Set selected voter details
+        setIsModalVisible(true); // Show the modal
+      })
+      .catch(error => {
+        console.error('Error fetching voter details:', error);
+        Alert.alert('Error', 'Failed to fetch voter details. Please try again.');
+      });
+  };
+
   const renderItem = ({ item }) => {
     const isClicked = item.voter_id === clickedVoter;
+    let backgroundColor = 'white';
 
+    if (item.voter_favour_id === 1) {
+      backgroundColor = '#d3f5d3';
+    } else if (item.voter_favour_id === 2) {
+      backgroundColor = '#f5d3d3';
+    } else if (item.voter_favour_id === 3) {
+      backgroundColor = '#f5f2d3';
+    } else if (item.voter_favour_id === 4) {
+      backgroundColor = '#c9daff';
+    } else if (item.voter_favour_id === 5) {
+      backgroundColor = 'skyblue';
+    } else if (item.voter_favour_id === 6) {
+      backgroundColor = '#fcacec';
+    } else if (item.voter_favour_id === 7) {
+      backgroundColor = '#dcacfa';
+    }
     return (
       <Pressable onPress={() => handleVoterPress(item)}>
         <Animated.View
           style={[
-            styles.voterItem,
+            styles.voterItem, { backgroundColor },
             isClicked && {
-              transform: [{ scale: animatedValue }],
+              transform: [{ scale: animatedValue }], // Apply the animation
+              shadowColor: 'black',
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.8,
               shadowRadius: 9,
-              elevation: 10,
+              elevation: 10, // Add shadow for Android
             }
           ]}
         >
@@ -101,9 +131,9 @@ export default function TownBoothVoters({ route, navigation }) {
               borderRightWidth: 1, borderColor: '#D9D9D9',
               width: 60, alignItems: 'center',
             }}>
-              <Text>{item.voter_id}</Text>
+              <Text style={{ fontSize: 16 }}>{item.voter_id}</Text>
             </View>
-            <Text>{item.voter_name}</Text>
+            <Text style={{ flex: 1, fontSize: 16 }}>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
           </View>
         </Animated.View>
       </Pressable>
@@ -111,53 +141,36 @@ export default function TownBoothVoters({ route, navigation }) {
   };
 
   return (
+
     <View style={styles.container}>
-      <View style={styles.nav}>
-        <Pressable onPress={handleGoBack}>
-          <Icon name='chevron-left' size={25} color={'black'} />
-        </Pressable>
-
-        <Text style={styles.text}>Voters in Booth {boothId}</Text>
-
-        <Pressable onPress={handleNotificationBtn}>
-          <AntDesign name="bells" size={24} color="black" />
-        </Pressable>
-      </View>
-
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="grey" />
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder='Search by voter’s name or ID'
+          placeholder={language === 'en' ? 'Search by voter’s name or ID' : 'मतदाराचे नाव किंवा ओळखपत्राने शोधा'}
           style={styles.searchInput}
         />
       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'small'} color={'black'} />
-          <Text>Loading...</Text>
-        </View>
-      ) :
-        <FlatList
-          data={filteredVoters}
-          keyExtractor={item => item.voter_id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          renderItem={renderItem}
-          ListEmptyComponent={<Text style={styles.noDataText}>No results found</Text>}
-        />
-      }
+      <FlatList
+        data={filteredVoters}
+        keyExtractor={item => item.voter_id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        renderItem={renderItem}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 15,
     flex: 1,
     backgroundColor: 'white',
+    paddingHorizontal: 15,
   },
   nav: {
     flexDirection: 'row',

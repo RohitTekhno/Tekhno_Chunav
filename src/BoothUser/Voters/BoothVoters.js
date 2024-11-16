@@ -6,7 +6,9 @@ import { ActivityIndicator } from 'react-native-paper';
 import { BoothUserContext } from '../../ContextApi/BuserContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BoothEditVoterForm from '../../ReusableCompo/BoothEditVoterForm';
-
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
 const { width, height } = Dimensions.get('screen');
 
 export default function BoothVoters() {
@@ -21,6 +23,7 @@ export default function BoothVoters() {
   const [initialVoters, setInitialVoters] = useState([]);
   const [isFormVisible, setFormVisible] = useState(false);
   const [thumbsUpState, setThumbsUpState] = useState({});
+  const { language, toggleLanguage } = useContext(LanguageContext);
 
   // Fetch voter details
   const fetchVoterDetails = (voter_id) => {
@@ -181,14 +184,14 @@ export default function BoothVoters() {
     fetchVotersData();
   }, []);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index }) => {
     const isThumbsUp = thumbsUpState[item.voter_id];
     let color = 'transparent';
 
     if (item.voter_favour_id === 1) {
       color = '#d3f5d3';
     } else if (item.voter_favour_id === 2) {
-      color = '#fa7873';
+      color = '#fededd';
     } else if (item.voter_favour_id === 3) {
       color = '#f8ff96';
     } else if (item.voter_favour_id === 4) {
@@ -207,9 +210,10 @@ export default function BoothVoters() {
           <Text style={styles.itemText}>{item.voter_id}</Text>
         </View>
         <TouchableOpacity style={styles.nameSection} onPress={() => handleVoterEditForm(item.voter_id)}>
-          <Text style={styles.itemText}>Name : {toTitleCase(item.voter_name)}</Text>
-          <Text style={styles.itemTown}>Contact : {item.voter_contact_number}</Text>
-          <Text style={styles.itemBooth}>Booth : {item.booth_name}</Text>
+          <Text style={styles.itemText}>{language === 'en' ? 'Name' : 'नाव'} : {toTitleCase(item.voter_name_mar)}</Text>
+          <Text style={styles.itemText}>{language === 'en' ? 'Name' : 'नाव'} : {toTitleCase(item.voter_name)}</Text>
+          <Text style={styles.itemTown}>{language === 'en' ? 'Contact' : 'संपर्क'} : {item.voter_contact_number}</Text>
+          <Text style={styles.itemBooth}>{language === 'en' ? 'Booth' : 'बूथ'} : {item.booth_name}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => toggleThumb(item.voter_id)} style={styles.thumbsUpIcon}>
           <Icon name={isThumbsUp ? 'thumb-up' : 'thumb-up-off-alt'} size={24} color={thumbsUpState[item.voter_id] ? 'black' : 'grey'} />
@@ -225,7 +229,7 @@ export default function BoothVoters() {
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by ID or Name"
+        placeholder={language === 'en' ? "Search by name or ID" : 'नाव किंवा आयडी द्वारे शोधा'}
         value={searchText}
         onChangeText={handleSearch}
       />
@@ -242,21 +246,11 @@ export default function BoothVoters() {
             colors={['#3C4CAC']}
           />
         }
-        ListHeaderComponent={
-          loading && (
-            <View style={styles.loadingContainer} >
-              <ActivityIndicator size={'small'} color='#3C4CAC' />
-              <Text style={{ color: 'black' }}>Loading...</Text>
-            </View>
-          )}
-        ListEmptyComponent={!loading && (
-          <View style={styles.loadingContainer}>
-            <Text style={{ color: 'black' }}>No Voters Found</Text>
-          </View>
-        )}
+        ListHeaderComponent={loading && <LoadingListComponent />}
+        ListEmptyComponent={!loading && <EmptyListComponent />}
       />
 
-      < BoothEditVoterForm
+      <BoothEditVoterForm
         isVisible={isFormVisible}
         onClose={handleCloseEditForm}
         selectedVoter={selectedVoter}

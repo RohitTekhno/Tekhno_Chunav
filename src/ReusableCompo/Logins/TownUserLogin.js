@@ -6,14 +6,15 @@ import Feather from '@expo/vector-icons/Feather';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
 import axios from 'axios';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
 
 const { height, width } = Dimensions.get('screen');
 
 const TownUserLogin = () => {
     const { setUserName, login } = useContext(TownUserContext);
-
-    const [username, setUsername] = useState("1234567001");
-    const [password, setPassword] = useState("townuser123");
+    const { language } = useContext(LanguageContext);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [isTextSecure, setTextSecure] = useState(true);
     const [isLoading, setLoading] = useState(false);
     const [nameError, setNameError] = useState('');
@@ -81,12 +82,12 @@ const TownUserLogin = () => {
             </View>
 
             <View style={styles.formContainer}>
-                <Text style={styles.title}>Log in</Text>
+                <Text style={styles.title}>{language === 'en' ? 'Log in' : 'लॉग इन'}</Text>
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Username</Text>
+                    <Text style={styles.label}>{language === 'en' ? 'Username or Mobile' : 'वापरकर्तानाव किंवा मोबाइल'}</Text>
                     <TextInput
                         value={username}
-                        placeholder='Enter username here ...'
+                        placeholder={language === 'en' ? 'Enter username or mobile here ...' : 'येथे वापरकर्तानाव किंवा मोबाइल प्रविष्ट करा ...'}
                         onChangeText={setUsername}
                         textContentType='username'
                         keyboardType='number-pad'
@@ -98,11 +99,11 @@ const TownUserLogin = () => {
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Password</Text>
+                    <Text style={styles.label}>{language === 'en' ? 'Password' : 'पासवर्ड'}</Text>
                     <View style={styles.passwordInputContainer}>
                         <TextInput
                             value={password}
-                            placeholder='Enter password here ...'
+                            placeholder={language === 'en' ? 'Enter password here ...' : 'इथे पासवर्ड टाका...'}
                             onChangeText={setPassword}
                             secureTextEntry={isTextSecure}
                             textContentType='password'
@@ -119,7 +120,7 @@ const TownUserLogin = () => {
 
                 <Pressable onPress={handleLogin} style={styles.loginButton}>
                     {!isLoading ? (
-                        <Text style={styles.loginButtonText}>Log in</Text>
+                        <Text style={styles.loginButtonText}>{language === 'en' ? 'Log in' : 'लॉग इन करा'}</Text>
                     ) : (
                         <ActivityIndicator color={'white'} size={'large'} />
                     )}

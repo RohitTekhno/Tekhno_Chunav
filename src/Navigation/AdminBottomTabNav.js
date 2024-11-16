@@ -13,6 +13,8 @@ import TownVoters from '../Admin/Towns/TownVoters';
 import Ward from '../Admin/Ward/Ward';
 import WardVoters from '../Admin/Ward/WardVoters';
 import ContactUs from '../ReusableCompo/ContactUs/ContactUs';
+import { useContext } from 'react';
+import { LanguageContext } from '../ContextApi/LanguageContext';
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -26,6 +28,7 @@ const TabBarIcon = ({ focused, name, IconComponent }) => (
 
 const TownStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Towns'>
@@ -35,6 +38,7 @@ const TownStack = () => {
                     headerTitleStyle: {
                         fontSize: height * 0.02,
                     },
+                    headerTitle: language === 'en' ? "Towns" : 'शहरे',
                     headerShadowVisible: false, headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
@@ -46,7 +50,7 @@ const TownStack = () => {
                 options={({ route }) => ({
                     headerShown: false,
                     headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitle: route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters',
+                    headerTitle: language === 'en' ? route.params.townId ? `Voters in Town : ${route.params.townId}  ` : 'Town Voters' : route.params.townId ? `शहरातील मतदार : ${route.params.townId}  ` : 'शहरातील मतदार',
                     headerLeft: () => (
                         <MaterialIcons name="menu" size={width * 0.05} color="black"
                             //style={{ marginLeft: 10 }}
@@ -60,6 +64,7 @@ const TownStack = () => {
 
 const BoothStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Booths'>
@@ -69,6 +74,7 @@ const BoothStack = () => {
                     headerTitleStyle: {
                         fontSize: height * 0.02,
                     },
+                    headerTitle: language === 'en' ? "Booths" : 'बूथ',
                     headerShadowVisible: false, headerLeft: () => (
                         <Pressable style={{ width: 35, borderRadius: 30, alignItems: 'center', padding: 5 }}
                             onPress={() => navigation.goBack()}  >
@@ -95,13 +101,14 @@ const BoothStack = () => {
 
 const WardStack = () => {
     const navigation = useNavigation();
+    const { language, toggleLanguage } = useContext(LanguageContext);
 
     return (
         <Stack.Navigator initialRouteName='Wards'>
             <Stack.Screen name='Wards' component={Ward}
                 options={{
                     headerShown: false, headerTitleAlign: 'center', headerShadowVisible: false,
-                    headerTitle: 'Ward List',
+                    headerTitle: language === 'en' ? "Wards list" : 'प्रभाग यादी',
                     headerTitleStyle: { fontSize: 20, fontWeight: '600', color: 'black' },
                     headerShadowVisible: false,
                     headerLeft: () => (

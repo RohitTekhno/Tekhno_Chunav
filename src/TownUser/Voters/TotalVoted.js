@@ -4,18 +4,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { TownUserContext } from '../../ContextApi/TownUserProvider';
 import axios from 'axios';
 import VoterDetailsPopUp from '../../ReusableCompo/VoterDetailsPopUp';
+import { LanguageContext } from '../../ContextApi/LanguageContext';
+import EmptyListComponent from '../../ReusableCompo/EmptyListComponent';
+import LoadingListComponent from '../../ReusableCompo/LoadingListComponent';
+import { toTitleCase } from '../../ReusableCompo/Functions/toTitleCaseConvertor';
 
 const { height, width } = Dimensions.get('screen');
 
-const VoterItem = memo(({ item, onPress }) => (
-  <Pressable style={styles.voterItem} onPress={onPress}>
-    <Text style={styles.voterIdText}>{item.voter_id}</Text>
-    <Text>{item.voter_name}</Text>
-  </Pressable>
-));
 
 const TotalVoted = () => {
   const { userId } = useContext(TownUserContext);
+  const { language } = useContext(LanguageContext);
   const [searchedValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(true);
   const [voters, setVoters] = useState([]);
@@ -29,6 +28,13 @@ const TotalVoted = () => {
     const searchValueLower = searchedValue.toLowerCase();
     return boothId.includes(searchValueLower) || boothName.includes(searchValueLower);
   });
+
+  const VoterItem = memo(({ item, onPress }) => (
+    <Pressable style={styles.voterItem} onPress={onPress}>
+      <Text style={styles.voterIdText}>{item.voter_id}</Text>
+      <Text>{language === 'en' ? toTitleCase(item.voter_name) : item.voter_name_mar}</Text>
+    </Pressable>
+  ));
 
   const fetchData = async () => {
     setLoading(true);
@@ -77,43 +83,32 @@ const TotalVoted = () => {
         <TextInput
           value={searchedValue}
           onChangeText={setSearchValue}
-          placeholder='Search by user’s name or ID'
+          placeholder={language === 'en' ? 'search by voter’s name or ID' : 'मतदाराचे नाव किंवा आयडी द्वारे शोधा'}
           style={styles.searchInput}
         />
       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size='small' />
-          <Text>Loading...</Text>
-        </View>
-      ) : (
-        <View style={styles.listContainer}>
-          {searchedVoter.length > 0 ? (
-            <>
-              <FlatList
-                data={searchedVoter}
-                keyExtractor={item => item.voter_id.toString()}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <VoterItem
-                    item={item}
-                    onPress={() => fetchVoterDetails(item.voter_id)}
-                  />
-                )}
-              />
-              <VoterDetailsPopUp
-                isModalVisible={isModalVisible}
-                selectedVoter={selectedVoter}
-                setIsModalVisible={setIsModalVisible}
-              />
-            </>
-          ) : (
-            <Text style={styles.noDataText}>No results found</Text>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={searchedVoter}
+          keyExtractor={item => item.voter_id.toString()}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <VoterItem
+              item={item}
+              onPress={() => fetchVoterDetails(item.voter_id)}
+            />
           )}
-        </View>
-      )}
-    </View>
+          ListHeaderComponent={loading && <LoadingListComponent />}
+          ListEmptyComponent={!loading && <EmptyListComponent />}
+        />
+        <VoterDetailsPopUp
+          isModalVisible={isModalVisible}
+          selectedVoter={selectedVoter}
+          setIsModalVisible={setIsModalVisible}
+        />
+      </View>
+    </View >
   );
 };
 

@@ -104,7 +104,7 @@ function WardDash({ toggleSidebar }) {
 
             <Pressable onPress={() => navigation.navigate('Booth Users')} style={[styles.statsBox, styles.statsBoxGreen]}>
               <Text style={styles.statsLabel}>
-                {language === 'en' ? 'Total Users' : 'एकूण वापरकर्ते'}
+                {language === 'en' ? 'Total Users' : 'एकूण कार्यकर्ता'}
               </Text>
               <Text style={styles.statsValue}>{totalUsers}</Text>
             </Pressable>
